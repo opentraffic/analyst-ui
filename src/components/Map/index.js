@@ -5,7 +5,7 @@ import { Map as Leaflet, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
 
-const ATTRIBUTION = '<a href="https://mapzen.com/">Mapzen</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://whosonfirst.mapzen.com#License">License</a>'
+const ATTRIBUTION = '<a href="https://mapzen.com/">Mapzen</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://whosonfirst.mapzen.com#License">Who’s on First</a>'
 
 export default class Map extends React.Component {
   static propTypes = {
@@ -28,9 +28,9 @@ export default class Map extends React.Component {
         }
       },
       attribution: ATTRIBUTION
-    });
+    })
 
-    layer.addTo(this.map.leafletElement);
+    layer.addTo(this.map.leafletElement)
   }
 
   render () {
