@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
-import logo from '../images/logo.svg';
 import './App.css';
+import Map from './Map'
 
 class App extends Component {
   render() {
+    const map = {
+      center: [0,120],
+      zoom: 3,
+
+      // Temporary. Credentials ported from traffic-engine-app.
+      mapbox: {
+        accessToken: 'pk.eyJ1IjoiY29udmV5YWwiLCJhIjoiMDliQURXOCJ9.9JWPsqJY7dGIdX777An7Pw',
+        mapId: 'conveyal.gepida3i'
+      },
+    }
+
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Map className="map-container" map={map} />
       </div>
     );
   }
