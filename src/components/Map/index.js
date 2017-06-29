@@ -1,10 +1,11 @@
+/* global Tangram */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Map as Leaflet, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
 
-const ATTRIBUTION = `&copy <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>`
+const ATTRIBUTION = '<a href="https://mapzen.com/">Mapzen</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://whosonfirst.mapzen.com#License">License</a>'
 
 export default class Map extends React.Component {
   static propTypes = {
@@ -15,22 +16,36 @@ export default class Map extends React.Component {
     onClick: PropTypes.func
   }
 
+  componentDidMount () {
+    const layer = Tangram.leafletLayer({
+      scene: {
+        import: [
+          'https://mapzen.com/carto/refill-style/7/refill-style.zip',
+          'https://mapzen.com/carto/refill-style/7/themes/gray-gold.zip'
+        ],
+        global: {
+          'sdk_mapzen_api_key': this.props.map.mapzen.apiKey
+        }
+      },
+      attribution: ATTRIBUTION
+    });
+
+    layer.addTo(this.map.leafletElement);
+  }
+
   render () {
     const { className, children, map, onChange, onClick } = this.props
     const { center, mapbox, zoom } = map
-    const url = `http://api.tiles.mapbox.com/v4/${mapbox.mapId}/{z}/{x}/{y}.png?access_token=${mapbox.accessToken}`
 
     return (
       <Leaflet
-        center={center}
         className={className}
+        center={center}
         zoom={zoom}
         onLeafletClick={onClick}
-        onLeafletZoomEnd={e => onChange({ zoom: e.target._zoom })}>
-        <TileLayer
-          url={url}
-          attribution={ATTRIBUTION}
-        />
+        onLeafletZoomEnd={e => onChange({ zoom: e.target._zoom })}
+        ref={(ref) => { this.map = ref }}
+      >
         {children}
       </Leaflet>
     )
