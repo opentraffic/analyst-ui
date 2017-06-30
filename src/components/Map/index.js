@@ -1,7 +1,8 @@
+/* global Tangram */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Map as Leaflet } from 'react-leaflet'
-import Tangram from 'tangram'
+// import Tangram from 'tangram'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
 
@@ -21,8 +22,8 @@ export default class Map extends React.Component {
       scene: {
         import: [
           'https://mapzen.com/carto/refill-style/7/refill-style.zip',
-          'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
-          // 'https://mapzen.com/carto/refill-style/7/themes/gray-gold.zip'
+          // 'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
+          'https://mapzen.com/carto/refill-style/7/themes/gray-gold.zip'
         ],
         global: {
           'sdk_mapzen_api_key': this.props.map.mapzen.apiKey
