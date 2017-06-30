@@ -8,6 +8,7 @@ class App extends Component {
     return (
       <div className="App">
         <Map className="map-container" map={config} />
+        <div className="sidebar" />
       </div>
     )
   }

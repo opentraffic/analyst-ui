@@ -1,7 +1,17 @@
 .map-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: calc(100% - 400px);
   height: 100%;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100%;
+  background-color: whitesmoke;
+  border-left: 1px solid #c0c0c0;
 }
