@@ -6,12 +6,11 @@
   height: 100%;
 }
 
-.sidebar {
+.sidebar-container {
   position: fixed;
   top: 0;
   right: 0;
   width: 400px;
   height: 100%;
-  background-color: whitesmoke;
   border-left: 1px solid #c0c0c0;
 }

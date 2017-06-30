@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import Map from './Map'
+import Sidebar from './Sidebar'
 import config from '../config'
+import 'semantic-ui-css/semantic.min.css'
 import './App.css'
 
 class App extends Component {
@@ -8,7 +10,7 @@ class App extends Component {
     return (
       <div className="App">
         <Map className="map-container" map={config} />
-        <div className="sidebar" />
+        <Sidebar className="sidebar-container" />
       </div>
     )
   }
