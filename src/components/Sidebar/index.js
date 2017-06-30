@@ -21,6 +21,7 @@ const Sidebar = (props) => (
   <div className={'Sidebar ' + props.className}>
     <Segment>
       <Header as="h3">Section header</Header>
+      <p><strong>Yo! This is a split branch test.</strong></p>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       <p>
         <Checkbox toggle label="Toggle" />
