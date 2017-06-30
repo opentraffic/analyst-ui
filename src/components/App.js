@@ -1,17 +1,24 @@
 import React, { Component } from 'react'
+import { Provider } from 'react-redux'
+
 import Map from './Map'
 import Sidebar from './Sidebar'
-import config from '../config'
+import DevTools from './DevTools'
+import store from '../store'
+
 import 'semantic-ui-css/semantic.min.css'
 import './App.css'
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <Map className="map-container" map={config} />
-        <Sidebar className="sidebar-container" />
-      </div>
+      <Provider store={store}>
+        <div className="App">
+          <Map className="map-container" />
+          <Sidebar className="sidebar-container" />
+          <DevTools />
+        </div>
+      </Provider>
     )
   }
 }

@@ -7,8 +7,10 @@ const config = {
     accessToken: 'pk.eyJ1IjoiY29udmV5YWwiLCJhIjoiMDliQURXOCJ9.9JWPsqJY7dGIdX777An7Pw',
     mapId: 'conveyal.gepida3i'
   },
-  center: [0, 120],
-  zoom: 3,
+  map: {
+    center: [0, 120],
+    zoom: 3,
+  }
 }
 
 export default config
