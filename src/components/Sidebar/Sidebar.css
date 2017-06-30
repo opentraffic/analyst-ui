@@ -1,4 +1,6 @@
 .Sidebar {
   padding: 1rem;
   background-color: whitesmoke;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
