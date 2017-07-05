@@ -9,7 +9,7 @@ import './Map.css'
 
 const ATTRIBUTION = '<a href="https://mapzen.com/">Mapzen</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://whosonfirst.mapzen.com#License">Who’s on First</a>'
 
-class Map extends React.Component {
+export default class Map extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     children: PropTypes.any,
@@ -54,5 +54,3 @@ class Map extends React.Component {
     )
   }
 }
-
-export default Map
