@@ -55,10 +55,4 @@ class Map extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    config: state.config,
-  }
-}
-
-export default connect(mapStateToProps)(Map)
+export default Map
