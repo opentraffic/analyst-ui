@@ -15,7 +15,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div className="App">
-          <MapContainer />
+          <MapContainer className="map-container" />
           <Sidebar className="sidebar-container" />
           <DevTools />
         </div>
