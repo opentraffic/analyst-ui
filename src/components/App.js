@@ -5,7 +5,6 @@ import MapContainer from './MapContainer'
 import Sidebar from './Sidebar'
 import DevTools from './DevTools'
 import store from '../store'
-import config from '../config'
 
 import 'semantic-ui-css/semantic.min.css'
 import './App.css'
