@@ -2,7 +2,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Map as Leaflet } from 'react-leaflet'
+import { Map as Leaflet, ScaleControl } from 'react-leaflet'
 // import Tangram from 'tangram'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
@@ -49,6 +49,7 @@ class Map extends React.Component {
         onLeafletZoomEnd={(e) => onChange({ zoom: e.target._zoom })}
         ref={(ref) => { this.map = ref }}
       >
+        <ScaleControl />
         {children}
       </Leaflet>
     )
