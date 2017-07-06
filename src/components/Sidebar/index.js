@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Header, Accordion, Checkbox, Button } from 'semantic-ui-react'
+import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
 import './Sidebar.css'
 
 const panels = [
@@ -22,9 +22,9 @@ const Sidebar = (props) => (
     <Segment>
       <Header as="h3">Section header</Header>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      <p>
+      <Message>
         <Checkbox toggle label="Toggle" />
-      </p>
+      </Message>
       <Accordion panels={panels} styled />
     </Segment>
     <Segment>
