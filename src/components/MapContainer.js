@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 class MapContainer extends React.Component {
 	render() {
 		return (
-			<Map className="map-container" config={this.props.config}/> 
+			<Map config={this.props.config}/> 
 		)
 	}
 }
