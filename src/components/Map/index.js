@@ -13,9 +13,18 @@ export default class Map extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     children: PropTypes.any,
-    config: PropTypes.object,
+    config: PropTypes.object.isRequired,
+    center: PropTypes.array,
+    zoom: PropTypes.number,
     onChange: PropTypes.func,
     onClick: PropTypes.func
+  }
+
+  static defaultProps = {
+    center: [0, 0],
+    zoom: 3,
+    onChange: function () {},
+    onClick: function () {}
   }
 
   componentDidMount () {
@@ -37,8 +46,7 @@ export default class Map extends React.Component {
   }
 
   render () {
-    const { className, children, config, onChange, onClick } = this.props
-    const { center, zoom } = config.map
+    const { className, children, config, center, zoom, onChange, onClick } = this.props
 
     return (
       <Leaflet
