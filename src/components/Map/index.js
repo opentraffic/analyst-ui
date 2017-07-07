@@ -52,8 +52,8 @@ export default class Map extends React.Component {
         className={className}
         center={center}
         zoom={zoom}
-        onLeafletClick={onClick}
-        onLeafletZoomEnd={(e) => onChange({ zoom: e.target._zoom })}
+        onClick={onClick}
+        onZoomEnd={(e) => onChange({ zoom: e.target._zoom })}
         ref={(ref) => { this.map = ref }}
       >
         <ScaleControl />
