@@ -3,11 +3,10 @@ import Map from './Map'
 import { connect } from 'react-redux'
 
 class MapContainer extends React.Component {
-	render() {
-		return (
-			<Map config={this.props.config}/> 
-		)
-	}
+  render() {
+    return (
+      <Map config={this.props.config} />
+    )
 }
 
 function mapStateToProps(state) {
