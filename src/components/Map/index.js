@@ -1,7 +1,6 @@
 /* global Tangram */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { Map as Leaflet, ScaleControl } from 'react-leaflet'
 // import Tangram from 'tangram'
 import 'leaflet/dist/leaflet.css'
@@ -46,7 +45,7 @@ export default class Map extends React.Component {
   }
 
   render () {
-    const { className, children, config, center, zoom, onChange, onClick } = this.props
+    const { className, children, center, zoom, onChange, onClick } = this.props
 
     return (
       <Leaflet
