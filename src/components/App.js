@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 
-import Map from './Map'
+import MapContainer from './MapContainer'
 import Sidebar from './Sidebar'
 import DevTools from './DevTools'
 import store from '../store'
@@ -14,7 +14,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div className="App">
-          <Map className="map-container" />
+          <MapContainer className="map-container" />
           <Sidebar className="sidebar-container" />
           <DevTools />
         </div>
