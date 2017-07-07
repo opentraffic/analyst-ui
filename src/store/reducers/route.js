@@ -9,7 +9,7 @@ export const RESET = 'analyst-ui/route/RESET'
 // Reducer
 const initialState = {
   waypoints: [],
-  route: null
+  positions: null
 }
 
 export default function reducer (state = initialState, action) {
@@ -23,6 +23,11 @@ export default function reducer (state = initialState, action) {
       return {
         ...state,
         waypoints: state.waypoints.filter(waypoint => waypoint !== action.waypoint)
+      }
+    case SET_ROUTE:
+      return {
+        ...state,
+        positions: action.positions
       }
     case RESET:
       return initialState
@@ -46,10 +51,10 @@ export function removeWaypoint (waypoint) {
   }
 }
 
-export function setRoute (route) {
+export function setRoute (positions) {
   return {
     type: SET_ROUTE,
-    route
+    positions
   }
 }
 
