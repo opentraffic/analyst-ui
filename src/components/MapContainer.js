@@ -7,6 +7,7 @@ class MapContainer extends React.Component {
     return (
       <Map config={this.props.config} />
     )
+  }
 }
 
 function mapStateToProps(state) {
