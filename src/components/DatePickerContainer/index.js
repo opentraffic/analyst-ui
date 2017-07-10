@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates' 
 import 'react-dates/lib/css/_datepicker.css'
 import './DatePickerContainer.css'
-import store from '../store'
+import store from '../../store'
 import moment from 'moment'
 
 class DatePickerContainer extends React.Component {
