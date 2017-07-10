@@ -1,7 +1,7 @@
 import React from 'react'
 import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
-import './Sidebar.css'
 import DatePickerContainer from '../DatePickerContainer'
+import './Sidebar.css'
 
 const panels = [
   {
