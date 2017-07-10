@@ -57,6 +57,8 @@ class DatePickerContainer extends React.Component {
 				focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
 				onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
 				renderCalendarInfo={() => { return infoPanel }}
+        showClearDates={true}
+        reopenPickerOnClearDates={true}
 			/>
 		)
 	}
