@@ -30,7 +30,7 @@ const Sidebar = (props) => (
     </Segment>
     <Segment> 
       <DatePickerContainer className='date-picker' />
-    <Segment>
+    </Segment>
       <Header as="h3">Export</Header>
       <Button icon="download" content="Download" color="blue" fluid />
     </Segment>
