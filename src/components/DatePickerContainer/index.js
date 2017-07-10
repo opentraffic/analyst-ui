@@ -2,22 +2,22 @@ import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates' 
+import moment from 'moment'
+import store from '../../store'
 import 'react-dates/lib/css/_datepicker.css'
 import './DatePickerContainer.css'
-import store from '../../store'
-import moment from 'moment'
 
 class DatePickerContainer extends React.Component {
 	static propTypes = {
 		dispatch: PropTypes.func.isRequired
 	}
 
-	constructor() {
-		super()
-		this.handleDateChange = this.handleDateChange.bind(this)
+	constructor(props) {
+		super(props)
 		this.state = {
 			focusedInput: null
 		}
+    this.handleDateChange = this.handleDateChange.bind(this)
 	}
 
 	handleDateChange(date) {
@@ -43,24 +43,24 @@ class DatePickerContainer extends React.Component {
 
     // If info panel needed pass into renderCalendarInfo() as function 
 		const infoPanel = (
-			<div className="infoPanel">	
+			<div className="info-panel">	
 				&#33; Here I am 
 			</div>
 		)
 
 		return (
 			<DateRangePicker
-				startDate={changeUnixToMoment(start)}  // momentPropTypes.momentObj or null,
-				endDate={changeUnixToMoment(end)} // momentPropTypes.momentObj or null,
-				numberOfMonths={1}
-				isOutsideRange={day => !isInclusivelyBeforeDay(day, today)}
-				onDatesChange={this.handleDateChange}
-				focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-				onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
-				renderCalendarInfo={() => { return infoPanel }}
-        showClearDates={true}
-        reopenPickerOnClearDates={true}
-			/>
+       startDate={changeUnixToMoment(start)}  // momentPropTypes.momentObj or null,
+       endDate={changeUnixToMoment(end)} // momentPropTypes.momentObj or null,
+			 numberOfMonths={1}
+			 isOutsideRange={day => !isInclusivelyBeforeDay(day, today)}
+			 onDatesChange={this.handleDateChange}
+			 focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+			 onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
+			 renderCalendarInfo={() => { return infoPanel }}
+       showClearDates={true}
+       reopenPickerOnClearDates={true}
+		  />
 		)
 	}
 }
