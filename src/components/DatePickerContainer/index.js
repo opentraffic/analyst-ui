@@ -44,7 +44,7 @@ class DatePickerContainer extends React.Component {
     // If info panel needed pass into renderCalendarInfo() as function 
 		const infoPanel = (
 			<div className="info-panel">	
-				&#33; Here I am 
+				This is where the info panel is.
 			</div>
 		)
 
