@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Map from './Map'
 import { connect } from 'react-redux'
+import Map from './Map'
 
 class MapContainer extends React.Component {
   static PropTypes = {
