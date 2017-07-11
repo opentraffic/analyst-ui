@@ -6,7 +6,8 @@ import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    config: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -82,7 +83,7 @@ class MapSearchBar extends React.Component {
 
   //Makes autocomplete request to Mapzen Search based on what user has typed
   autocomplete(query) {
-    const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=mapzen-YFrX5jt`
+    const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
     this.makeRequest(endpoint)
   }
 
