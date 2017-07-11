@@ -1,7 +1,8 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import Map from './Map'
-import { connect } from 'react-redux'
+import MapSearchBar from './MapSearchBar'
 
 class MapContainer extends React.Component {
   static PropTypes = {
@@ -14,6 +15,7 @@ class MapContainer extends React.Component {
 
     return (
       <div className={this.props.className}>
+        <MapSearchBar config={config} />
         <Map config={config} center={config.center} zoom={config.zoom} />
       </div>
     )
