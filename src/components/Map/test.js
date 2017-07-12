@@ -1,3 +1,4 @@
+/* global it */
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Map from './'
@@ -7,7 +8,7 @@ it('renders without crashing', () => {
   global.Tangram = Tangram
   const div = document.createElement('div')
   const config = {
-    mapzen: { apiKey: 'foo '}
+    mapzen: { apiKey: 'foo' }
   }
 
   ReactDOM.render(<Map config={config} />, div)

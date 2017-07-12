@@ -9,7 +9,7 @@ const config = {
   },
   map: {
     center: [0, 120],
-    zoom: 3,
+    zoom: 3
   }
 }
 
