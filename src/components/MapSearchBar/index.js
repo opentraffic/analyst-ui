@@ -70,7 +70,7 @@ class MapSearchBar extends React.Component {
 
     return (
       <div className="map-search-suggestion-item">
-        <i aria-hidden="true" className="marker icon"></i>{highlighted}
+        <Icon name="marker" />{highlighted}
       </div>
     )
   }
