@@ -12,6 +12,17 @@
   margin: 10px;
 }
 
+.close.icon.clear-search {
+  position: absolute;
+  right: 0;
+  margin: 8px;
+  cursor: pointer;
+}
+
+.close.icon.clear-search:hover {
+  color: #aaa;
+}
+
 .react-autosuggest__input--focused {
   outline: none;
 }
@@ -19,8 +30,8 @@
 .react-autosuggest__input {
   width: 330px;
   height: 35px;
-  padding: 10px 20px;
-  padding-left: 35px;
+  padding: 10px 30px;
+  padding-right: 20px;
   font-family: Helvetica, sans-serif;
   font-weight: 300;
   font-size: 16px;
