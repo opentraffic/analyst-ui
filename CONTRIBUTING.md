@@ -30,7 +30,8 @@ marked as errors.
 
 Because `create-react-app` has its own linting system, this is not tied into
 the `npm run build` script. Our test script has been augmented to run this
-separately.
+separately. Note that `package.json` needs to specify the same versions of `eslint`
+and various `eslint-config-*` packages as `create-react-app` or errors will occur.
 
 ## Testing publicly
 
