@@ -14,8 +14,9 @@ class MapContainer extends React.Component {
 
 	render() {
     const config = this.props.config
+    
 		return (
-			<div className ={this.props.className}>
+			<div className={this.props.className}>
 				<MapSearchBar config={config} setLocation={this.props.setLocation} recenterMap={this.props.recenterMap} />
 				<Map config={config} center={config.center} zoom={config.zoom} />
 			</div>
