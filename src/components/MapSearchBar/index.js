@@ -1,13 +1,13 @@
 import React from 'react'
 import Autosuggest from 'react-autosuggest'
-import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    config: PropTypes.object.isRequired
+     setLocation: PropTypes.func.isRequired,
+     recenterMap: PropTypes.func.isRequired,
+     config: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -24,7 +24,7 @@ class MapSearchBar extends React.Component {
     this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this)
     this.getSuggestionValue = this.getSuggestionValue.bind(this)
     this.renderSuggestion = this.renderSuggestion.bind(this)
-    this.changeCenterMap = this.changeCenterMap.bind(this)
+    this.makeRequest = this.makeRequest.bind(this)
   }
 
   // Will be called every time you need to recalculate suggestions
@@ -46,31 +46,30 @@ class MapSearchBar extends React.Component {
     const lat = suggestion.geometry.coordinates[1]
     const lng = suggestion.geometry.coordinates[0]
     const latlng = [lat, lng]
+    const name = suggestion.properties.label
 
-    this.props.dispatch({
-      type: 'SET_LOCATION',
-      latlng: latlng,
-      name: suggestion.properties.label
-    })
-
-    this.changeCenterMap(latlng)
+    // Stores latlng and name of selected location in Redux
+    this.props.setLocation(latlng, name)
+    // Recenters map to the selected location's latlng
+    this.props.recenterMap(latlng)
     return suggestion.properties.label
-  }
-
-  // Change center of map when suggestion is selected
-  changeCenterMap(newCenter) {
-    // latitude is the second number in array, not first
-    this.props.dispatch({
-      type: 'CHANGE_CENTER',
-      coordinates: newCenter
-    })
   }
 
   renderSuggestion(suggestion, {query, isHighlighted}) {
     const label = suggestion.properties.label
+
+    // Highlight the input query
+    const r = new RegExp(`(${query})`, 'gi')
+    const highlighted = label.split(r)
+    for (let i = 0; i < highlighted.length; i++) {
+      if (highlighted[i].toLowerCase() === query.toLowerCase()) {
+        highlighted[i] = <strong key={i}>{highlighted[i]}</strong>
+      }
+    }
+
     return (
       <div className="map-search-suggestion-item">
-        <i aria-hidden="true" className="marker icon"></i> {label}
+        <i aria-hidden="true" className="marker icon"></i>{highlighted}
       </div>
     )
   }
@@ -81,7 +80,7 @@ class MapSearchBar extends React.Component {
     })
   }
 
-  //Makes autocomplete request to Mapzen Search based on what user has typed
+  // Makes autocomplete request to Mapzen Search based on what user has typed
   autocomplete(query) {
     const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
     this.makeRequest(endpoint)
@@ -110,6 +109,7 @@ class MapSearchBar extends React.Component {
           <i aria-hidden="true" className="search icon"></i>
         </div>
         <Autosuggest
+          ref={(ref) => {this.autosuggestBar = ref}}
           suggestions={this.state.suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
@@ -122,4 +122,4 @@ class MapSearchBar extends React.Component {
   }
 }
 
-export default connect()(MapSearchBar)
+export default MapSearchBar
