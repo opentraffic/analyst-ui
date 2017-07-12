@@ -97,7 +97,8 @@ function getAndDisplayRoutes (route, dispatch) {
     locations: formatLocations(waypoints),
     costing: 'auto'
   }
-  const url = `https://valhalla.mapzen.com/route?json=${JSON.stringify(json)}&api_key=mapzen-YFrX5jt`
+  const server = 'routing-prod.opentraffic.io'
+  const url = `https://${server}/route?json=${JSON.stringify(json)}`
 
   window.fetch(url)
     .then(response => {
