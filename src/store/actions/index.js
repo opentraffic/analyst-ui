@@ -13,4 +13,4 @@ export function setLocation(latlng, name) {
     latlng,
     name
   }
-  
+}
