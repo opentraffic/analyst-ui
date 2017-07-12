@@ -4,12 +4,12 @@ import { connect } from 'react-redux'
 import Map from './Map'
 
 class MapContainer extends React.Component {
-  static PropTypes = {
+  static propTypes = {
     className: PropTypes.string,
     config: PropTypes.object
   }
 
-  render() {
+  render () {
     const config = this.props.config
 
     return (
@@ -20,9 +20,9 @@ class MapContainer extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps (state) {
   return {
-    config: state.config,
+    config: state.config
   }
 }
 

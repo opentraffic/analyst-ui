@@ -3,7 +3,7 @@ import { persistState } from 'redux-devtools'
 import thunk from 'redux-thunk'
 
 import DevTools from '../components/DevTools'
-import reducers from './reducers';
+import reducers from './reducers'
 
 const store = createStore(reducers, compose(
   applyMiddleware(thunk),
