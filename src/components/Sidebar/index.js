@@ -1,5 +1,6 @@
 import React from 'react'
 import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
+import DatePickerContainer from '../DatePickerContainer'
 import './Sidebar.css'
 
 const panels = [
@@ -26,6 +27,9 @@ const Sidebar = (props) => (
         <Checkbox toggle label="Toggle" />
       </Message>
       <Accordion panels={panels} styled />
+    </Segment>
+    <Segment>
+      <DatePickerContainer className="date-picker" />
     </Segment>
     <Segment>
       <Header as="h3">Export</Header>

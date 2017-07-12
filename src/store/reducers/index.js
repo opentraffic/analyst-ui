@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux'
 import config from './config'
+import date from './date'
 
 const reducers = combineReducers({
-  config
+  config,
+  date
 })
 
 export default reducers
