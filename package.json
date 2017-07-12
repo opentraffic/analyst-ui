@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",
-    "eslint": "4.1.1",
+    "eslint": "3.19.0",
     "eslint-config-react-app": "1.0.5",
     "eslint-config-standard": "10.2.1",
     "eslint-config-standard-jsx": "4.0.2",
