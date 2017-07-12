@@ -6,7 +6,7 @@ import route from './route'
 const reducers = combineReducers({
   config,
   date,
-  route,
+  route
 })
 
 export default reducers

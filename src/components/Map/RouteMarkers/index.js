@@ -42,12 +42,12 @@ function createMarkers (waypoints, onClick) {
 export default class RouteMarkers extends React.Component {
   static propTypes = {
     waypoints: PropTypes.array,
-    onClick: PropTypes.func,
+    onClick: PropTypes.func
   }
 
   static defaultProps = {
     waypoints: [],
-    onClick: function () {},
+    onClick: function () {}
   }
 
   render () {

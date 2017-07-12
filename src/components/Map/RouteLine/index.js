@@ -4,11 +4,11 @@ import { LayerGroup, Polyline } from 'react-leaflet'
 
 export default class RouteLine extends React.Component {
   static propTypes = {
-    positions: PropTypes.array,
+    positions: PropTypes.array
   }
 
   static defaultProps = {
-    positions: [],
+    positions: []
   }
 
   render () {

@@ -13,7 +13,7 @@ class MapContainer extends React.Component {
     dispatch: PropTypes.func.isRequired,
     className: PropTypes.string,
     config: PropTypes.object,
-    route: PropTypes.object,
+    route: PropTypes.object
   }
 
   constructor (props) {
@@ -63,7 +63,7 @@ class MapContainer extends React.Component {
 function mapStateToProps (state) {
   return {
     config: state.config,
-    route: state.route,
+    route: state.route
   }
 }
 
