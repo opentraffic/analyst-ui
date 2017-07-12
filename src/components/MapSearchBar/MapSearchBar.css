@@ -8,16 +8,8 @@
 .search-icon {
   height: 25px;
   position: absolute;
-  padding: 2px 3px;
-  margin: 5px;
-}
-
-.icon-button {
-  position: absolute;
-  right: 0;
-  height: 25px;
-  padding: 2px 3px;
-  margin: 5px;
+  padding: 7px 10px;
+  margin: 10px;
 }
 
 .react-autosuggest__input--focused {
