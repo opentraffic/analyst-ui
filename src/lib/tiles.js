@@ -18,11 +18,11 @@ const VALHALLA_TILES = [
  * @param {Number} top - northern latitude
  * @returns {Array} - of OSMLR tuples [tile level, tile index]
  */
-export function getTilesForBoundingBox (left, bottom, right, top) {
+export function getTilesForBbox (left, bottom, right, top) {
   // if this is crossing the anti meridian split it up and combine
   if (left > right) {
-    const east = getTilesForBoundingBox(left, bottom, 180.0, top)
-    const west = getTilesForBoundingBox(-180.0, bottom, right, top)
+    const east = getTilesForBbox(left, bottom, 180.0, top)
+    const west = getTilesForBbox(-180.0, bottom, right, top)
     return east.concat(west)
   }
 
@@ -47,4 +47,21 @@ export function getTilesForBoundingBox (left, bottom, right, top) {
 
     return tiles.concat(set)
   }, [])
+}
+
+/**
+ * Creates a buffer around the given bounding box and calls getTilesForBbox()
+ * with the new bounds.
+ *
+ * Rationale: OSMLR segments are not duplicated in adjacent tiles even if they cross
+ * a tile boundary. An OSMLR segment exists in a tile if its start point is inside
+ * the tile, and it is allowed to cross the tile and end outside of the tile.
+ * For that reason it is possible to have a requested bounding box align with a
+ * tile boundary such that a segment that would normally intersect it isn't
+ * actually present in the tile. By extending the buffer, we can make sure these
+ * segments are captured. Thankfully the segments are quite short and only a very
+ * small buffer is needed.
+ */
+export function getTilesForBufferedBbox (left, bottom, right, top, buffer = 0.1) {
+  return getTilesForBbox(left - buffer, bottom - buffer, right + buffer, top + buffer)
 }
