@@ -1,6 +1,7 @@
 import React from 'react'
 import Autosuggest from 'react-autosuggest'
 import PropTypes from 'prop-types'
+import { Icon } from 'semantic-ui-react'
 import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {
@@ -102,12 +103,10 @@ class MapSearchBar extends React.Component {
       value: this.state.value,
       onChange: this.onChangeAutosuggest,
     }
-
+    
     return (
       <div className="map-search-panel">
-        <div className="search-icon">
-          <i aria-hidden="true" className="search icon"></i>
-        </div>
+        <Icon name="search" className="search-icon" /> 
         <Autosuggest
           ref={(ref) => {this.autosuggestBar = ref}}
           suggestions={this.state.suggestions}
