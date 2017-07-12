@@ -12,16 +12,16 @@ class MapContainer extends React.Component {
     config: PropTypes.object
   }
 
-  render() {
+	render() {
     const config = this.props.config
 
-    return (
-      <div className={this.props.className}>
-        <MapSearchBar config={config} recenterMap={this.props.recenterMap} setLocation={this.props.setLocation} />
-        <Map config={config} center={config.center} zoom={config.zoom} />
-      </div>
-    )
-  }
+		return (
+			<div className ={this.props.className}>
+				<MapSearchBar config={config} setLocation={this.props.setLocation} recenterMap={this.props.recenterMap} />
+				<Map config={config} center={config.center} zoom={config.zoom} />
+			</div>
+		)
+	}
 }
 
 function mapStateToProps(state) {
