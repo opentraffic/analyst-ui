@@ -28,8 +28,8 @@ const Sidebar = (props) => (
       </Message>
       <Accordion panels={panels} styled />
     </Segment>
-    <Segment> 
-      <DatePickerContainer className='date-picker' />
+    <Segment>
+      <DatePickerContainer className="date-picker" />
     </Segment>
     <Segment>
       <Header as="h3">Export</Header>
