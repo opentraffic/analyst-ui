@@ -97,6 +97,24 @@ class MapSearchBar extends React.Component {
       })
   }
 
+  // Clear button only appears when there's more than two characters in input
+  renderClearButton(value) {
+    if (value.length > 2) {
+      return (
+        <Icon name="close" className="clear-search" onClick={this.clearSearch} />
+      )
+    }
+  }
+
+  clearSearch(event) {
+    // set state value back to empty string
+    this.setState({
+      value: ''
+    })
+    // clears suggestions
+    this.onSuggestionsClearRequested()
+  }
+
   render() {
     const inputProps = {
       placeholder: this.state.placeholder,
@@ -104,9 +122,12 @@ class MapSearchBar extends React.Component {
       onChange: this.onChangeAutosuggest,
     }
     
+    const inputVal = this.state.value 
+    
     return (
       <div className="map-search-panel">
         <Icon name="search" className="search-icon" /> 
+        {this.renderClearButton(inputVal)}
         <Autosuggest
           ref={(ref) => {this.autosuggestBar = ref}}
           suggestions={this.state.suggestions}
