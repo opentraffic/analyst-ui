@@ -3,7 +3,7 @@
   "parserOptions": {
     "sourceType": "module",
   },
-  "extends": ["standard", "standard-jsx"],
+  "extends": ["react-app", "standard", "standard-jsx"],
   "rules": {
     "jsx-quotes": ["error", "prefer-double"]
   }
