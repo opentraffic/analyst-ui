@@ -27,6 +27,7 @@ class MapSearchBar extends React.Component {
     this.makeRequest = this.makeRequest.bind(this)
     this.clearSearch = this.clearSearch.bind(this)
     this.renderClearButton = this.renderClearButton.bind(this)
+    this.onSuggestionSelected = this.onSuggestionSelected.bind(this)
   }
 
   // Will be called every time you need to recalculate suggestions
@@ -45,16 +46,19 @@ class MapSearchBar extends React.Component {
 
   // Teach Autosuggest what should be input value when suggestion is clicked
   getSuggestionValue (suggestion) {
+    return suggestion.properties.label
+  }
+
+  // Will be called every time suggestion is selected via mouse or keyboard
+  onSuggestionSelected (event, {suggestion, suggestionValue, suggestionIndex, sectionIndex, method}) {
     const lat = suggestion.geometry.coordinates[1]
     const lng = suggestion.geometry.coordinates[0]
     const latlng = [lat, lng]
-    const name = suggestion.properties.label
 
     // Stores latlng and name of selected location in Redux
-    this.props.setLocation(latlng, name)
+    this.props.setLocation(latlng, suggestionValue)
     // Recenters map to the selected location's latlng
     this.props.recenterMap(latlng)
-    return suggestion.properties.label
   }
 
   renderSuggestion (suggestion, {query, isHighlighted}) {
@@ -120,7 +124,7 @@ class MapSearchBar extends React.Component {
     const inputProps = {
       placeholder: this.state.placeholder,
       value: this.state.value,
-      onChange: this.onChangeAutosuggest
+      onChange: this.onChangeAutosuggest,
     }
 
     const inputVal = this.state.value
@@ -135,6 +139,7 @@ class MapSearchBar extends React.Component {
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
           getSuggestionValue={this.getSuggestionValue}
+          onSuggestionSelected={this.onSuggestionSelected}
           renderSuggestion={this.renderSuggestion}
           inputProps={inputProps}
         />
