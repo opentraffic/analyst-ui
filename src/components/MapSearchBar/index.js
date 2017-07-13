@@ -1,8 +1,7 @@
 import React from 'react'
 import Autosuggest from 'react-autosuggest'
-import { Icon } from 'semantic-ui-react'
-// import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
+import { Icon } from 'semantic-ui-react'
 import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {
@@ -14,8 +13,7 @@ class MapSearchBar extends React.Component {
   }
 
   constructor (props) {
-    super(props)
-
+    super (props)
     this.state = {
       value: '',
       placeholder: 'Search for an address or a place',
@@ -74,7 +72,7 @@ class MapSearchBar extends React.Component {
 
     return (
       <div className="map-search-suggestion-item">
-        <Icon name="marker" /> {highlighted}
+        <Icon name="marker" />{highlighted}
       </div>
     )
   }
@@ -101,7 +99,7 @@ class MapSearchBar extends React.Component {
       })
   }
 
-  // clear button only appears when there's more than two characters in input
+  // Clear button only appears when there's more than two characters in input
   renderClearButton (value) {
     if (value.length > 2) {
       return (
