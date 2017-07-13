@@ -124,7 +124,7 @@ class MapSearchBar extends React.Component {
     const inputProps = {
       placeholder: this.state.placeholder,
       value: this.state.value,
-      onChange: this.onChangeAutosuggest,
+      onChange: this.onChangeAutosuggest
     }
 
     const inputVal = this.state.value
