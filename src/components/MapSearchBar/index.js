@@ -9,7 +9,6 @@ class MapSearchBar extends React.Component {
     setLocation: PropTypes.func.isRequired,
     recenterMap: PropTypes.func.isRequired,
     config: PropTypes.object.isRequired
-     // dispatch: PropTypes.func.isRequired
   }
 
   constructor (props) {
