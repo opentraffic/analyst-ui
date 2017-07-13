@@ -4,8 +4,15 @@ import { connect } from 'react-redux'
 import Map from './Map'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
-import { setWaypoint, removeWaypoint, setRoute } from '../store/reducers/route'
-import { addError } from '../store/reducers/errors'
+import RouteError from './Map/RouteError'
+import {
+  setWaypoint,
+  removeWaypoint,
+  setRoute,
+  setRouteError,
+  clearRoute,
+  clearRouteError
+} from '../store/reducers/route'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 
 class MapContainer extends React.Component {
@@ -21,6 +28,7 @@ class MapContainer extends React.Component {
 
     this.onClick = this.onClick.bind(this)
     this.onClickWaypoint = this.onClickWaypoint.bind(this)
+    this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
   }
 
   onClick (event) {
@@ -41,7 +49,12 @@ class MapContainer extends React.Component {
     const host = 'routing-prod.opentraffic.io'
     const waypoints = this.props.route.waypoints
 
-    if (waypoints.length <= 1) return
+    if (waypoints.length <= 1) {
+      // TODO: probably not the best place to do this
+      this.props.dispatch(clearRoute())
+      this.props.dispatch(clearRouteError())
+      return
+    }
 
     getRoute(host, waypoints)
       .then(response => {
@@ -49,8 +62,18 @@ class MapContainer extends React.Component {
         this.props.dispatch(setRoute(coordinates))
       })
       .catch(error => {
-        this.props.dispatch(addError(error))
+        let message
+        if (typeof error === 'object' && error.error) {
+          message = error.error
+        } else {
+          message = error
+        }
+        this.props.dispatch(setRouteError(message))
       })
+  }
+
+  onClickDismissErrors () {
+    this.props.dispatch(clearRouteError())
   }
 
   render () {
@@ -67,6 +90,7 @@ class MapContainer extends React.Component {
           <RouteLine positions={this.props.route.lineCoordinates} />
           <RouteMarkers waypoints={this.props.route.waypoints} onClick={this.onClickWaypoint} />
         </Map>
+        <RouteError message={this.props.route.error} onClick={this.onClickDismissErrors} />
       </div>
     )
   }

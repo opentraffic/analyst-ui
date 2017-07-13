@@ -4,12 +4,14 @@
 export const SET_WAYPOINT = 'analyst-ui/route/SET_WAYPOINT'
 export const REMOVE_WAYPOINT = 'analyst-ui/route/REMOVE_WAYPOINT'
 export const SET_ROUTE = 'analyst-ui/route/SET_ROUTE'
+export const SET_ROUTE_ERROR = 'analyst-ui/route/SET_ROUTE_ERROR'
 export const RESET = 'analyst-ui/route/RESET'
 
 // Reducer
 const initialState = {
   waypoints: [],
-  lineCoordinates: []
+  lineCoordinates: [],
+  error: null
 }
 
 export default function reducer (state = initialState, action) {
@@ -27,7 +29,14 @@ export default function reducer (state = initialState, action) {
     case SET_ROUTE:
       return {
         ...state,
-        lineCoordinates: action.lineCoordinates
+        lineCoordinates: action.lineCoordinates,
+        error: null
+      }
+    case SET_ROUTE_ERROR:
+      return {
+        ...state,
+        lineCoordinates: [],
+        error: action.error
       }
     case RESET:
       return initialState
@@ -55,6 +64,27 @@ export function setRoute (latlngs) {
   return {
     type: SET_ROUTE,
     lineCoordinates: latlngs
+  }
+}
+
+export function clearRoute () {
+  return {
+    type: SET_ROUTE,
+    lineCoordinates: []
+  }
+}
+
+export function setRouteError (message) {
+  return {
+    type: SET_ROUTE_ERROR,
+    error: message
+  }
+}
+
+export function clearRouteError () {
+  return {
+    type: SET_ROUTE_ERROR,
+    error: null
   }
 }
 
