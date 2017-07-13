@@ -28,6 +28,8 @@ class MapSearchBar extends React.Component {
     this.clearSearch = this.clearSearch.bind(this)
     this.renderClearButton = this.renderClearButton.bind(this)
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.search = this.search.bind(this)
   }
 
   // Will be called every time you need to recalculate suggestions
@@ -51,6 +53,7 @@ class MapSearchBar extends React.Component {
 
   // Will be called every time suggestion is selected via mouse or keyboard
   onSuggestionSelected (event, {suggestion, suggestionValue, suggestionIndex, sectionIndex, method}) {
+    event.preventDefault()
     const lat = suggestion.geometry.coordinates[1]
     const lng = suggestion.geometry.coordinates[0]
     const latlng = [lat, lng]
@@ -92,6 +95,12 @@ class MapSearchBar extends React.Component {
     this.makeRequest(endpoint)
   }
 
+  // Makes search request based on what user has entered
+  search (query) {
+    const endpoint = `https://search.mapzen.com/v1/search?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
+    this.makeRequest(endpoint)
+  }
+
   makeRequest (endpoint) {
     window.fetch(endpoint)
       .then(response => response.json())
@@ -120,6 +129,14 @@ class MapSearchBar extends React.Component {
     this.onSuggestionsClearRequested()
   }
 
+  // Now Autosuggest component is wrapped in a form so that when 'enter' is pressed, suggestions container is not closed automatically
+  // Instead search results are returned in suggestions container
+  handleSubmit (event) {
+    event.preventDefault()
+    const inputValue = this.autosuggestBar.input.value
+    this.search(inputValue)
+  }
+
   render () {
     const inputProps = {
       placeholder: this.state.placeholder,
@@ -133,16 +150,18 @@ class MapSearchBar extends React.Component {
       <div className="map-search-panel">
         <Icon name="search" className="search-icon" />
         {this.renderClearButton(inputVal)}
-        <Autosuggest
-          ref={(ref) => { this.autosuggestBar = ref }}
-          suggestions={this.state.suggestions}
-          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-          getSuggestionValue={this.getSuggestionValue}
-          onSuggestionSelected={this.onSuggestionSelected}
-          renderSuggestion={this.renderSuggestion}
-          inputProps={inputProps}
-        />
+        <form onSubmit={this.handleSubmit}>
+          <Autosuggest
+            ref={(ref) => { this.autosuggestBar = ref }}
+            suggestions={this.state.suggestions}
+            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+            getSuggestionValue={this.getSuggestionValue}
+            onSuggestionSelected={this.onSuggestionSelected}
+            renderSuggestion={this.renderSuggestion}
+            inputProps={inputProps}
+          />
+        </form>
       </div>
     )
   }
