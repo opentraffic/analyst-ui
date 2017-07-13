@@ -5,6 +5,7 @@ import Map from './Map'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import { setWaypoint, removeWaypoint, setRoute } from '../store/reducers/route'
+import { addError } from '../store/reducers/errors'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 
 class MapContainer extends React.Component {
@@ -48,7 +49,7 @@ class MapContainer extends React.Component {
         this.props.dispatch(setRoute(coordinates))
       })
       .catch(error => {
-        console.log(error)
+        this.props.dispatch(addError(error))
       })
   }
 

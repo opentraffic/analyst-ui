@@ -6,6 +6,7 @@
     "@mapbox/polyline": "0.2.0",
     "leaflet": "1.1.0",
     "leaflet-extra-markers": "1.0.6",
+    "lodash": "4.17.4",
     "moment": "2.18.1",
     "react": "15.6.1",
     "react-addons-shallow-compare": "15.6.0",
