@@ -1,0 +1,14 @@
+/* Fix icon positioning from Leaflet.extra-markers package */
+i.icon.map-marker-start,
+i.icon.map-marker-end {
+  font-size: 1.5em;
+  margin-top: 0.25em;
+  margin-left: 0.05em;
+}
+
+i.icon.map-marker-middle {
+  font-size: 0.5em;
+  margin-top: 2.25em;
+  margin-left: 0.075em;
+  opacity: 0.85;
+}
