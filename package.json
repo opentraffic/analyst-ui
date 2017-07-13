@@ -10,6 +10,7 @@
     "moment": "2.18.1",
     "react": "15.6.1",
     "react-addons-shallow-compare": "15.6.0",
+    "react-autosuggest": "9.3.1",
     "react-dates": "12.2.3",
     "react-dom": "15.6.1",
     "react-leaflet": "1.4.0",
