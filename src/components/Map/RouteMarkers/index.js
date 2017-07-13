@@ -1,38 +1,35 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { CircleMarker, LayerGroup } from 'react-leaflet'
+import { Marker, LayerGroup } from 'react-leaflet'
 
 // Other utility functions
 function createMarkers (waypoints, onClick) {
-  const START_FILL_COLOR = '#0d0'
-  const MIDDLE_FILL_COLOR = '#00d'
-  const END_FILL_COLOR = '#d00'
-  const MARKER_RADIUS = 5
-  const STROKE_WEIGHT = 2
+  // const START_FILL_COLOR = '#0d0'
+  // const MIDDLE_FILL_COLOR = '#00d'
+  // const END_FILL_COLOR = '#d00'
 
   if (waypoints.length === 0) return null
 
   return waypoints.map((latlng, index, array) => {
-    let fill = MIDDLE_FILL_COLOR
-    if (index === 0) {
-      fill = START_FILL_COLOR
-    } else if (index === array.length - 1) {
-      fill = END_FILL_COLOR
-    }
+    // let fill = MIDDLE_FILL_COLOR
+    // if (index === 0) {
+    //   fill = START_FILL_COLOR
+    // } else if (index === array.length - 1) {
+    //   fill = END_FILL_COLOR
+    // }
 
     return (
-      <CircleMarker
-        center={latlng}
+      <Marker
+        position={latlng}
         key={latlng}
-        radius={MARKER_RADIUS}
-        weight={STROKE_WEIGHT}
-        color="white"
-        opacity="1.0"
-        fillColor={fill}
-        fillOpacity="1.0"
-        bubblingMouseEvents={false}
-        onClick={e => {
+        draggable
+        onClick={event => {
           onClick(latlng)
+        }}
+        onDragEnd={event => {
+          const oldLatLng = latlng
+          const newLatLng = event.target._latlng
+          console.log(oldLatLng, newLatLng)
         }}
       />
     )

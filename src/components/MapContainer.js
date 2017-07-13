@@ -5,9 +5,7 @@ import Map from './Map'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import { setWaypoint, removeWaypoint, setRoute } from '../store/reducers/route'
-import { formatLocations } from '../lib/valhalla'
-
-import polyline from '@mapbox/polyline'
+import { leafletLatlngsToValhallaLocations, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -53,7 +51,7 @@ class MapContainer extends React.Component {
           zoom={config.zoom}
           onClick={this.onClick}
         >
-          <RouteLine positions={this.props.route.positions} />
+          <RouteLine positions={this.props.route.lineCoordinates} />
           <RouteMarkers waypoints={this.props.route.waypoints} onClick={this.onClickWaypoint} />
         </Map>
       </div>
@@ -78,7 +76,7 @@ function getAndDisplayRoutes (route, dispatch) {
   if (waypoints.length <= 1) return
 
   const json = {
-    locations: formatLocations(waypoints),
+    locations: leafletLatlngsToValhallaLocations(waypoints),
     costing: 'auto'
   }
   const server = 'routing-prod.opentraffic.io'
@@ -89,15 +87,7 @@ function getAndDisplayRoutes (route, dispatch) {
       return response.json()
     })
     .then(response => {
-      const coordinates = []
-
-      for (let i = 0; i < response.trip.legs.length; i++) {
-        const coord = polyline.decode(response.trip.legs[i].shape, 6)
-
-        for (let k = 0; k < coord.length; k++) {
-          coordinates.push({ lat: coord[k][0], lng: coord[k][1] })
-        }
-      }
+      const coordinates = valhallaResponseToPolylineCoordinates(response)
 
       dispatch(setRoute(coordinates))
     })
