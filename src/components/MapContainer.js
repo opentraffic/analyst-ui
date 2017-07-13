@@ -7,20 +7,12 @@ import MapSearchBar from './MapSearchBar'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import RouteError from './Map/RouteError'
-import {
-  setWaypoint,
-  removeWaypoint,
-  setRoute,
-  setRouteError,
-  clearRoute,
-  clearRouteError
-} from '../store/reducers/route'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import * as actionCreators from '../store/actions'
+import * as routeActionCreators from '../store/reducers/route'
 
 class MapContainer extends React.Component {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired,
     className: PropTypes.string,
     config: PropTypes.object,
     route: PropTypes.object,
@@ -36,7 +28,7 @@ class MapContainer extends React.Component {
   }
 
   onClick (event) {
-    this.props.dispatch(setWaypoint(event.latlng))
+    this.props.setWaypoint(event.latlng)
     this.showRoute()
   }
 
@@ -45,7 +37,7 @@ class MapContainer extends React.Component {
    * the original event argument and passes the latlng value of the marker instead.
    */
   onClickWaypoint (latlng) {
-    this.props.dispatch(removeWaypoint(latlng))
+    this.props.removeWaypoint(latlng)
     this.showRoute()
   }
 
@@ -55,15 +47,15 @@ class MapContainer extends React.Component {
 
     if (waypoints.length <= 1) {
       // TODO: probably not the best place to do this
-      this.props.dispatch(clearRoute())
-      this.props.dispatch(clearRouteError())
+      this.props.clearRoute()
+      this.props.clearRouteError()
       return
     }
 
     getRoute(host, waypoints)
       .then(response => {
         const coordinates = valhallaResponseToPolylineCoordinates(response)
-        this.props.dispatch(setRoute(coordinates))
+        this.props.setRoute(coordinates)
       })
       .catch(error => {
         let message
@@ -72,12 +64,12 @@ class MapContainer extends React.Component {
         } else {
           message = error
         }
-        this.props.dispatch(setRouteError(message))
+        this.props.setRouteError(message)
       })
   }
 
   onClickDismissErrors () {
-    this.props.dispatch(clearRouteError())
+    this.props.clearRouteError()
   }
 
   render () {
@@ -111,7 +103,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators(actionCreators, dispatch)
+  return bindActionCreators({ ...actionCreators, ...routeActionCreators }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)

@@ -1,11 +1,11 @@
 // Experimental: try Ducks (https://github.com/erikras/ducks-modular-redux)
 
 // Actions
-export const SET_WAYPOINT = 'analyst-ui/route/SET_WAYPOINT'
-export const REMOVE_WAYPOINT = 'analyst-ui/route/REMOVE_WAYPOINT'
-export const SET_ROUTE = 'analyst-ui/route/SET_ROUTE'
-export const SET_ROUTE_ERROR = 'analyst-ui/route/SET_ROUTE_ERROR'
-export const RESET = 'analyst-ui/route/RESET'
+const SET_WAYPOINT = 'analyst-ui/route/SET_WAYPOINT'
+const REMOVE_WAYPOINT = 'analyst-ui/route/REMOVE_WAYPOINT'
+const SET_ROUTE = 'analyst-ui/route/SET_ROUTE'
+const SET_ROUTE_ERROR = 'analyst-ui/route/SET_ROUTE_ERROR'
+const RESET = 'analyst-ui/route/RESET'
 
 // Reducer
 const initialState = {
