@@ -5,6 +5,7 @@ import Map from './Map'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import { setWaypoint, removeWaypoint, setRoute } from '../store/reducers/route'
+import { formatLocations } from '../lib/valhalla'
 
 import polyline from '@mapbox/polyline'
 
@@ -70,23 +71,6 @@ function mapStateToProps (state) {
 export default connect(mapStateToProps)(MapContainer)
 
 /* TODO move elsewhere */
-function formatLocations (locations) {
-  return locations.map((location, index, array) => {
-    // Do not use / modify the original location. Create a new object for routing
-    // query. Valhalla requires `lon` syntax over `lng`.
-    const item = {
-      lat: location.lat,
-      lon: location.lng
-    }
-
-    // Intermediary points are of type `through`. Start and end points must
-    // be of type `break`.
-    item.type = 'through'
-    if (index === 0 || index === array.length - 1) item.type = 'break'
-
-    return item
-  })
-}
 
 function getAndDisplayRoutes (route, dispatch) {
   const waypoints = route.waypoints
