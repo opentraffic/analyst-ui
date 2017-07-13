@@ -13,7 +13,7 @@ class MapSearchBar extends React.Component {
   }
 
   constructor (props) {
-    super (props)
+    super(props)
     this.state = {
       value: '',
       placeholder: 'Search for an address or a place',

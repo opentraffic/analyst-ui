@@ -1,5 +1,5 @@
 // recenters map when location chosen from MapSearchBar
-export function recenterMap(coordinates) {
+export function recenterMap (coordinates) {
   return {
     type: 'CHANGE_CENTER',
     coordinates
@@ -7,7 +7,7 @@ export function recenterMap(coordinates) {
 }
 
 // stores lat and lng of new location from MapSearchBar
-export function setLocation(latlng, name) {
+export function setLocation (latlng, name) {
   return {
     type: 'SET_LOCATION',
     latlng,
