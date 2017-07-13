@@ -5,7 +5,7 @@ import Map from './Map'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import { setWaypoint, removeWaypoint, setRoute } from '../store/reducers/route'
-import { leafletLatlngsToValhallaLocations, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
+import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -37,7 +37,19 @@ class MapContainer extends React.Component {
   }
 
   showRoute () {
-    getAndDisplayRoutes(this.props.route, this.props.dispatch)
+    const host = 'routing-prod.opentraffic.io'
+    const waypoints = this.props.route.waypoints
+
+    if (waypoints.length <= 1) return
+
+    getRoute(host, waypoints)
+      .then(response => {
+        const coordinates = valhallaResponseToPolylineCoordinates(response)
+        this.props.dispatch(setRoute(coordinates))
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   render () {
@@ -67,28 +79,3 @@ function mapStateToProps (state) {
 }
 
 export default connect(mapStateToProps)(MapContainer)
-
-/* TODO move elsewhere */
-
-function getAndDisplayRoutes (route, dispatch) {
-  const waypoints = route.waypoints
-
-  if (waypoints.length <= 1) return
-
-  const json = {
-    locations: leafletLatlngsToValhallaLocations(waypoints),
-    costing: 'auto'
-  }
-  const server = 'routing-prod.opentraffic.io'
-  const url = `https://${server}/route?json=${JSON.stringify(json)}`
-
-  window.fetch(url)
-    .then(response => {
-      return response.json()
-    })
-    .then(response => {
-      const coordinates = valhallaResponseToPolylineCoordinates(response)
-
-      dispatch(setRoute(coordinates))
-    })
-}
