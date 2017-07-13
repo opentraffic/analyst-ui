@@ -1,0 +1,19 @@
+.route-error {
+  position: relative;
+  top: 60px;
+  max-width: 350px;
+  margin: 0 auto;
+  z-index: 1000;
+
+  /* Use existing Semantic UI font styling; we should import these */
+  font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+  font-size: 14px;
+}
+
+.route-error-message {
+  margin-right: 1em;
+}
+
+.route-error p {
+  line-height: 2;
+}
