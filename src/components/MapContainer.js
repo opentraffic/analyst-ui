@@ -9,18 +9,18 @@ import * as actionCreators from '../store/actions'
 class MapContainer extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    config: PropTypes.object
-    // mapLocation: PropTypes.object
+    config: PropTypes.object,
+    mapLocation: PropTypes.object
   }
 
   render () {
     const config = this.props.config
-    // const mapLocation = this.props.mapLocation
+    const mapLocation = this.props.mapLocation
 
     return (
       <div className={this.props.className}>
         <MapSearchBar config={config} setLocation={this.props.setLocation} recenterMap={this.props.recenterMap} />
-        <Map config={config} center={config.center} zoom={config.zoom} />
+        <Map config={config} center={mapLocation.coordinates} zoom={config.zoom} />
       </div>
     )
   }
@@ -28,8 +28,8 @@ class MapContainer extends React.Component {
 
 function mapStateToProps (state) {
   return {
-    config: state.config
-    // mapLocation: state.mapLocation
+    config: state.config,
+    mapLocation: state.mapLocation
   }
 }
 
