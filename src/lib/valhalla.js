@@ -13,7 +13,7 @@ import { request } from './fetch-utils'
  * @param {Array} locations - array of L.LatLng objects
  * @returns {Array} - array of locations compatible with Valhalla API
  */
-function leafletLatlngsToValhallaLocations (locations) {
+export function leafletLatlngsToValhallaLocations (locations) {
   return locations.map((location, index, array) => {
     // Do not use / modify the original location. Create a new object for
     // routing query. Valhalla requires `lon` syntax over `lng`.
