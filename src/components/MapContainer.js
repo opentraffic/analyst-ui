@@ -24,11 +24,12 @@ class MapContainer extends React.Component {
 
     this.onClick = this.onClick.bind(this)
     this.onClickWaypoint = this.onClickWaypoint.bind(this)
+    this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
     this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
   }
 
   onClick (event) {
-    this.props.setWaypoint(event.latlng)
+    this.props.addWaypoint(event.latlng)
     this.showRoute()
   }
 
@@ -38,6 +39,11 @@ class MapContainer extends React.Component {
    */
   onClickWaypoint (latlng) {
     this.props.removeWaypoint(latlng)
+    this.showRoute()
+  }
+
+  onDragEndWaypoint (oldLatLng, newLatLng) {
+    this.props.updateWaypoint(oldLatLng, newLatLng)
     this.showRoute()
   }
 
@@ -86,7 +92,11 @@ class MapContainer extends React.Component {
           onClick={this.onClick}
         >
           <RouteLine positions={this.props.route.lineCoordinates} />
-          <RouteMarkers waypoints={this.props.route.waypoints} onClick={this.onClickWaypoint} />
+          <RouteMarkers
+            waypoints={this.props.route.waypoints}
+            onClick={this.onClickWaypoint}
+            onDragEnd={this.onDragEndWaypoint}
+          />
         </Map>
         <RouteError message={this.props.route.error} onClick={this.onClickDismissErrors} />
       </div>

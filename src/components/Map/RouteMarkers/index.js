@@ -7,7 +7,7 @@ import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css'
 import './RouteMarkers.css'
 
 // Other utility functions
-function createMarkers (waypoints, onClick) {
+function createMarkers (waypoints, onClick, onDragEnd) {
   const START_FILL_COLOR = 'green-light'
   const MIDDLE_FILL_COLOR = 'cyan'
   const END_FILL_COLOR = 'orange-dark'
@@ -44,26 +44,29 @@ function createMarkers (waypoints, onClick) {
         onDragEnd={event => {
           const oldLatLng = latlng
           const newLatLng = event.target._latlng
-          console.log(oldLatLng, newLatLng)
+          onDragEnd(oldLatLng, newLatLng)
         }}
       />
     )
   })
 }
 
-export default class RouteMarkers extends React.Component {
+export default class RouteMarkers extends React.PureComponent {
   static propTypes = {
     waypoints: PropTypes.array,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    onDragEnd: PropTypes.func
   }
 
   static defaultProps = {
     waypoints: [],
-    onClick: function () {}
+    onClick: function () {},
+    onDragEnd: function () {}
   }
 
   render () {
-    const children = createMarkers(this.props.waypoints, this.props.onClick)
+    const { waypoints, onClick, onDragEnd } = this.props
+    const children = createMarkers(waypoints, onClick, onDragEnd)
 
     return (
       <LayerGroup>
