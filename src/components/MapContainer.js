@@ -24,11 +24,12 @@ class MapContainer extends React.Component {
 
     this.onClick = this.onClick.bind(this)
     this.onClickWaypoint = this.onClickWaypoint.bind(this)
+    this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
     this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
   }
 
   onClick (event) {
-    this.props.setWaypoint(event.latlng)
+    this.props.addWaypoint(event.latlng)
     this.showRoute()
   }
 
@@ -42,7 +43,8 @@ class MapContainer extends React.Component {
   }
 
   onDragEndWaypoint (oldLatLng, newLatLng) {
-    console.log(oldLatLng, newLatLng)
+    this.props.updateWaypoint(oldLatLng, newLatLng)
+    this.showRoute()
   }
 
   showRoute () {

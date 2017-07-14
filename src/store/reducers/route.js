@@ -1,8 +1,11 @@
+import { isEqual } from 'lodash'
+
 // Experimental: try Ducks (https://github.com/erikras/ducks-modular-redux)
 
 // Actions
-const SET_WAYPOINT = 'analyst-ui/route/SET_WAYPOINT'
+const ADD_WAYPOINT = 'analyst-ui/route/ADD_WAYPOINT'
 const REMOVE_WAYPOINT = 'analyst-ui/route/REMOVE_WAYPOINT'
+const UPDATE_WAYPOINT = 'analyst-ui/route/UPDATE_WAYPOINT'
 const SET_ROUTE = 'analyst-ui/route/SET_ROUTE'
 const SET_ROUTE_ERROR = 'analyst-ui/route/SET_ROUTE_ERROR'
 const RESET = 'analyst-ui/route/RESET'
@@ -16,7 +19,7 @@ const initialState = {
 
 export default function reducer (state = initialState, action) {
   switch (action.type) {
-    case SET_WAYPOINT:
+    case ADD_WAYPOINT:
       return {
         ...state,
         waypoints: [...state.waypoints, action.waypoint]
@@ -26,6 +29,19 @@ export default function reducer (state = initialState, action) {
         ...state,
         waypoints: state.waypoints.filter(waypoint => waypoint !== action.waypoint)
       }
+    case UPDATE_WAYPOINT: {
+      const copy = [...state.waypoints]
+      for (let i = 0; i < copy.length; i++) {
+        if (isEqual(copy[i], action.oldWaypoint)) {
+          copy[i] = action.newWaypoint
+          break
+        }
+      }
+      return {
+        ...state,
+        waypoints: copy
+      }
+    }
     case SET_ROUTE:
       return {
         ...state,
@@ -46,9 +62,9 @@ export default function reducer (state = initialState, action) {
 }
 
 // Action creators
-export function setWaypoint (waypoint) {
+export function addWaypoint (waypoint) {
   return {
-    type: SET_WAYPOINT,
+    type: ADD_WAYPOINT,
     waypoint
   }
 }
@@ -57,6 +73,14 @@ export function removeWaypoint (waypoint) {
   return {
     type: REMOVE_WAYPOINT,
     waypoint
+  }
+}
+
+export function updateWaypoint (oldWaypoint, newWaypoint) {
+  return {
+    type: UPDATE_WAYPOINT,
+    oldWaypoint,
+    newWaypoint
   }
 }
 
