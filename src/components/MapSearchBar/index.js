@@ -2,6 +2,7 @@ import React from 'react'
 import Autosuggest from 'react-autosuggest'
 import PropTypes from 'prop-types'
 import { Icon } from 'semantic-ui-react'
+import { throttle } from 'lodash'
 import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {
@@ -19,6 +20,7 @@ class MapSearchBar extends React.Component {
       suggestions: []
     }
 
+    this.throttleMakeRequest = throttle(this.makeRequest, 250)
     this.onChangeAutosuggest = this.onChangeAutosuggest.bind(this)
     this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
     this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this)
@@ -92,13 +94,13 @@ class MapSearchBar extends React.Component {
   // Makes autocomplete request to Mapzen Search based on what user has typed
   autocomplete (query) {
     const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
-    this.makeRequest(endpoint)
+    this.throttleMakeRequest(endpoint)
   }
 
   // Makes search request based on what user has entered
   search (query) {
     const endpoint = `https://search.mapzen.com/v1/search?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
-    this.makeRequest(endpoint)
+    this.throttleMakeRequest(endpoint)
   }
 
   makeRequest (endpoint) {
