@@ -20,7 +20,7 @@ class MapSearchBar extends React.Component {
       suggestions: []
     }
 
-    this.throttleMakeRequest = throttle(this.makeRequest, 300)
+    this.throttleMakeRequest = throttle(this.makeRequest, 250)
     this.onChangeAutosuggest = this.onChangeAutosuggest.bind(this)
     this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
     this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this)
