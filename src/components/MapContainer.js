@@ -2,6 +2,7 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
+import { isEqual } from 'lodash'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import RouteMarkers from './Map/RouteMarkers'
@@ -23,28 +24,31 @@ class MapContainer extends React.Component {
     super(props)
 
     this.onClick = this.onClick.bind(this)
-    this.onClickWaypoint = this.onClickWaypoint.bind(this)
+    this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
     this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
     this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
   }
 
+  componentDidUpdate (prevProps) {
+    if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
+
+    this.showRoute()
+  }
+
   onClick (event) {
     this.props.addWaypoint(event.latlng)
-    this.showRoute()
   }
 
   /**
    * This handler function is passed to the RouteMarkers component, which eats
    * the original event argument and passes the latlng value of the marker instead.
    */
-  onClickWaypoint (latlng) {
+  handleRemoveWaypoint (latlng) {
     this.props.removeWaypoint(latlng)
-    this.showRoute()
   }
 
   onDragEndWaypoint (oldLatLng, newLatLng) {
     this.props.updateWaypoint(oldLatLng, newLatLng)
-    this.showRoute()
   }
 
   showRoute () {
@@ -94,7 +98,7 @@ class MapContainer extends React.Component {
           <RouteLine positions={this.props.route.lineCoordinates} />
           <RouteMarkers
             waypoints={this.props.route.waypoints}
-            onClick={this.onClickWaypoint}
+            handleRemove={this.handleRemoveWaypoint}
             onDragEnd={this.onDragEndWaypoint}
           />
         </Map>

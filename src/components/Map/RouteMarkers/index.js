@@ -1,13 +1,14 @@
 /* global L */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Marker, LayerGroup } from 'react-leaflet'
+import { Marker, Popup, LayerGroup } from 'react-leaflet'
+import { Button } from 'semantic-ui-react'
 import 'leaflet-extra-markers'
 import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css'
 import './RouteMarkers.css'
 
 // Other utility functions
-function createMarkers (waypoints, onClick, onDragEnd) {
+function createMarkers (waypoints, handleRemove, onDragEnd) {
   const START_FILL_COLOR = 'green-light'
   const MIDDLE_FILL_COLOR = 'cyan'
   const END_FILL_COLOR = 'orange-dark'
@@ -26,11 +27,15 @@ function createMarkers (waypoints, onClick, onDragEnd) {
       className = 'map-marker-end'
     }
 
-    var redMarker = L.ExtraMarkers.icon({
+    const redMarker = L.ExtraMarkers.icon({
       icon: 'circle',
       prefix: 'map-marker ' + className + ' icon ',
       markerColor: fill
     })
+
+    const removeHandler = (event) => {
+      handleRemove(latlng)
+    }
 
     return (
       <Marker
@@ -38,15 +43,16 @@ function createMarkers (waypoints, onClick, onDragEnd) {
         key={latlng}
         draggable
         icon={redMarker}
-        onClick={event => {
-          onClick(latlng)
-        }}
         onDragEnd={event => {
           const oldLatLng = latlng
           const newLatLng = event.target._latlng
           onDragEnd(oldLatLng, newLatLng)
         }}
-      />
+      >
+        <Popup>
+          <Button icon="trash" content="Remove waypoint" color="red" onClick={removeHandler} />
+        </Popup>
+      </Marker>
     )
   })
 }
@@ -54,19 +60,19 @@ function createMarkers (waypoints, onClick, onDragEnd) {
 export default class RouteMarkers extends React.PureComponent {
   static propTypes = {
     waypoints: PropTypes.array,
-    onClick: PropTypes.func,
+    handleRemove: PropTypes.func,
     onDragEnd: PropTypes.func
   }
 
   static defaultProps = {
     waypoints: [],
-    onClick: function () {},
+    handleRemove: function () {},
     onDragEnd: function () {}
   }
 
   render () {
-    const { waypoints, onClick, onDragEnd } = this.props
-    const children = createMarkers(waypoints, onClick, onDragEnd)
+    const { waypoints, handleRemove, onDragEnd } = this.props
+    const children = createMarkers(waypoints, handleRemove, onDragEnd)
 
     return (
       <LayerGroup>
