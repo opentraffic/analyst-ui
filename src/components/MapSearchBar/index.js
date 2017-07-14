@@ -19,7 +19,7 @@ class MapSearchBar extends React.Component {
       placeholder: 'Search for an address or a place',
       suggestions: []
     }
-    
+
     this.throttleMakeRequest = throttle(this.makeRequest, 300)
     this.onChangeAutosuggest = this.onChangeAutosuggest.bind(this)
     this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
