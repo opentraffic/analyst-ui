@@ -41,6 +41,10 @@ class MapContainer extends React.Component {
     this.showRoute()
   }
 
+  onDragEndWaypoint (oldLatLng, newLatLng) {
+    console.log(oldLatLng, newLatLng)
+  }
+
   showRoute () {
     const host = 'routing-prod.opentraffic.io'
     const waypoints = this.props.route.waypoints
@@ -86,7 +90,11 @@ class MapContainer extends React.Component {
           onClick={this.onClick}
         >
           <RouteLine positions={this.props.route.lineCoordinates} />
-          <RouteMarkers waypoints={this.props.route.waypoints} onClick={this.onClickWaypoint} />
+          <RouteMarkers
+            waypoints={this.props.route.waypoints}
+            onClick={this.onClickWaypoint}
+            onDragEnd={this.onDragEndWaypoint}
+          />
         </Map>
         <RouteError message={this.props.route.error} onClick={this.onClickDismissErrors} />
       </div>
