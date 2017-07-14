@@ -19,7 +19,8 @@ class MapSearchBar extends React.Component {
       placeholder: 'Search for an address or a place',
       suggestions: []
     }
-
+    
+    this.throttleMakeRequest = throttle(this.makeRequest, 300)
     this.onChangeAutosuggest = this.onChangeAutosuggest.bind(this)
     this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
     this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this)
@@ -93,13 +94,13 @@ class MapSearchBar extends React.Component {
   // Makes autocomplete request to Mapzen Search based on what user has typed
   autocomplete (query) {
     const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
-    throttle(this.makeRequest(endpoint))
+    this.throttleMakeRequest(endpoint)
   }
 
   // Makes search request based on what user has entered
   search (query) {
     const endpoint = `https://search.mapzen.com/v1/search?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
-    throttle(this.makeRequest(endpoint))
+    this.throttleMakeRequest(endpoint)
   }
 
   makeRequest (endpoint) {
