@@ -1,8 +1,9 @@
 // recenters map when location chosen from MapSearchBar
-export function recenterMap (coordinates) {
+export function recenterMap (coordinates, zoom) {
   return {
     type: 'CHANGE_CENTER',
-    coordinates
+    coordinates,
+    zoom
   }
 }
 
