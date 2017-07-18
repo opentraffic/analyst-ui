@@ -47,4 +47,3 @@ export function updateURL (params = {}) {
   const queryString = addNewParam(params)
   window.history.replaceState({}, null, locationPrefix + queryString)
 }
-
