@@ -3,6 +3,7 @@ import Autosuggest from 'react-autosuggest'
 import PropTypes from 'prop-types'
 import { Icon } from 'semantic-ui-react'
 import { throttle } from 'lodash'
+import { updateURL, parseQueryString } from '../../url-state'
 import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {
@@ -32,6 +33,17 @@ class MapSearchBar extends React.Component {
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.search = this.search.bind(this)
+  }
+
+  componentDidMount () {
+    // Not sure if right lifecycle
+    // If queryString has value for label, set value on MapSearchBar
+    const newValue = parseQueryString('label')
+    if (newValue !== null) {
+      this.setState({
+        value: newValue
+      })
+    }
   }
 
   // Will be called every time you need to recalculate suggestions
@@ -64,6 +76,14 @@ class MapSearchBar extends React.Component {
     this.props.setLocation(latlng, suggestionValue)
     // Recenters map to the selected location's latlng
     this.props.recenterMap(latlng)
+
+    // Updating URL to represent new lat/lng coordinates and new label
+    const centerParams = {
+      lat: lat,
+      lng: lng,
+      label: suggestionValue
+    }
+    updateURL(centerParams)
   }
 
   renderSuggestion (suggestion, {query, isHighlighted}) {
