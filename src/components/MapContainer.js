@@ -11,6 +11,7 @@ import RouteError from './Map/RouteError'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import * as actionCreators from '../store/actions'
 import * as routeActionCreators from '../store/reducers/route'
+import { updateURL, getQueryStringObject } from '../url-state'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -22,7 +23,9 @@ class MapContainer extends React.Component {
 
   constructor (props) {
     super(props)
+    this.initMap()
 
+    this.initMap = this.initMap.bind(this)
     this.onClick = this.onClick.bind(this)
     this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
     this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
@@ -33,6 +36,30 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
 
     this.showRoute()
+  }
+
+  initMap (queryString = window.location.search) {
+    const { config } = this.props
+    // If query string exists (copy/paste url)
+    if (queryString.length > 0) {
+      // Get necessary params
+      const object = getQueryStringObject(queryString)
+      const center = [Number(object.lat), Number(object.lng)]
+      const zoom = Number(object.zoom)
+      const label = object.label || ''
+
+      // Update redux store to display given params
+      this.props.recenterMap(center, zoom)
+      this.props.setLocation(center, label)
+    } else { // Else if bare URL
+      const initial = {
+        lat: config.map.center[0],
+        lng: config.map.center[1],
+        zoom: config.map.zoom
+      }
+      // Update URL to reflect config/initial states
+      updateURL(initial)
+    }
   }
 
   onClick (event) {
@@ -92,7 +119,7 @@ class MapContainer extends React.Component {
         <Map
           config={config}
           center={mapLocation.coordinates}
-          zoom={config.zoom}
+          zoom={config.map.zoom}
           onClick={this.onClick}
         >
           <RouteLine positions={this.props.route.lineCoordinates} />
