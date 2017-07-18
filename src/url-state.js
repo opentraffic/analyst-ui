@@ -1,6 +1,6 @@
 // Turn query string into an object with key/value
 export function getQueryStringObject (queryString = window.location.search) {
-  const params = new window.URLSearchParams(queryString)
+  const params = new URLSearchParams(queryString)
   const queryObject = {}
 
   for (const param of params.entries()) {
@@ -17,14 +17,14 @@ export function getQueryStringObject (queryString = window.location.search) {
 
 // Parsing query string to return certain parameter
 export function parseQueryString (param, queryString = window.location.search) {
-  const params = new window.URLSearchParams(queryString)
+  const params = new URLSearchParams(queryString)
   return params.get(param)
 }
 
 // Adding new parameter to query string
 // If no query string, empty URLSearchParams object is created
 export function addNewParam (params = {}, queryString = window.location.search) {
-  const searchParams = new window.URLSearchParams(queryString)
+  const searchParams = new URLSearchParams(queryString)
 
   Object.entries(params).forEach((param) => {
     const [key, value] = param
@@ -47,3 +47,4 @@ export function updateURL (params = {}) {
   const queryString = addNewParam(params)
   window.history.replaceState({}, null, locationPrefix + queryString)
 }
+
