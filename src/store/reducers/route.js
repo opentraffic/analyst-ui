@@ -6,6 +6,7 @@ import { isEqual } from 'lodash'
 const ADD_WAYPOINT = 'analyst-ui/route/ADD_WAYPOINT'
 const REMOVE_WAYPOINT = 'analyst-ui/route/REMOVE_WAYPOINT'
 const UPDATE_WAYPOINT = 'analyst-ui/route/UPDATE_WAYPOINT'
+const INSERT_WAYPOINT = 'analyst-ui/route/INSERT_WAYPOINT'
 const SET_ROUTE = 'analyst-ui/route/SET_ROUTE'
 const SET_ROUTE_ERROR = 'analyst-ui/route/SET_ROUTE_ERROR'
 const RESET = 'analyst-ui/route/RESET'
@@ -42,6 +43,15 @@ export default function reducer (state = initialState, action) {
         waypoints: copy
       }
     }
+    case INSERT_WAYPOINT:
+      return {
+        ...state,
+        waypoints: [
+          ...state.waypoints.slice(0, action.index),
+          action.waypoint,
+          ...state.waypoints.slice(action.index)
+        ]
+      }
     case SET_ROUTE:
       return {
         ...state,
@@ -81,6 +91,14 @@ export function updateWaypoint (oldWaypoint, newWaypoint) {
     type: UPDATE_WAYPOINT,
     oldWaypoint,
     newWaypoint
+  }
+}
+
+export function insertWaypoint (waypoint, insertAfter) {
+  return {
+    type: INSERT_WAYPOINT,
+    waypoint,
+    index: insertAfter + 1
   }
 }
 

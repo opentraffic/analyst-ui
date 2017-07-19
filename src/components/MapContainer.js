@@ -9,6 +9,7 @@ import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import RouteError from './Map/RouteError'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
+import { getNewWaypointPosition } from '../lib/routing'
 import * as actionCreators from '../store/actions'
 import * as routeActionCreators from '../store/reducers/route'
 
@@ -24,6 +25,7 @@ class MapContainer extends React.Component {
     super(props)
 
     this.onClick = this.onClick.bind(this)
+    this.onMouseDownLine = this.onMouseDownLine.bind(this)
     this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
     this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
     this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
@@ -36,7 +38,18 @@ class MapContainer extends React.Component {
   }
 
   onClick (event) {
-    this.props.addWaypoint(event.latlng)
+    // Only add waypoint when the original map canvas is clicked. This prevents
+    // a bug where clicking a polyline and then adding a marker causes another
+    // onClick to fire in the wrong place.
+    if (event.originalEvent.target.tagName === 'CANVAS') {
+      this.props.addWaypoint(event.latlng)
+    }
+  }
+
+  onMouseDownLine (event) {
+    const { waypoints, lineCoordinates } = this.props.route
+    const index = getNewWaypointPosition(event.latlng, waypoints, lineCoordinates)
+    this.props.insertWaypoint(event.latlng, index)
   }
 
   /**
@@ -95,7 +108,7 @@ class MapContainer extends React.Component {
           zoom={config.zoom}
           onClick={this.onClick}
         >
-          <RouteLine positions={this.props.route.lineCoordinates} />
+          <RouteLine positions={this.props.route.lineCoordinates} onMouseDown={this.onMouseDownLine} />
           <RouteMarkers
             waypoints={this.props.route.waypoints}
             handleRemove={this.handleRemoveWaypoint}
