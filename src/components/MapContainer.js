@@ -40,8 +40,15 @@ class MapContainer extends React.Component {
 
   initMap (queryString = window.location.search) {
     const { config } = this.props
-    // If query string exists (copy/paste url)
-    if (queryString.length > 0) {
+    // If bare url
+    if (queryString.length === 0) {
+      const initial = {
+        lat: config.map.center[0],
+        lng: config.map.center[1],
+        zoom: config.map.zoom
+      }
+      updateURL(initial)
+    } else { // If query string exists (copy/paste url)
       // Get necessary params
       const object = getQueryStringObject(queryString)
       const center = [Number(object.lat), Number(object.lng)]
@@ -51,14 +58,6 @@ class MapContainer extends React.Component {
       // Update redux store to display given params
       this.props.recenterMap(center, zoom)
       this.props.setLocation(center, label)
-    } else { // Else if bare URL
-      const initial = {
-        lat: config.map.center[0],
-        lng: config.map.center[1],
-        zoom: config.map.zoom
-      }
-      // Update URL to reflect config/initial states
-      updateURL(initial)
     }
   }
 
