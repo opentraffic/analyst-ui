@@ -1,4 +1,3 @@
-/* global L */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Polyline } from 'react-leaflet'
@@ -22,7 +21,6 @@ export default class RouteLine extends React.PureComponent {
         positions={this.props.positions}
         color="red"
         onMouseDown={this.props.onMouseDown}
-        onClick={function (e) { console.log('cancel polyline click'); L.DomEvent.stopPropagation(e) }}
       />
     )
   }
