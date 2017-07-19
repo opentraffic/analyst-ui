@@ -26,8 +26,8 @@ export function parseQueryString (param, queryString = window.location.search) {
 export function addNewParam (params = {}, queryString = window.location.search) {
   const searchParams = new URLSearchParams(queryString)
 
-  Object.entries(params).forEach((param) => {
-    const [key, value] = param
+  for (var param in params) {
+    const [key, value] = [param, params[param]]
 
     // If no value, delete key
     if (value === null) {
