@@ -53,11 +53,11 @@ class MapContainer extends React.Component {
 
       // If there is a mid waypoint, initialize mid_lat and mid_lng
       // If there is no mid waypoint, initialize to null to remove param from url query string
-      const mid_latlng = {
-        mid_lat: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints/2)].lat : null,
-        mid_lng: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints/2)].lng : null
+      const midLatLng = {
+        mid_lat: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints / 2)].lat : null,
+        mid_lng: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints / 2)].lng : null
       }
-      updateURL(mid_latlng)
+      updateURL(midLatLng)
     }
   }
 
@@ -81,26 +81,26 @@ class MapContainer extends React.Component {
       if (parseQueryString('st_lat') !== null) {
         // Getting start lat/lng and end lat/lng
         // Have to turn them into Leaflet's latlng object first
-        const st_latlng = L.latLng (
+        const stLatLng = L.latLng(
           Number(object.st_lat),
           Number(object.st_lng)
         )
-        const end_latlng = L.latLng (
+        const endLatLng = L.latLng(
           Number(object.end_lat),
           Number(object.end_lng)
         )
 
-        this.props.addWaypoint(st_latlng)
+        this.props.addWaypoint(stLatLng)
 
         if (parseQueryString('mid_lat') !== null) {
-          const mid_latlng = L.latLng (
+          const midLatLng = L.latLng(
             Number(object.mid_lat),
             Number(object.mid_lng)
           )
-          this.props.addWaypoint(mid_latlng)
+          this.props.addWaypoint(midLatLng)
         }
 
-        this.props.addWaypoint(end_latlng)
+        this.props.addWaypoint(endLatLng)
       }
 
       // Update redux store to display given params
