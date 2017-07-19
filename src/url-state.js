@@ -35,7 +35,7 @@ export function addNewParam (params = {}, queryString = window.location.search) 
     } else {
       searchParams.set(key, value)
     }
-  })
+  }
 
   const newQueryString = `?${searchParams.toString()}`
   return newQueryString
