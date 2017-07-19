@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { isEqual } from 'lodash'
+import L from 'leaflet'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import RouteMarkers from './Map/RouteMarkers'
@@ -11,7 +12,7 @@ import RouteError from './Map/RouteError'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import * as actionCreators from '../store/actions'
 import * as routeActionCreators from '../store/reducers/route'
-import { updateURL, getQueryStringObject } from '../url-state'
+import { updateURL, getQueryStringObject, parseQueryString } from '../url-state'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -36,6 +37,28 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
 
     this.showRoute()
+
+    // Updating URL
+    const waypoints = this.props.route.waypoints
+    const numOfPoints = waypoints.length
+    // If there is a start and end waypoint, update url
+    if (numOfPoints > 1) {
+      const points = {
+        st_lat: waypoints[0].lat,
+        st_lng: waypoints[0].lng,
+        end_lat: waypoints[numOfPoints - 1].lat,
+        end_lng: waypoints[numOfPoints - 1].lng
+      }
+      updateURL(points)
+
+      // If there is a mid waypoint, initialize mid_lat and mid_lng
+      // If there is no mid waypoint, initialize to null to remove param from url query string
+      const mid_latlng = {
+        mid_lat: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints/2)].lat : null,
+        mid_lng: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints/2)].lng : null
+      }
+      updateURL(mid_latlng)
+    }
   }
 
   initMap (queryString = window.location.search) {
@@ -54,6 +77,31 @@ class MapContainer extends React.Component {
       const center = [Number(object.lat), Number(object.lng)]
       const zoom = Number(object.zoom)
       const label = object.label || ''
+
+      if (parseQueryString('st_lat') !== null) {
+        // Getting start lat/lng and end lat/lng
+        // Have to turn them into Leaflet's latlng object first
+        const st_latlng = L.latLng (
+          Number(object.st_lat),
+          Number(object.st_lng)
+        )
+        const end_latlng = L.latLng (
+          Number(object.end_lat),
+          Number(object.end_lng)
+        )
+
+        this.props.addWaypoint(st_latlng)
+
+        if (parseQueryString('mid_lat') !== null) {
+          const mid_latlng = L.latLng (
+            Number(object.mid_lat),
+            Number(object.mid_lng)
+          )
+          this.props.addWaypoint(mid_latlng)
+        }
+
+        this.props.addWaypoint(end_latlng)
+      }
 
       // Update redux store to display given params
       this.props.recenterMap(center, zoom)
