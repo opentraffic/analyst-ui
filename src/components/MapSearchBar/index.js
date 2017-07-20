@@ -75,7 +75,13 @@ class MapSearchBar extends React.Component {
     // Stores latlng and name of selected location in Redux
     this.props.setLocation(latlng, suggestionValue)
     // Recenters map to the selected location's latlng
-    this.props.recenterMap(latlng, 3)
+    const zoom = this.props.config.map.zoom
+    // If user is below zoom 10, set to 10
+    if (zoom < 10) {
+      this.props.recenterMap(latlng, 10)
+    } else {
+      this.props.recenterMap(latlng, zoom)
+    }
 
     // Updating URL to represent new lat/lng coordinates and new label
     const centerParams = {

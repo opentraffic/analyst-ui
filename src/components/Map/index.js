@@ -27,6 +27,13 @@ export default class Map extends React.Component {
     onClick: function () {}
   }
 
+  constructor (props) {
+    super(props)
+
+    this.handleDrag = this.handleDrag.bind(this)
+    this.handleZoom = this.handleZoom.bind(this)
+  }
+
   componentDidMount () {
     const layer = Tangram.leafletLayer({
       scene: {
@@ -49,21 +56,25 @@ export default class Map extends React.Component {
   // Not sure if config needs to be updated as well
   handleDrag (event) {
     const newCenter = event.target.getCenter()
+    const zoom = event.target.getZoom()
     const centerParams = {
       lat: newCenter.lat.toFixed(4),
       lng: newCenter.lng.toFixed(4)
     }
     updateURL(centerParams)
+    this.props.recenterMap(newCenter, zoom)
   }
 
   // When map is zoomed in/out, update URL to represent change
   // Not sure if config needs to be update as well
   handleZoom (event) {
     const newZoom = event.target.getZoom()
+    const center = event.target.getCenter()
     const zoomParams = {
       zoom: newZoom.toFixed(4)
     }
     updateURL(zoomParams)
+    this.props.recenterMap(center, newZoom)
   }
 
   render () {
