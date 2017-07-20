@@ -27,6 +27,7 @@ class MapContainer extends React.Component {
     this.initMap()
 
     this.initMap = this.initMap.bind(this)
+    this.initRoute = this.initRoute.bind(this)
     this.onClick = this.onClick.bind(this)
     this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
     this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
@@ -41,23 +42,19 @@ class MapContainer extends React.Component {
     // Updating URL
     const waypoints = this.props.route.waypoints
     const numOfPoints = waypoints.length
-    // If there is a start and end waypoint, update url
+    const points = {
+      waypoints: []
+    }
+
     if (numOfPoints > 1) {
-      const points = {
-        st_lat: waypoints[0].lat,
-        st_lng: waypoints[0].lng,
-        end_lat: waypoints[numOfPoints - 1].lat,
-        end_lng: waypoints[numOfPoints - 1].lng
+      for (var i = 0; i < numOfPoints; i++) {
+        const lat = waypoints[i].lat.toFixed(4)
+        const lng = waypoints[i].lng.toFixed(4)
+        const latlng = lat + '/' + lng
+        // Push latlng point to array of waypoints
+        points.waypoints.push(latlng)
       }
       updateURL(points)
-
-      // If there is a mid waypoint, initialize mid_lat and mid_lng
-      // If there is no mid waypoint, initialize to null to remove param from url query string
-      const midLatLng = {
-        mid_lat: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints / 2)].lat : null,
-        mid_lng: (numOfPoints > 2) ? waypoints[Math.floor(numOfPoints / 2)].lng : null
-      }
-      updateURL(midLatLng)
     }
   }
 
@@ -78,34 +75,28 @@ class MapContainer extends React.Component {
       const zoom = Number(object.zoom)
       const label = object.label || ''
 
-      if (parseQueryString('st_lat') !== null) {
-        // Getting start lat/lng and end lat/lng
-        // Have to turn them into Leaflet's latlng object first
-        const stLatLng = L.latLng(
-          Number(object.st_lat),
-          Number(object.st_lng)
-        )
-        const endLatLng = L.latLng(
-          Number(object.end_lat),
-          Number(object.end_lng)
-        )
-
-        this.props.addWaypoint(stLatLng)
-
-        if (parseQueryString('mid_lat') !== null) {
-          const midLatLng = L.latLng(
-            Number(object.mid_lat),
-            Number(object.mid_lng)
-          )
-          this.props.addWaypoint(midLatLng)
-        }
-
-        this.props.addWaypoint(endLatLng)
-      }
-
       // Update redux store to display given params
       this.props.recenterMap(center, zoom)
       this.props.setLocation(center, label)
+      this.initRoute(object)
+    }
+  }
+
+  initRoute (queryObject) {
+    if (parseQueryString('waypoints') !== null) {
+      // Split the string into array of latlng points
+      const waypoints = queryObject.waypoints.split(',')
+      for (var i = 0; i < waypoints.length; i++) {
+        // Get the lat and lng for each waypoint
+        const latlng = waypoints[i].split('/')
+        // Initialize to leaflet latLng
+        const point = L.latLng(
+          Number(latlng[0]),
+          Number(latlng[1])
+        )
+        // Add waypoint to route
+        this.props.addWaypoint(point)
+      }
     }
   }
 
@@ -168,6 +159,7 @@ class MapContainer extends React.Component {
           center={mapLocation.coordinates}
           zoom={config.map.zoom}
           onClick={this.onClick}
+          recenterMap={this.props.recenterMap}
         >
           <RouteLine positions={this.props.route.lineCoordinates} />
           <RouteMarkers
