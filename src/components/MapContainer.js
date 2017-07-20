@@ -8,8 +8,9 @@ import MapSearchBar from './MapSearchBar'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import RouteError from './Map/RouteError'
-import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
+import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { getNewWaypointPosition } from '../lib/routing'
+import { getTilesForBbox } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateURL } from '../lib/url-state'
@@ -103,6 +104,21 @@ class MapContainer extends React.Component {
       .then(response => {
         const coordinates = valhallaResponseToPolylineCoordinates(response)
         this.props.setRoute(coordinates)
+
+        // Get bounding box for OSMLR tiles
+        const bounds = response.trip.summary
+        const tiles = getTilesForBbox(bounds.min_lon, bounds.min_lat, bounds.max_lon, bounds.max_lat)
+        console.log('tiles', tiles)
+        Promise.all()
+
+        return coordinates
+      })
+      .then(coordinates => {
+        // Experimental.
+        return getTraceAttributes(host, coordinates)
+      })
+      .then(response => {
+        console.log(response)
       })
       .catch(error => {
         let message

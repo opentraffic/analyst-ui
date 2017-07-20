@@ -50,6 +50,9 @@ export default class Map extends React.Component {
     })
 
     layer.addTo(this.map.leafletElement)
+
+    // Expose map globally for debug
+    window.map = this.map.leafletElement
   }
 
   // When map is dragged/zoomed and lat/lng/zoom are changed, update URL to reflect change

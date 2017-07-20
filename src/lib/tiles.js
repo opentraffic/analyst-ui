@@ -15,10 +15,10 @@ const VALHALLA_TILES = [
  * intersect the bounding box, where the first item in the tuple is the tile
  * level and the second item in the tuple is the tile's index
  *
- * @param {Number} left - western longitude
- * @param {Number} bottom - southern latitude
- * @param {Number} right - eastern longitude
- * @param {Number} top - northern latitude
+ * @param {Number} left - western (minimum) longitude
+ * @param {Number} bottom - southern (minimum) latitude
+ * @param {Number} right - eastern (maximum) longitude
+ * @param {Number} top - northern (maximum) latitude
  * @returns {Array} - of OSMLR tuples [tile level, tile index]
  */
 export function getTilesForBbox (left, bottom, right, top) {
