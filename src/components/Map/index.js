@@ -53,7 +53,7 @@ export default class Map extends React.Component {
   }
 
   // When map is dragged and lat/lng are changed, update URL to reflect change
-  // Not sure if config needs to be updated as well
+  // Config is now also updated whenenver lat/lng is changed
   handleDrag (event) {
     const newCenter = event.target.getCenter()
     const zoom = event.target.getZoom()
@@ -66,7 +66,7 @@ export default class Map extends React.Component {
   }
 
   // When map is zoomed in/out, update URL to represent change
-  // Not sure if config needs to be update as well
+  // Config is now also updated whenever zoom is changed
   handleZoom (event) {
     const newZoom = event.target.getZoom()
     const center = event.target.getCenter()
