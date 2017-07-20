@@ -46,7 +46,7 @@ class MapContainer extends React.Component {
       waypoints: []
     }
 
-    if (numOfPoints > 1) {
+    if (numOfPoints > 0) {
       for (var i = 0; i < numOfPoints; i++) {
         const lat = waypoints[i].lat.toFixed(4)
         const lng = waypoints[i].lng.toFixed(4)
