@@ -55,6 +55,10 @@ class MapContainer extends React.Component {
         points.waypoints.push(latlng)
       }
       updateURL(points)
+    } else { // If points all removed
+      // Remove waypoints from url query string
+      points.waypoints = null
+      updateURL(points)
     }
   }
 
