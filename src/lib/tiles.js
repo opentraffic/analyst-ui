@@ -100,3 +100,38 @@ export function getTileUrlSuffix (level, id) {
 
   return '/' + level + '/' + temp.join('/')
 }
+
+const LEVEL_BITS = 3
+const TILE_INDEX_BITS = 22
+const SEGMENT_INDEX_BITS = 21
+
+const LEVEL_MASK = (2 ** LEVEL_BITS) - 1
+const TILE_INDEX_MASK = (2 ** TILE_INDEX_BITS) - 1
+const SEGMENT_INDEX_MASK = (2 ** SEGMENT_INDEX_BITS) - 1
+
+function getLevelFromSegmentId (id) {
+  return id & LEVEL_MASK
+}
+
+function getTileIndexFromSegmentId (id) {
+  return (id >> LEVEL_BITS) & TILE_INDEX_MASK
+}
+
+function getSegmentIndexFromSegmentId (id) {
+  return (id >> (LEVEL_BITS + TILE_INDEX_BITS)) & SEGMENT_INDEX_MASK
+}
+
+/**
+ * Given an segment id from trace_attributes, convert it to reference OSMLR
+ * level, tile, and segment indices.
+ *
+ * @param {Number} id
+ * @returns {Object}
+ */
+export function parseSegmentId (id) {
+  return {
+    level: getLevelFromSegmentId(id),
+    tile: getTileIndexFromSegmentId(id),
+    segment: getSegmentIndexFromSegmentId(id)
+  }
+}
