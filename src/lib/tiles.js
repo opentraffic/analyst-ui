@@ -1,6 +1,8 @@
 /**
  * OSMLR tile utilities
  */
+import { filter } from 'lodash'
+
 const VALHALLA_TILES = [
   { level: 2, size: 0.25 },
   { level: 1, size: 1.0 },
@@ -64,4 +66,37 @@ export function getTilesForBbox (left, bottom, right, top) {
  */
 export function getTilesForBufferedBbox (left, bottom, right, top, buffer = 0.1) {
   return getTilesForBbox(left - buffer, bottom - buffer, right + buffer, top + buffer)
+}
+
+/**
+ * Given an OSMLR id, convert it to the appropriate directory/file scheme.
+ *
+ * @todo Handle improper tile levels or ids.
+ * @param {Number} level - tile level (0-2).
+ * @param {Number} id - tile id.
+ * @returns {string} urlSuffix - a string for the directory/file.
+ */
+export function getTileUrlSuffix (level, id) {
+  // Get the right tileset definition for the level we want
+  const tileSet = filter(VALHALLA_TILES, { level })[0]
+
+  // Get the maximum tile id for that tileset
+  const maxId = (360.0 / tileSet.size * 180.0 / tileSet.size) - 1
+
+  // Get the number of directories, we need 3 digits per directory
+  const numDirs = Math.ceil(maxId.toString().length / 3)
+
+  // Zero pad the string of the number so it has the proper amount of digits
+  let suffix = id.toString().padStart(3 * numDirs, 0)
+
+  // Add directory separators
+  const temp = []
+
+  while (suffix.length) {
+    var part = suffix.substr(0, 3)
+    temp.push(part)
+    suffix = suffix.substr(3)
+  }
+
+  return '/' + level + '/' + temp.join('/')
 }

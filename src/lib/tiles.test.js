@@ -1,5 +1,5 @@
 /* global it, expect */
-import { getTilesForBbox, getTilesForBufferedBbox } from './tiles'
+import { getTilesForBbox, getTilesForBufferedBbox, getTileUrlSuffix } from './tiles'
 
 it('returns a set of Valhalla tiles given a bounding box', () => {
   // Switzerland
@@ -23,4 +23,20 @@ it('returns a set of Valhalla tiles given a bounding box, with a buffer', () => 
   const expected = [[2, 785551], [2, 786991], [2, 788431], [2, 789871], [2, 791311], [2, 792751], [2, 785552], [2, 786992], [2, 788432], [2, 789872], [2, 791312], [2, 792752], [2, 785553], [2, 786993], [2, 788433], [2, 789873], [2, 791313], [2, 792753], [2, 785554], [2, 786994], [2, 788434], [2, 789874], [2, 791314], [2, 792754], [2, 785555], [2, 786995], [2, 788435], [2, 789875], [2, 791315], [2, 792755], [2, 785556], [2, 786996], [2, 788436], [2, 789876], [2, 791316], [2, 792756], [2, 785557], [2, 786997], [2, 788437], [2, 789877], [2, 791317], [2, 792757], [2, 785558], [2, 786998], [2, 788438], [2, 789878], [2, 791318], [2, 792758], [2, 785559], [2, 786999], [2, 788439], [2, 789879], [2, 791319], [2, 792759], [2, 785560], [2, 787000], [2, 788440], [2, 789880], [2, 791320], [2, 792760], [1, 49147], [1, 49507], [1, 49148], [1, 49508], [1, 49149], [1, 49509], [1, 49150], [1, 49510], [0, 3106], [0, 3107]]
 
   expect(result).toEqual(expected)
+})
+
+it('creates a directory/file path from a tile level and id', () => {
+  const result1 = getTileUrlSuffix(2, 1036752)
+  const result2 = getTileUrlSuffix(2, 42)
+  const result3 = getTileUrlSuffix(1, 54)
+  const result4 = getTileUrlSuffix(1, 64001)
+  const result5 = getTileUrlSuffix(0, 79)
+  const result6 = getTileUrlSuffix(0, 4001)
+
+  expect(result1).toEqual('/2/001/036/752')
+  expect(result2).toEqual('/2/000/000/042')
+  expect(result3).toEqual('/1/000/054')
+  expect(result4).toEqual('/1/064/001')
+  expect(result5).toEqual('/0/000/079')
+  expect(result6).toEqual('/0/004/001')
 })
