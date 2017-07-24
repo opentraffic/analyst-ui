@@ -15,8 +15,10 @@ class MapSearchBar extends React.Component {
 
   constructor (props) {
     super(props)
+
+    const newValue = parseQueryString('label')
     this.state = {
-      value: '',
+      value: newValue || '',
       placeholder: 'Search for an address or a place',
       suggestions: []
     }
@@ -33,17 +35,6 @@ class MapSearchBar extends React.Component {
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.search = this.search.bind(this)
-  }
-
-  componentDidMount () {
-    // Not sure if right lifecycle
-    // If queryString has value for label, set value on MapSearchBar
-    const newValue = parseQueryString('label')
-    if (newValue !== null) {
-      this.setState({
-        value: newValue
-      })
-    }
   }
 
   // Will be called every time you need to recalculate suggestions
@@ -82,14 +73,8 @@ class MapSearchBar extends React.Component {
     } else {
       this.props.recenterMap(latlng, zoom)
     }
-
-    // Updating URL to represent new lat/lng coordinates and new label
-    const centerParams = {
-      lat: lat,
-      lng: lng,
-      label: suggestionValue
-    }
-    updateURL(centerParams)
+    // Updating URL with suggestion value
+    updateURL({label: suggestionValue})
   }
 
   renderSuggestion (suggestion, {query, isHighlighted}) {
@@ -149,12 +134,14 @@ class MapSearchBar extends React.Component {
   }
 
   clearSearch (event) {
-    // set state value back to empty string
+    // Set state value back to empty string
     this.setState({
       value: ''
     })
-    // clears suggestions
+    // Clears suggestions
     this.onSuggestionsClearRequested()
+    // Clear suggestion value from URL
+    updateURL({label: null})
   }
 
   // Now Autosuggest component is wrapped in a form so that when 'enter' is pressed, suggestions container is not closed automatically
