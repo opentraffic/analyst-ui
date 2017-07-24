@@ -16,7 +16,7 @@ export function setLocation (latlng, name) {
   }
 }
 
-export function setDate(startDate, endDate) {
+export function setDate (startDate, endDate) {
   return {
     type: 'SET_DATE',
     startDate,

@@ -54,6 +54,7 @@ export function updateURL (params = {}) {
   window.history.replaceState({}, null, locationPrefix + queryString)
 }
 
+// Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
   // Parse URL to get all params
   const object = getQueryStringObject(queryString)
