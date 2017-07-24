@@ -136,7 +136,9 @@ class MapSearchBar extends React.Component {
   handleSubmit (event) {
     event.preventDefault()
     const inputValue = this.autosuggestBar.input.value
-    this.search(inputValue)
+    if (inputValue !== '') {
+      this.search(inputValue)
+    }
   }
 
   render () {
