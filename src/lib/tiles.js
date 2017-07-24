@@ -2,6 +2,7 @@
  * OSMLR tile utilities
  */
 import { filter } from 'lodash'
+import bigInt from 'big-integer'
 
 const VALHALLA_TILES = [
   { level: 2, size: 0.25 },
@@ -109,16 +110,22 @@ const LEVEL_MASK = (2 ** LEVEL_BITS) - 1
 const TILE_INDEX_MASK = (2 ** TILE_INDEX_BITS) - 1
 const SEGMENT_INDEX_MASK = (2 ** SEGMENT_INDEX_BITS) - 1
 
+/**
+ * parses segment ID for level, tile index, and segment index. This ID is
+ * greater than the 32-bit number in JavaScript, so a normal right shift
+ * operation doesn't work properly. We wrap the id in the bigInt object to
+ * get aoround this.
+ */
 function getLevelFromSegmentId (id) {
-  return id & LEVEL_MASK
+  return bigInt(id) & LEVEL_MASK
 }
 
 function getTileIndexFromSegmentId (id) {
-  return (id >> LEVEL_BITS) & TILE_INDEX_MASK
+  return bigInt(id).shiftRight(LEVEL_BITS) & TILE_INDEX_MASK
 }
 
 function getSegmentIndexFromSegmentId (id) {
-  return (id >> (LEVEL_BITS + TILE_INDEX_BITS)) & SEGMENT_INDEX_MASK
+  return bigInt(id).shiftRight(LEVEL_BITS + TILE_INDEX_BITS) & SEGMENT_INDEX_MASK
 }
 
 /**
