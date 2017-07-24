@@ -10,7 +10,7 @@ import RouteLine from './Map/RouteLine'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { getNewWaypointPosition } from '../lib/routing'
-import { getTilesForBbox } from '../lib/tiles'
+import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateURL } from '../lib/url-state'
@@ -108,8 +108,14 @@ class MapContainer extends React.Component {
         // Get bounding box for OSMLR tiles
         const bounds = response.trip.summary
         const tiles = getTilesForBbox(bounds.min_lon, bounds.min_lat, bounds.max_lon, bounds.max_lat)
-        console.log('tiles', tiles)
-        Promise.all()
+
+        // Get tiles (experimental)
+        const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
+        tiles.forEach(i => {
+          console.log(i)
+          console.log(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
+        })
+        // Promise.all()
 
         return coordinates
       })

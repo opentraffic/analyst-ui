@@ -74,10 +74,41 @@ export function getTilesForBufferedBbox (left, bottom, right, top, buffer = 0.1)
  *
  * @todo Handle improper tile levels or ids.
  * @param {Number} level - tile level (0-2).
- * @param {Number} id - tile id.
+ * @param {Number} tileId - tile index.
+ * - or -
+ * @param {Array} tuple - an array of two values: [ level, tileId ]
+ *          See the return value for getTilesForBbox()
+ * - or -
+ * @param {Object} parsedSegmentId - an object of shape { level, tile, segment }
+ *
+ * @todo standardize on one form?!
+ *
  * @returns {string} urlSuffix - a string for the directory/file.
  */
-export function getTileUrlSuffix (level, id) {
+export function getTileUrlSuffix (arg1, arg2) {
+  function getTileLevel (arg) {
+    if (Array.isArray(arg)) {
+      return arg[0]
+    } else if (typeof arg === 'object' && arg !== null) {
+      return arg.level
+    } else {
+      return arg
+    }
+  }
+
+  function getTileIndex (arg) {
+    if (Array.isArray(arg)) {
+      return arg[1]
+    } else if (typeof arg === 'object' && arg !== null) {
+      return arg.tile
+    } else {
+      return arg
+    }
+  }
+
+  const level = getTileLevel(arg1)
+  const id = getTileIndex(arg2 || arg1)
+
   // Get the right tileset definition for the level we want
   const tileSet = filter(VALHALLA_TILES, { level })[0]
 
@@ -99,7 +130,7 @@ export function getTileUrlSuffix (level, id) {
     suffix = suffix.substr(3)
   }
 
-  return '/' + level + '/' + temp.join('/')
+  return level + '/' + temp.join('/')
 }
 
 const LEVEL_BITS = 3
