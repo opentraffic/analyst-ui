@@ -30,8 +30,7 @@ export default class Map extends React.Component {
   constructor (props) {
     super(props)
 
-    this.handleDrag = this.handleDrag.bind(this)
-    this.handleZoom = this.handleZoom.bind(this)
+    this.onChange = this.onChange.bind(this)
   }
 
   componentDidMount () {
@@ -52,29 +51,18 @@ export default class Map extends React.Component {
     layer.addTo(this.map.leafletElement)
   }
 
-  // When map is dragged and lat/lng are changed, update URL to reflect change
-  // Config is now also updated whenenver lat/lng is changed
-  handleDrag (event) {
+  // When map is dragged/zoomed and lat/lng/zoom are changed, update URL to reflect change
+  // Config is now also updated whenenver lat/lng/zoom are changed
+  onChange (event) {
     const newCenter = event.target.getCenter()
-    const zoom = event.target.getZoom()
+    const newZoom = event.target.getZoom()
     const centerParams = {
       lat: newCenter.lat.toFixed(4),
-      lng: newCenter.lng.toFixed(4)
-    }
-    updateURL(centerParams)
-    this.props.recenterMap(newCenter, zoom)
-  }
-
-  // When map is zoomed in/out, update URL to represent change
-  // Config is now also updated whenever zoom is changed
-  handleZoom (event) {
-    const newZoom = event.target.getZoom()
-    const center = event.target.getCenter()
-    const zoomParams = {
+      lng: newCenter.lng.toFixed(4),
       zoom: newZoom.toFixed(4)
     }
-    updateURL(zoomParams)
-    this.props.recenterMap(center, newZoom)
+    updateURL(centerParams)
+    this.props.recenterMap(newCenter, newZoom)
   }
 
   render () {
@@ -86,8 +74,7 @@ export default class Map extends React.Component {
         center={center}
         zoom={zoom}
         onClick={onClick}
-        onZoomEnd={this.handleZoom}
-        onMoveEnd={this.handleDrag}
+        onMoveEnd={this.onChange}
         ref={(ref) => { this.map = ref }}
       >
         <ScaleControl />
