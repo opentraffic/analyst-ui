@@ -2,6 +2,7 @@
  * OSMLR tile utilities
  */
 import { filter } from 'lodash'
+import bigInt from 'big-integer'
 
 const VALHALLA_TILES = [
   { level: 2, size: 0.25 },
@@ -99,4 +100,45 @@ export function getTileUrlSuffix (level, id) {
   }
 
   return '/' + level + '/' + temp.join('/')
+}
+
+const LEVEL_BITS = 3
+const TILE_INDEX_BITS = 22
+const SEGMENT_INDEX_BITS = 21
+
+const LEVEL_MASK = (2 ** LEVEL_BITS) - 1
+const TILE_INDEX_MASK = (2 ** TILE_INDEX_BITS) - 1
+const SEGMENT_INDEX_MASK = (2 ** SEGMENT_INDEX_BITS) - 1
+
+/**
+ * parses segment ID for level, tile index, and segment index. This ID is
+ * greater than the 32-bit number in JavaScript, so a normal right shift
+ * operation doesn't work properly. We wrap the id in the bigInt object to
+ * get aoround this.
+ */
+function getLevelFromSegmentId (id) {
+  return bigInt(id) & LEVEL_MASK
+}
+
+function getTileIndexFromSegmentId (id) {
+  return bigInt(id).shiftRight(LEVEL_BITS) & TILE_INDEX_MASK
+}
+
+function getSegmentIndexFromSegmentId (id) {
+  return bigInt(id).shiftRight(LEVEL_BITS + TILE_INDEX_BITS) & SEGMENT_INDEX_MASK
+}
+
+/**
+ * Given an segment id from trace_attributes, convert it to reference OSMLR
+ * level, tile, and segment indices.
+ *
+ * @param {Number} id
+ * @returns {Object}
+ */
+export function parseSegmentId (id) {
+  return {
+    level: getLevelFromSegmentId(id),
+    tile: getTileIndexFromSegmentId(id),
+    segment: getSegmentIndexFromSegmentId(id)
+  }
 }

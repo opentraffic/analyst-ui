@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@mapbox/polyline": "0.2.0",
+    "big-integer": "1.6.23",
     "leaflet": "1.1.0",
     "leaflet-extra-markers": "1.0.6",
     "lodash": "4.17.4",
