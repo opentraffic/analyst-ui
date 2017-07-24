@@ -1,5 +1,10 @@
 /* global it, expect */
-import { getTilesForBbox, getTilesForBufferedBbox, getTileUrlSuffix } from './tiles'
+import {
+  getTilesForBbox,
+  getTilesForBufferedBbox,
+  getTileUrlSuffix,
+  parseSegmentId
+} from './tiles'
 
 it('returns a set of Valhalla tiles given a bounding box', () => {
   // Switzerland
@@ -39,4 +44,12 @@ it('creates a directory/file path from a tile level and id', () => {
   expect(result4).toEqual('/1/064/001')
   expect(result5).toEqual('/0/000/079')
   expect(result6).toEqual('/0/004/001')
+})
+
+it('parses a segment id from trace_attributes', () => {
+  const result = parseSegmentId(983044211424)
+
+  expect(result.level).toEqual(0)
+  expect(result.tile).toEqual(2140)
+  expect(result.segment).toEqual(29297)
 })
