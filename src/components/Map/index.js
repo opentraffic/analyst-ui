@@ -2,6 +2,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Map as Leaflet, ScaleControl } from 'react-leaflet'
+import 'leaflet-editable'
 // import Tangram from 'tangram'
 import { updateURL } from '../../lib/url-state'
 import 'leaflet/dist/leaflet.css'
@@ -72,6 +73,8 @@ export default class Map extends React.Component {
   render () {
     const { className, children, center, zoom, onClick } = this.props
 
+    // The `editable` option is not provided by Leaflet but by Leaflet.Editable.
+    // It is passed to the options object via props.
     return (
       <Leaflet
         className={className}
@@ -80,6 +83,7 @@ export default class Map extends React.Component {
         onClick={onClick}
         onMoveEnd={this.onChange}
         ref={(ref) => { this.map = ref }}
+        editable
       >
         <ScaleControl />
         {children}

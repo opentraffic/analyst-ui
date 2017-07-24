@@ -118,10 +118,10 @@ class MapContainer extends React.Component {
           tileUrls.push(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
         })
 
-        const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
-        Promise.all(promises).then(results => {
-          console.log(results)
-        })
+        // const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
+        // Promise.all(promises).then(results => {
+        //   console.log(results)
+        // })
 
         return coordinates
       })
