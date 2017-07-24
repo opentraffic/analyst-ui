@@ -24,7 +24,8 @@
     "semantic-ui-css": "2.2.10",
     "semantic-ui-react": "0.70.0",
     "string.prototype.padstart": "3.0.0",
-    "tangram": "0.13.0"
+    "tangram": "0.13.0",
+    "url-search-params-polyfill": "2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

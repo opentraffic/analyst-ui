@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Map as Leaflet, ScaleControl } from 'react-leaflet'
 // import Tangram from 'tangram'
+import { updateURL } from '../../url-state'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
 
@@ -26,6 +27,12 @@ export default class Map extends React.Component {
     onClick: function () {}
   }
 
+  constructor (props) {
+    super(props)
+
+    this.onChange = this.onChange.bind(this)
+  }
+
   componentDidMount () {
     const layer = Tangram.leafletLayer({
       scene: {
@@ -44,8 +51,22 @@ export default class Map extends React.Component {
     layer.addTo(this.map.leafletElement)
   }
 
+  // When map is dragged/zoomed and lat/lng/zoom are changed, update URL to reflect change
+  // Config is now also updated whenenver lat/lng/zoom are changed
+  onChange (event) {
+    const newCenter = event.target.getCenter()
+    const newZoom = event.target.getZoom()
+    const centerParams = {
+      lat: newCenter.lat.toFixed(4),
+      lng: newCenter.lng.toFixed(4),
+      zoom: newZoom.toFixed(4)
+    }
+    updateURL(centerParams)
+    this.props.recenterMap(newCenter, newZoom)
+  }
+
   render () {
-    const { className, children, center, zoom, onChange, onClick } = this.props
+    const { className, children, center, zoom, onClick } = this.props
 
     return (
       <Leaflet
@@ -53,7 +74,7 @@ export default class Map extends React.Component {
         center={center}
         zoom={zoom}
         onClick={onClick}
-        onZoomEnd={(e) => onChange({ zoom: e.target._zoom })}
+        onMoveEnd={this.onChange}
         ref={(ref) => { this.map = ref }}
       >
         <ScaleControl />

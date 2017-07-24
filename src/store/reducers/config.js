@@ -6,7 +6,8 @@ const config = (state = initialState, action) => {
       return {
         ...state,
         map: {
-          center: action.coordinates
+          center: action.coordinates,
+          zoom: action.zoom
         }
       }
     default:

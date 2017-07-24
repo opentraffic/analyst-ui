@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { isEqual } from 'lodash'
+import L from 'leaflet'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import RouteMarkers from './Map/RouteMarkers'
@@ -11,6 +12,7 @@ import RouteError from './Map/RouteError'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import * as actionCreators from '../store/actions'
 import * as routeActionCreators from '../store/reducers/route'
+import { updateURL, getQueryStringObject, parseQueryString } from '../url-state'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -22,7 +24,10 @@ class MapContainer extends React.Component {
 
   constructor (props) {
     super(props)
+    this.initMap()
 
+    this.initMap = this.initMap.bind(this)
+    this.initRoute = this.initRoute.bind(this)
     this.onClick = this.onClick.bind(this)
     this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
     this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
@@ -33,6 +38,70 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
 
     this.showRoute()
+
+    // Updating URL
+    const waypoints = this.props.route.waypoints
+    const numOfPoints = waypoints.length
+    const points = {
+      waypoints: []
+    }
+
+    if (numOfPoints > 0) {
+      for (var i = 0; i < numOfPoints; i++) {
+        const lat = waypoints[i].lat.toFixed(4)
+        const lng = waypoints[i].lng.toFixed(4)
+        const latlng = lat + '/' + lng
+        // Push latlng point to array of waypoints
+        points.waypoints.push(latlng)
+      }
+      updateURL(points)
+    } else { // If points all removed
+      // Remove waypoints from url query string
+      points.waypoints = null
+      updateURL(points)
+    }
+  }
+
+  initMap (queryString = window.location.search) {
+    const { config } = this.props
+    // If bare url
+    if (queryString.length === 0) {
+      const initial = {
+        lat: config.map.center[0],
+        lng: config.map.center[1],
+        zoom: config.map.zoom
+      }
+      updateURL(initial)
+    } else { // If query string exists (copy/paste url)
+      // Get necessary params
+      const object = getQueryStringObject(queryString)
+      const center = [Number(object.lat), Number(object.lng)]
+      const zoom = Number(object.zoom)
+      const label = object.label || ''
+
+      // Update redux store to display given params
+      this.props.recenterMap(center, zoom)
+      this.props.setLocation(center, label)
+      this.initRoute(object)
+    }
+  }
+
+  initRoute (queryObject) {
+    if (parseQueryString('waypoints') !== null) {
+      // Split the string into array of latlng points
+      const waypoints = queryObject.waypoints.split(',')
+      for (var i = 0; i < waypoints.length; i++) {
+        // Get the lat and lng for each waypoint
+        const latlng = waypoints[i].split('/')
+        // Initialize to leaflet latLng
+        const point = L.latLng(
+          Number(latlng[0]),
+          Number(latlng[1])
+        )
+        // Add waypoint to route
+        this.props.addWaypoint(point)
+      }
+    }
   }
 
   onClick (event) {
@@ -92,8 +161,9 @@ class MapContainer extends React.Component {
         <Map
           config={config}
           center={mapLocation.coordinates}
-          zoom={config.zoom}
+          zoom={config.map.zoom}
           onClick={this.onClick}
+          recenterMap={this.props.recenterMap}
         >
           <RouteLine positions={this.props.route.lineCoordinates} />
           <RouteMarkers
