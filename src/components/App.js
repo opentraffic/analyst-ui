@@ -5,11 +5,16 @@ import MapContainer from './MapContainer'
 import Sidebar from './Sidebar'
 import DevTools from './DevTools'
 import store from '../store'
+import { initApp } from '../url-state'
 
 import 'semantic-ui-css/semantic.min.css'
 import './App.css'
 
 class App extends Component {
+  constructor (props) {
+    super(props)
+    initApp()
+  }
   render () {
     return (
       <Provider store={store}>
