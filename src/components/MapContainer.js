@@ -111,17 +111,11 @@ class MapContainer extends React.Component {
 
         // Get tiles (experimental)
         const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
-        // For now, reject tiles at level 2
-        const downloadTiles = reject(tiles, (i) => i[0] === 2)
-        const tileUrls = []
-        downloadTiles.forEach(i => {
-          tileUrls.push(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
+        tiles.forEach(i => {
+          console.log(i)
+          console.log(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
         })
-
-        const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
-        Promise.all(promises).then(results => {
-          console.log(results)
-        })
+        // Promise.all()
 
         return coordinates
       })
