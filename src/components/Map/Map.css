@@ -14,3 +14,7 @@
 .leaflet-control-attribution a:hover {
   color: #ddd;
 }
+
+.map-bounding-box-disabled {
+  cursor: inherit;
+}
