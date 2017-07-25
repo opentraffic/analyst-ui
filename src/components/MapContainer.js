@@ -12,7 +12,7 @@ import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla
 import { getNewWaypointPosition } from '../lib/routing'
 import * as actionCreators from '../store/actions'
 import * as routeActionCreators from '../store/reducers/route'
-import { updateURL } from '../url-state'
+import { updateURL } from '../lib/url-state'
 
 class MapContainer extends React.Component {
   static propTypes = {

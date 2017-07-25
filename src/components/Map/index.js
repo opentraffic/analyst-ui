@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Map as Leaflet, ScaleControl } from 'react-leaflet'
 // import Tangram from 'tangram'
-import { updateURL } from '../../url-state'
+import { updateURL } from '../../lib/url-state'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
 

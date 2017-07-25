@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
 import moment from 'moment'
 import store from '../../store'
-import { updateURL } from '../../url-state'
+import { updateURL } from '../../lib/url-state'
 import 'react-dates/lib/css/_datepicker.css'
 import './DatePickerContainer.css'
 
