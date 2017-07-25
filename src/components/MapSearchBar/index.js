@@ -3,7 +3,7 @@ import Autosuggest from 'react-autosuggest'
 import PropTypes from 'prop-types'
 import { Icon } from 'semantic-ui-react'
 import { throttle } from 'lodash'
-import { updateURL, parseQueryString } from '../../url-state'
+import { updateURL, parseQueryString } from '../../lib/url-state'
 import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {

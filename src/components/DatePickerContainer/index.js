@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
 import moment from 'moment'
 import store from '../../store'
-import { getQueryStringObject, updateURL, parseQueryString } from '../../url-state'
+import { updateURL } from '../../lib/url-state'
 import 'react-dates/lib/css/_datepicker.css'
 import './DatePickerContainer.css'
 
@@ -19,22 +19,7 @@ class DatePickerContainer extends React.Component {
       focusedInput: null
     }
 
-    this.initDate()
     this.handleDateChange = this.handleDateChange.bind(this)
-  }
-
-  initDate (queryString = window.location.search) {
-    // If there is a start date, set values for date picker
-    if (parseQueryString('startDate') !== null) {
-      const object = getQueryStringObject(queryString)
-      const startDate = Number(object.startDate) || null
-      const endDate = Number(object.endDate) || null
-      this.props.dispatch({
-        type: 'SET_DATE',
-        startDate,
-        endDate
-      })
-    }
   }
 
   handleDateChange (date) {
