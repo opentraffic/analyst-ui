@@ -34,9 +34,14 @@ const Sidebar = (props) => {
       {errors}
       <Segment>
         <Header as="h3">Select mode</Header>
-        <Button icon="crop" content="Select region" color="yellow" fluid
-          onClick={onClickDrawRectangle}
-         />
+        <Button.Group fluid>
+          <Button icon="crop" content="Analyze region" color="yellow"
+            onClick={onClickDrawRectangle}
+          />
+          <Button icon="crop" content="Analyze route" color="teal"
+            onClick={onClickDrawRectangle}
+          />
+        </Button.Group>
       </Segment>
       <Segment>
         <Header as="h3">Section header</Header>

@@ -4,13 +4,15 @@ import date from './date'
 import errors from './errors'
 import map from './map'
 import route from './route'
+import viewBounds from './viewBounds'
 
 const reducers = combineReducers({
   config,
   date,
   errors,
   map,
-  route
+  route,
+  viewBounds
 })
 
 export default reducers
