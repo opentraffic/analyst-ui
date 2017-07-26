@@ -16,6 +16,7 @@ class ModeSelect extends React.PureComponent {
 
     this.onClickRegion = this.onClickRegion.bind(this)
     this.onClickRoute = this.onClickRoute.bind(this)
+    this.onClickClearAnalysis = this.onClickClearAnalysis.bind(this)
     this.handleBounds = this.handleBounds.bind(this)
   }
 
@@ -40,6 +41,10 @@ class ModeSelect extends React.PureComponent {
     this.props.dispatch(app.setRouteAnalysisMode())
   }
 
+  onClickClearAnalysis (event) {
+    this.props.dispatch(app.clearAnalysisMode())
+  }
+
   render () {
     return (
       <Segment>
@@ -48,12 +53,12 @@ class ModeSelect extends React.PureComponent {
           <Button icon="crop" content="Analyze region" color="yellow"
             onClick={this.onClickRegion}
           />
-          <Button icon="crop" content="Analyze route" color="teal"
+          <Button icon="car" content="Analyze route" color="teal"
             onClick={this.onClickRoute}
           />
         </Button.Group>
-        <Button content="Clear analysis area" color="grey"
-          onClick={this.onClickRoute} fluid basic style={{ marginTop: '0.5em' }}
+        <Button icon="remove" content="Clear analysis area" color="grey"
+          onClick={this.onClickClearAnalysis} fluid basic style={{ marginTop: '0.5em' }}
         />
       </Segment>
     )
