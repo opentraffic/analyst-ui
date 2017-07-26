@@ -1,7 +1,7 @@
 import React from 'react'
 import Autosuggest from 'react-autosuggest'
 import PropTypes from 'prop-types'
-import { Icon } from 'semantic-ui-react'
+import { Button, Icon } from 'semantic-ui-react'
 import { throttle } from 'lodash'
 import { updateURL, parseQueryString } from '../../lib/url-state'
 import './MapSearchBar.css'
@@ -35,6 +35,7 @@ class MapSearchBar extends React.Component {
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.search = this.search.bind(this)
+    this.handleClick = this.handleClick.bind(this)
   }
 
   // Will be called every time you need to recalculate suggestions
@@ -154,20 +155,30 @@ class MapSearchBar extends React.Component {
     }
   }
 
+  handleClick (event) {
+    const button = (event.target.nextSibling === null) ? event.target.parentElement : event.target
+    const inputContainer = button.nextSibling
+    if (inputContainer.style.display === 'block') {
+      inputContainer.style.display = "none"
+    } else {
+      inputContainer.style.display = "block"
+    }
+  }
+
   render () {
     const inputProps = {
       placeholder: this.state.placeholder,
       value: this.state.value,
       onChange: this.onChangeAutosuggest
     }
-
     const inputVal = this.state.value
 
     return (
       <div className="map-search-panel">
-        <Icon name="search" className="search-icon" />
-        {this.renderClearButton(inputVal)}
-        <form onSubmit={this.handleSubmit}>
+        <Button icon size="tiny" className="search-button" onClick={this.handleClick}>
+          <Icon name="search" className="search-icon" />
+        </Button>
+        <form onSubmit={this.handleSubmit} className="inputContainer">
           <Autosuggest
             ref={(ref) => { this.autosuggestBar = ref }}
             suggestions={this.state.suggestions}
@@ -178,6 +189,7 @@ class MapSearchBar extends React.Component {
             renderSuggestion={this.renderSuggestion}
             inputProps={inputProps}
           />
+          {this.renderClearButton(inputVal)}
         </form>
       </div>
     )
