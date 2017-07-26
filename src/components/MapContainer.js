@@ -67,6 +67,8 @@ class MapContainer extends React.Component {
     // a bug where clicking a polyline and then adding a marker causes another
     // onClick to fire in the wrong place.
     if (event.originalEvent.target.tagName === 'CANVAS') {
+      if (this.props.mode !== 'ROUTE') return
+
       this.props.addWaypoint(event.latlng)
     }
   }
@@ -176,6 +178,7 @@ class MapContainer extends React.Component {
 
 function mapStateToProps (state) {
   return {
+    mode: state.app.analysisMode,
     config: state.config,
     route: state.route,
     map: state.map

@@ -1,8 +1,15 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { Segment, Header, Button } from 'semantic-ui-react'
 import { onClickDrawRectangle } from '../../../lib/region-bounds'
+import * as app from '../../../store/reducers/app'
 
-export default class ModeSelect extends React.PureComponent {
+class ModeSelect extends React.PureComponent {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired
+  }
+
   constructor (props) {
     super(props)
 
@@ -12,10 +19,11 @@ export default class ModeSelect extends React.PureComponent {
 
   onClickRegion (event) {
     onClickDrawRectangle()
+    this.props.dispatch(app.setRegionAnalysisMode())
   }
 
   onClickRoute (event) {
-    onClickRoute()
+    this.props.dispatch(app.setRouteAnalysisMode())
   }
 
   render () {
@@ -34,3 +42,5 @@ export default class ModeSelect extends React.PureComponent {
     )
   }
 }
+
+export default connect()(ModeSelect)
