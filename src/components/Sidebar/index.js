@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
 import DatePickerContainer from '../DatePickerContainer'
 import ErrorMessage from './ErrorMessage'
-import { onClickDrawRectangle } from '../../lib/region-bounds'
+import ModeSelect from './ModeSelect'
 import './Sidebar.css'
 
 const panels = [
@@ -32,17 +32,7 @@ const Sidebar = (props) => {
   return (
     <div className={'Sidebar ' + props.className}>
       {errors}
-      <Segment>
-        <Header as="h3">Select mode</Header>
-        <Button.Group fluid>
-          <Button icon="crop" content="Analyze region" color="yellow"
-            onClick={onClickDrawRectangle}
-          />
-          <Button icon="crop" content="Analyze route" color="teal"
-            onClick={onClickDrawRectangle}
-          />
-        </Button.Group>
-      </Segment>
+      <ModeSelect />
       <Segment>
         <Header as="h3">Section header</Header>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
