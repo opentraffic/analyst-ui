@@ -38,6 +38,13 @@ class MapSearchBar extends React.Component {
     this.handleClick = this.handleClick.bind(this)
   }
 
+  componentDidMount () {
+    // If link has label query, display search bar and expand search icon to fit search bar
+    if (this.state.value !== '') {
+      this.refs.searchBar.classList.add('search-bar__expanded')
+      this.refs.searchButton.ref.classList.add('search-bar__expanded')
+    }
+  }
   // Will be called every time you need to recalculate suggestions
   onSuggestionsFetchRequested ({value}) {
     if (value.length >= 2) {
@@ -155,14 +162,13 @@ class MapSearchBar extends React.Component {
     }
   }
 
+  // When search button is clicked, autosuggest bar gets displayed
   handleClick (event) {
-    const button = (event.target.nextSibling === null) ? event.target.parentElement : event.target
-    const inputContainer = button.nextSibling
-    if (inputContainer.style.display === 'block') {
-      inputContainer.style.display = "none"
-    } else {
-      inputContainer.style.display = "block"
-    }
+    const searchButton = this.refs.searchButton.ref
+    const inputContainer = this.refs.searchBar
+    // Display search bar and expand search icon size when clicked on
+    inputContainer.classList.toggle('search-bar__expanded')
+    searchButton.classList.toggle('search-bar__expanded')
   }
 
   render () {
@@ -175,10 +181,10 @@ class MapSearchBar extends React.Component {
 
     return (
       <div className="map-search-panel">
-        <Button icon size="tiny" className="search-button" onClick={this.handleClick}>
+        <Button icon size="tiny" className="search-button" onClick={this.handleClick} ref="searchButton">
           <Icon name="search" className="search-icon" />
         </Button>
-        <form onSubmit={this.handleSubmit} className="inputContainer">
+        <form ref="searchBar" onSubmit={this.handleSubmit} className="inputContainer">
           <Autosuggest
             ref={(ref) => { this.autosuggestBar = ref }}
             suggestions={this.state.suggestions}
