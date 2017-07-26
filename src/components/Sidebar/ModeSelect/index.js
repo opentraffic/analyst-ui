@@ -38,6 +38,9 @@ class ModeSelect extends React.PureComponent {
             onClick={this.onClickRoute}
           />
         </Button.Group>
+        <Button content="Clear analysis area" color="gray"
+          onClick={this.onClickRoute} fluid basic style={{ marginTop: '0.5em' }}
+        />
       </Segment>
     )
   }
