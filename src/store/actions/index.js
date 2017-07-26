@@ -1,3 +1,7 @@
+/* app */
+export const SET_ANALYSIS_MODE = 'SET_ANALYSIS_MODE'
+export const CLEAR_ANALYSIS_MODE = 'CLEAR_ANALYSIS_MODE'
+
 /* date */
 export const SET_DATE = 'SET_DATE'
 
@@ -18,4 +22,6 @@ export const INSERT_ROUTE_WAYPOINT = 'INSERT_ROUTE_WAYPOINT'
 export const SET_ROUTE = 'SET_ROUTE'
 export const SET_ROUTE_ERROR = 'SET_ROUTE_ERROR'
 
-export const CLEAR_ANALYSIS_MODE = 'CLEAR_ANALYSIS_MODE'
+/* view bounds */
+export const SET_VIEW_BOUNDS = 'SET_VIEW_BOUNDS'
+export const CLEAR_VIEW_BOUNDS = 'CLEAR_VIEW_BOUNDS'

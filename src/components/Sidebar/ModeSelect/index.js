@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds } from '../../../lib/region-bounds'
-import * as app from '../../../store/reducers/app'
-import { setBounds } from '../../../store/reducers/viewBounds'
+import * as app from '../../../store/actions/app'
+import { setBounds } from '../../../store/actions/viewBounds'
 
 class ModeSelect extends React.PureComponent {
   static propTypes = {
