@@ -2,8 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Segment, Header, Button } from 'semantic-ui-react'
-import { onClickDrawRectangle } from '../../../lib/region-bounds'
+import { startDrawingBounds } from '../../../lib/region-bounds'
 import * as app from '../../../store/reducers/app'
+import { setBounds } from '../../../store/reducers/viewBounds'
 
 class ModeSelect extends React.PureComponent {
   static propTypes = {
@@ -15,10 +16,23 @@ class ModeSelect extends React.PureComponent {
 
     this.onClickRegion = this.onClickRegion.bind(this)
     this.onClickRoute = this.onClickRoute.bind(this)
+    this.handleBounds = this.handleBounds.bind(this)
+  }
+
+  /**
+   * @param {L.LatLngBounds}
+   */
+  handleBounds (latLngBounds) {
+    const north = latLngBounds.getNorth()
+    const south = latLngBounds.getSouth()
+    const east = latLngBounds.getEast()
+    const west = latLngBounds.getWest()
+
+    this.props.dispatch(setBounds({ north, south, east, west }))
   }
 
   onClickRegion (event) {
-    onClickDrawRectangle()
+    startDrawingBounds(this.handleBounds)
     this.props.dispatch(app.setRegionAnalysisMode())
   }
 
@@ -38,7 +52,7 @@ class ModeSelect extends React.PureComponent {
             onClick={this.onClickRoute}
           />
         </Button.Group>
-        <Button content="Clear analysis area" color="gray"
+        <Button content="Clear analysis area" color="grey"
           onClick={this.onClickRoute} fluid basic style={{ marginTop: '0.5em' }}
         />
       </Segment>

@@ -4,7 +4,12 @@
 const bounds = []
 let handlersAdded = false
 
-// Removes an existing bounds.
+/**
+ * Removes an existing bounds.
+ *
+ * @param {Number} index - remove the bounds at this index in the cache.
+ *          Defaults to the earliest bounds (at index 0).
+ */
 function removeExistingBounds (index = 0) {
   if (bounds[index] && bounds[index].remove) {
     // Manual cleanup on Leaflet
@@ -33,13 +38,13 @@ function setBoundToDisabledAppearance (bound) {
 }
 
 /**
- * Handler function for drawing new viewport bounds.
+ * Function for drawing new viewport bounds.
  *
  * @param {Object} event - from onClick handler
  * @param {Function} callback - optional. Callback function to call after the
  *          bounds has finished drawing.
  */
-export function onClickDrawRectangle (event, callback) {
+export function startDrawingBounds (callback) {
   if (!handlersAdded) {
     map.on('editable:drawing:commit', function (event) {
       // The newly created rectangle is stored at `event.layer`
