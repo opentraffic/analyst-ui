@@ -10,8 +10,8 @@ import RouteLine from './Map/RouteLine'
 import RouteError from './Map/RouteError'
 import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { getNewWaypointPosition } from '../lib/routing'
-import * as actionCreators from '../store/actions'
-import * as routeActionCreators from '../store/reducers/route'
+import * as mapActionCreators from '../store/actions/map'
+import * as routeActionCreators from '../store/actions/route'
 import { updateURL } from '../lib/url-state'
 
 class MapContainer extends React.Component {
@@ -19,7 +19,7 @@ class MapContainer extends React.Component {
     className: PropTypes.string,
     config: PropTypes.object,
     route: PropTypes.object,
-    mapLocation: PropTypes.object
+    map: PropTypes.object
   }
 
   constructor (props) {
@@ -121,14 +121,14 @@ class MapContainer extends React.Component {
 
   render () {
     const config = this.props.config
-    const mapLocation = this.props.mapLocation
+    const map = this.props.map
 
     return (
       <div className={this.props.className}>
         <MapSearchBar config={config} setLocation={this.props.setLocation} recenterMap={this.props.recenterMap} />
         <Map
           config={config}
-          center={mapLocation.coordinates}
+          center={map.coordinates}
           zoom={config.map.zoom}
           onClick={this.onClick}
           recenterMap={this.props.recenterMap}
@@ -150,12 +150,12 @@ function mapStateToProps (state) {
   return {
     config: state.config,
     route: state.route,
-    mapLocation: state.mapLocation
+    map: state.map
   }
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...actionCreators, ...routeActionCreators }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)

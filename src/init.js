@@ -1,8 +1,9 @@
 import L from 'leaflet'
-import * as actionCreators from './store/actions'
-import * as routeActionCreators from './store/reducers/route'
-import store from './store'
 import config from './config'
+import store from './store'
+import { recenterMap, setLocation } from './store/actions/map'
+import { setDate } from './store/actions/date'
+import { addWaypoint } from './store/actions/route'
 import { getQueryStringObject, updateURL, parseQueryString } from './lib/url-state'
 
 // Initialize application based on url query string params
@@ -26,11 +27,11 @@ export function initApp (queryString = window.location.search) {
     updateURL(mapView)
   }
   // Initializing lat/lng and zoom
-  store.dispatch(actionCreators.recenterMap(coordinates, mapView.zoom))
+  store.dispatch(recenterMap(coordinates, mapView.zoom))
   // Initializing map search bar
-  store.dispatch(actionCreators.setLocation(coordinates, label))
+  store.dispatch(setLocation(coordinates, label))
   // Initializing dates
-  store.dispatch(actionCreators.setDate(date.startDate, date.endDate))
+  store.dispatch(setDate(date.startDate, date.endDate))
   // Initializing markers and route
   initRoute(object)
 }
@@ -48,7 +49,7 @@ export function initRoute (queryObject) {
         Number(latlng[1])
       )
       // Add waypoint to route
-      store.dispatch(routeActionCreators.addWaypoint(point))
+      store.dispatch(addWaypoint(point))
     }
   }
 }

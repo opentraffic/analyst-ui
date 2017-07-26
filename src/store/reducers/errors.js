@@ -1,11 +1,6 @@
 import { uniqWith, reject, isEqual } from 'lodash'
+import { ADD_ERROR, REMOVE_ERROR, CLEAR_ERRORS } from '../actions'
 
-// Actions
-export const ADD_ERROR = 'analyst-ui/errors/ADD_ERROR'
-export const REMOVE_ERROR = 'analyst-ui/errors/REMOVE_ERROR'
-export const CLEAR_ERRORS = 'analyst-ui/errors/CLEAR_ERRORS'
-
-// Reducer
 const initialState = {
   errors: []
 }
@@ -36,24 +31,3 @@ const errors = (state = initialState, action) => {
 }
 
 export default errors
-
-// Action creators
-export function addError (error) {
-  return {
-    type: ADD_ERROR,
-    error
-  }
-}
-
-export function removeError (error) {
-  return {
-    type: REMOVE_ERROR,
-    error
-  }
-}
-
-export function clearErrors () {
-  return {
-    type: CLEAR_ERRORS
-  }
-}
