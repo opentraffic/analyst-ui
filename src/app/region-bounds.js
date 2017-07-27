@@ -1,7 +1,7 @@
 /* global map, L */
 import store from '../store'
 import { setBounds } from '../store/actions/viewBounds'
-import { updateURL } from './url-state'
+import { updateURL } from '../lib/url-state'
 
 // Store for existing bounds.
 const bounds = []

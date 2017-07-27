@@ -11,8 +11,7 @@ import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } f
 import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
-import { updateURL } from '../lib/url-state'
-import { drawBounds } from '../lib/region-bounds'
+import { drawBounds } from '../app/region-bounds'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -40,28 +39,6 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
 
     this.showRoute()
-
-    // Updating URL
-    const waypoints = this.props.route.waypoints
-    const numOfPoints = waypoints.length
-    const points = {
-      waypoints: []
-    }
-
-    if (numOfPoints > 0) {
-      for (var i = 0; i < numOfPoints; i++) {
-        const lat = waypoints[i].lat.toFixed(4)
-        const lng = waypoints[i].lng.toFixed(4)
-        const latlng = lat + '/' + lng
-        // Push latlng point to array of waypoints
-        points.waypoints.push(latlng)
-      }
-      updateURL(points)
-    } else { // If points all removed
-      // Remove waypoints from url query string
-      points.waypoints = null
-      updateURL(points)
-    }
   }
 
   onClick (event) {
@@ -107,10 +84,10 @@ class MapContainer extends React.Component {
           tileUrls.push(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
         })
 
-        const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
-        Promise.all(promises).then(results => {
-          console.log(results)
-        })
+        // const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
+        // Promise.all(promises).then(results => {
+        //   console.log(results)
+        // })
 
         return coordinates
       })
