@@ -1,4 +1,4 @@
-import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS_MODE } from '../actions'
+import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS } from '../actions'
 
 const ROUTE_MODE = 'ROUTE'
 const REGION_MODE = 'REGION'
@@ -19,5 +19,5 @@ export function setRouteAnalysisMode () {
 }
 
 export function clearAnalysisMode () {
-  return { type: CLEAR_ANALYSIS_MODE }
+  return { type: CLEAR_ANALYSIS }
 }

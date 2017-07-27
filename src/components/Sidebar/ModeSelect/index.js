@@ -5,6 +5,7 @@ import { Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds } from '../../../lib/region-bounds'
 import * as app from '../../../store/actions/app'
 import { setBounds } from '../../../store/actions/viewBounds'
+import { resetAnalysis } from '../../../store/actions/reset'
 
 class ModeSelect extends React.PureComponent {
   static propTypes = {
@@ -42,7 +43,7 @@ class ModeSelect extends React.PureComponent {
   }
 
   onClickClearAnalysis (event) {
-    this.props.dispatch(app.clearAnalysisMode())
+    this.props.dispatch(resetAnalysis())
   }
 
   render () {

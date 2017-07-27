@@ -1,6 +1,6 @@
 /* app */
 export const SET_ANALYSIS_MODE = 'SET_ANALYSIS_MODE'
-export const CLEAR_ANALYSIS_MODE = 'CLEAR_ANALYSIS_MODE'
+export const CLEAR_ANALYSIS = 'CLEAR_ANALYSIS'
 
 /* date */
 export const SET_DATE = 'SET_DATE'

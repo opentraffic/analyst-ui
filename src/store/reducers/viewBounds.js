@@ -1,4 +1,4 @@
-import { SET_VIEW_BOUNDS, CLEAR_VIEW_BOUNDS } from '../actions'
+import { SET_VIEW_BOUNDS, CLEAR_VIEW_BOUNDS, CLEAR_ANALYSIS } from '../actions'
 
 const initialState = {
   bounds: null
@@ -12,10 +12,8 @@ const viewBounds = (state = initialState, action) => {
         bounds: action.bounds
       }
     case CLEAR_VIEW_BOUNDS:
-      return {
-        ...state,
-        bounds: null
-      }
+    case CLEAR_ANALYSIS:
+      return initialState
     default:
       return state
   }

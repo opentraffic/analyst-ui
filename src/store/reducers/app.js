@@ -1,4 +1,4 @@
-import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS_MODE } from '../actions'
+import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS } from '../actions'
 
 const initialState = {
   analysisMode: null
@@ -11,7 +11,7 @@ const app = (state = initialState, action) => {
         ...state,
         analysisMode: action.mode
       }
-    case CLEAR_ANALYSIS_MODE:
+    case CLEAR_ANALYSIS:
       return {
         ...state,
         analysisMode: null

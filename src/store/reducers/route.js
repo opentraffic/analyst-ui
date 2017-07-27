@@ -6,7 +6,7 @@ import {
   INSERT_ROUTE_WAYPOINT,
   SET_ROUTE,
   SET_ROUTE_ERROR,
-  CLEAR_ANALYSIS_MODE
+  CLEAR_ANALYSIS
 } from '../actions'
 
 const initialState = {
@@ -61,7 +61,7 @@ const route = (state = initialState, action) => {
         lineCoordinates: [],
         error: action.error
       }
-    case CLEAR_ANALYSIS_MODE:
+    case CLEAR_ANALYSIS:
       return initialState
     default:
       return state
