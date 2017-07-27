@@ -1,7 +1,7 @@
 import React from 'react'
 import Autosuggest from 'react-autosuggest'
 import PropTypes from 'prop-types'
-import { Icon } from 'semantic-ui-react'
+import { Button, Icon } from 'semantic-ui-react'
 import { throttle } from 'lodash'
 import { updateURL, parseQueryString } from '../../lib/url-state'
 import './MapSearchBar.css'
@@ -35,8 +35,16 @@ class MapSearchBar extends React.Component {
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.search = this.search.bind(this)
+    this.handleClick = this.handleClick.bind(this)
   }
 
+  componentDidMount () {
+    // If link has label query, display search bar and expand search icon to fit search bar
+    if (this.state.value !== '') {
+      this.refs.searchBar.classList.add('search-bar__expanded')
+      this.refs.searchButton.ref.classList.add('search-bar__expanded')
+    }
+  }
   // Will be called every time you need to recalculate suggestions
   onSuggestionsFetchRequested ({value}) {
     if (value.length >= 2) {
@@ -154,20 +162,29 @@ class MapSearchBar extends React.Component {
     }
   }
 
+  // When search button is clicked, autosuggest bar gets displayed
+  handleClick (event) {
+    const searchButton = this.refs.searchButton.ref
+    const inputContainer = this.refs.searchBar
+    // Display search bar and expand search icon size when clicked on
+    inputContainer.classList.toggle('search-bar__expanded')
+    searchButton.classList.toggle('search-bar__expanded')
+  }
+
   render () {
     const inputProps = {
       placeholder: this.state.placeholder,
       value: this.state.value,
       onChange: this.onChangeAutosuggest
     }
-
     const inputVal = this.state.value
 
     return (
       <div className="map-search-panel">
-        <Icon name="search" className="search-icon" />
-        {this.renderClearButton(inputVal)}
-        <form onSubmit={this.handleSubmit}>
+        <Button icon size="tiny" className="search-button" onClick={this.handleClick} ref="searchButton">
+          <Icon name="search" className="search-icon" />
+        </Button>
+        <form ref="searchBar" onSubmit={this.handleSubmit} className="inputContainer">
           <Autosuggest
             ref={(ref) => { this.autosuggestBar = ref }}
             suggestions={this.state.suggestions}
@@ -178,6 +195,7 @@ class MapSearchBar extends React.Component {
             renderSuggestion={this.renderSuggestion}
             inputProps={inputProps}
           />
+          {this.renderClearButton(inputVal)}
         </form>
       </div>
     )
