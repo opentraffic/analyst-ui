@@ -131,7 +131,7 @@ export function startDrawingBounds () {
   map.editTools.startRectangle()
 }
 
-export function drawBounds (west, south, east, north) {
+export function drawBounds ({ west, south, east, north }) {
   const rect = L.rectangle([
     [north, west],
     [south, east]

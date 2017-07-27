@@ -14,6 +14,7 @@ import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateURL } from '../lib/url-state'
+import { drawBounds } from '../lib/region-bounds'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -32,6 +33,12 @@ class MapContainer extends React.Component {
     this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
     this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
     this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
+  }
+
+  componentDidMount () {
+    if (this.props.bounds) {
+      drawBounds(this.props.bounds)
+    }
   }
 
   componentDidUpdate (prevProps) {
@@ -181,7 +188,8 @@ function mapStateToProps (state) {
     mode: state.app.analysisMode,
     config: state.config,
     route: state.route,
-    map: state.map
+    map: state.map,
+    bounds: state.viewBounds.bounds
   }
 }
 

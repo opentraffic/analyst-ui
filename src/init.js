@@ -4,9 +4,9 @@ import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
 import { setDate } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
+import { setBounds } from './store/actions/viewBounds'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from './store/actions/app'
 import { getQueryStringObject, updateURL } from './lib/url-state'
-import { drawBounds } from './lib/region-bounds'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
@@ -63,8 +63,6 @@ function initRoute (value) {
 }
 
 function initBounds (west, south, east, north) {
-  window.setTimeout(() => {
-    drawBounds(west, south, east, north)
-  }, 1000)
+  store.dispatch(setBounds({ north, south, east, west }))
   store.dispatch(setRegionAnalysisMode())
 }
