@@ -4,7 +4,7 @@
   height: 100%;
 }
 
-.leaflet-control-attribution {
+.leaflet-container .leaflet-control-attribution {
   background: transparent;
   color: #ddd;
   margin: 0.5em;
