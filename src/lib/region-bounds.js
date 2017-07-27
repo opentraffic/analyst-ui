@@ -6,10 +6,17 @@ import { setBounds } from '../store/actions/viewBounds'
 const bounds = []
 let handlersAdded = false
 
-// If anything changes the viewbounds in store, update (or remove) current bounds.
+// Subscribe to changes in state to affect the behavior of Leaflet.Editable.
 store.subscribe(() => {
   const state = store.getState()
+
+  // If bounds are cleared from state, remove current bounds.
   if (!state.viewBounds.bounds) removeAllExistingBounds()
+
+  // If select mode has changed, stop any existing drawing interaction.
+  if (!state.app.analysisMode !== 'REGION' && typeof map !== 'undefined' && map.editTools) {
+    map.editTools.stopDrawing()
+  }
 })
 
 /**

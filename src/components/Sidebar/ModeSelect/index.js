@@ -21,9 +21,9 @@ class ModeSelect extends React.PureComponent {
   }
 
   onClickRegion (event) {
-    startDrawingBounds()
     this.props.dispatch(resetAnalysis())
     this.props.dispatch(app.setRegionAnalysisMode())
+    startDrawingBounds()
   }
 
   onClickRoute (event) {
