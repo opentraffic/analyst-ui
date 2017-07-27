@@ -34,15 +34,15 @@ const Sidebar = (props) => {
       {errors}
       <ModeSelect />
       <Segment>
+        <DatePickerContainer className="date-picker" />
+      </Segment>
+      <Segment>
         <Header as="h3">Section header</Header>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
         <Message>
           <Checkbox toggle label="Toggle" />
         </Message>
         <Accordion panels={panels} styled />
-      </Segment>
-      <Segment>
-        <DatePickerContainer className="date-picker" />
       </Segment>
       <Segment>
         <Header as="h3">Export</Header>

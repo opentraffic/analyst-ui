@@ -8,7 +8,8 @@ import { resetAnalysis } from '../../../store/actions/reset'
 
 class ModeSelect extends React.PureComponent {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    activeMode: PropTypes.string
   }
 
   constructor (props) {
@@ -39,19 +40,39 @@ class ModeSelect extends React.PureComponent {
       <Segment>
         <Header as="h3">Select mode</Header>
         <Button.Group fluid>
-          <Button icon="crop" content="Analyze region" color="yellow"
+          <Button
+            icon="crop"
+            content="Analyze region"
+            color="blue"
             onClick={this.onClickRegion}
+            basic={!(this.props.activeMode === 'REGION')}
           />
-          <Button icon="car" content="Analyze route" color="teal"
+          <Button
+            icon="car"
+            content="Analyze route"
+            color="blue"
             onClick={this.onClickRoute}
+            basic={!(this.props.activeMode === 'ROUTE')}
           />
         </Button.Group>
-        <Button icon="remove" content="Clear analysis area" color="grey"
-          onClick={this.onClickClearAnalysis} fluid basic style={{ marginTop: '0.5em' }}
+        <Button
+          icon="remove"
+          content="Clear analysis area"
+          color="grey"
+          onClick={this.onClickClearAnalysis}
+          fluid
+          basic
+          style={{ marginTop: '0.5em' }}
         />
       </Segment>
     )
   }
 }
 
-export default connect()(ModeSelect)
+function mapStateToProps (state) {
+  return {
+    activeMode: state.app.analysisMode
+  }
+}
+
+export default connect(mapStateToProps)(ModeSelect)
