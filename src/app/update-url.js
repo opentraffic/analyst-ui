@@ -7,7 +7,8 @@ export function initUrlUpdate () {
 
     updateURL({
       waypoints: getRouteWaypoints(state.route),
-      ...getRegionBounds(state.viewBounds.bounds)
+      ...getRegionBounds(state.viewBounds.bounds),
+      ...getDateRange(state.date)
     })
   })
 }
@@ -39,5 +40,12 @@ function getRegionBounds (bounds) {
     rs: (bounds && bounds.south) || null,
     re: (bounds && bounds.east) || null,
     rw: (bounds && bounds.west) || null
+  }
+}
+
+function getDateRange (date) {
+  return {
+    startDate: (date && date.startDate) || null,
+    endDate: (date && date.endDate) || null
   }
 }
