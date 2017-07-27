@@ -38,18 +38,18 @@ class ModeSelect extends React.PureComponent {
   render () {
     return (
       <Segment>
-        <Header as="h3">Select mode</Header>
+        <Header as="h3">Analysis mode</Header>
         <Button.Group fluid>
           <Button
             icon="crop"
-            content="Analyze region"
+            content="Region"
             color="blue"
             onClick={this.onClickRegion}
             basic={!(this.props.activeMode === 'REGION')}
           />
           <Button
             icon="car"
-            content="Analyze route"
+            content="Route"
             color="blue"
             onClick={this.onClickRoute}
             basic={!(this.props.activeMode === 'ROUTE')}
@@ -57,7 +57,7 @@ class ModeSelect extends React.PureComponent {
         </Button.Group>
         <Button
           icon="remove"
-          content="Clear analysis area"
+          content="Clear analysis"
           color="grey"
           onClick={this.onClickClearAnalysis}
           fluid
