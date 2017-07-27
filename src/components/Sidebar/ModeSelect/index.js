@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds } from '../../../lib/region-bounds'
 import * as app from '../../../store/actions/app'
-import { setBounds } from '../../../store/actions/viewBounds'
 import { resetAnalysis } from '../../../store/actions/reset'
 
 class ModeSelect extends React.PureComponent {
@@ -18,27 +17,16 @@ class ModeSelect extends React.PureComponent {
     this.onClickRegion = this.onClickRegion.bind(this)
     this.onClickRoute = this.onClickRoute.bind(this)
     this.onClickClearAnalysis = this.onClickClearAnalysis.bind(this)
-    this.handleBounds = this.handleBounds.bind(this)
-  }
-
-  /**
-   * @param {L.LatLngBounds}
-   */
-  handleBounds (latLngBounds) {
-    const north = latLngBounds.getNorth()
-    const south = latLngBounds.getSouth()
-    const east = latLngBounds.getEast()
-    const west = latLngBounds.getWest()
-
-    this.props.dispatch(setBounds({ north, south, east, west }))
   }
 
   onClickRegion (event) {
-    startDrawingBounds(this.handleBounds)
+    startDrawingBounds()
+    this.props.dispatch(resetAnalysis())
     this.props.dispatch(app.setRegionAnalysisMode())
   }
 
   onClickRoute (event) {
+    this.props.dispatch(resetAnalysis())
     this.props.dispatch(app.setRouteAnalysisMode())
   }
 

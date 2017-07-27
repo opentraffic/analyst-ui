@@ -1,8 +1,16 @@
 /* global map */
+import store from '../store'
+import { setBounds } from '../store/actions/viewBounds'
 
 // Store for existing bounds.
 const bounds = []
 let handlersAdded = false
+
+// If anything changes the viewbounds in store, update (or remove) current bounds.
+store.subscribe(() => {
+  const state = store.getState()
+  if (!state.viewBounds.bounds) removeAllExistingBounds()
+})
 
 /**
  * Removes an existing bounds.
@@ -17,6 +25,13 @@ function removeExistingBounds (index = 0) {
 
     // Remove from memory
     bounds.splice(index, 1)
+  }
+}
+
+function removeAllExistingBounds () {
+  while (bounds.length) {
+    bounds[0].remove()
+    bounds.shift()
   }
 }
 
@@ -38,31 +53,47 @@ function setBoundToDisabledAppearance (bound) {
 }
 
 /**
+ * @param {L.LatLngBounds}
+ */
+function storeBounds (latLngBounds) {
+  const north = latLngBounds.getNorth()
+  const south = latLngBounds.getSouth()
+  const east = latLngBounds.getEast()
+  const west = latLngBounds.getWest()
+
+  store.dispatch(setBounds({ north, south, east, west }))
+}
+
+function onDrawingFinished (event) {
+  // The newly created rectangle is stored at `event.layer`
+  bounds.push(event.layer)
+
+  // Remove previous bounds after the new one has been drawn.
+  if (bounds.length > 1) {
+    removeExistingBounds(0)
+  }
+}
+
+function onDrawingEdited (event) {
+  // Get the bounds object of the layer and store it.
+  storeBounds(event.layer.getBounds())
+}
+
+function addEventListeners () {
+  map.on('editable:drawing:commit', onDrawingFinished)
+  map.on('editable:vertex:dragend', onDrawingEdited)
+}
+
+/**
  * Function for drawing new viewport bounds.
  *
  * @param {Object} event - from onClick handler
  * @param {Function} callback - optional. Callback function to call after the
  *          bounds has finished drawing.
  */
-export function startDrawingBounds (callback) {
+export function startDrawingBounds () {
   if (!handlersAdded) {
-    map.on('editable:drawing:commit', function (event) {
-      // The newly created rectangle is stored at `event.layer`
-      bounds.push(event.layer)
-
-      // Remove previous bounds after the new one has been drawn.
-      if (bounds.length > 1) {
-        removeExistingBounds(0)
-      }
-
-      // Get the bounds object of the layer and return it in the callback function.
-      if (typeof callback === 'function') {
-        callback(event.layer.getBounds())
-      }
-    })
-
-    // TODO: Handle canceling.
-
+    addEventListeners()
     handlersAdded = true
   }
 
