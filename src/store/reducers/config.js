@@ -1,8 +1,9 @@
 import initialState from '../../config'
+import { SET_MAP_VIEW } from '../actions'
 
 const config = (state = initialState, action) => {
   switch (action.type) {
-    case 'CHANGE_CENTER':
+    case SET_MAP_VIEW:
       return {
         ...state,
         map: {

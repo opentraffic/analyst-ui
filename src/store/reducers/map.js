@@ -1,13 +1,14 @@
 import config from '../../config'
+import { SET_MAP_LOCATION } from '../actions'
 
 const initialState = {
   coordinates: config.map.center,
   label: ''
 }
 
-const mapLocation = (state = initialState, action) => {
+const map = (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_LOCATION':
+    case SET_MAP_LOCATION:
       return {
         ...state,
         coordinates: action.latlng,
@@ -18,4 +19,4 @@ const mapLocation = (state = initialState, action) => {
   }
 }
 
-export default mapLocation
+export default map
