@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
 import DatePickerContainer from '../DatePickerContainer'
 import ErrorMessage from './ErrorMessage'
+import ModeSelect from './ModeSelect'
 import './Sidebar.css'
 
 const panels = [
@@ -31,6 +32,10 @@ const Sidebar = (props) => {
   return (
     <div className={'Sidebar ' + props.className}>
       {errors}
+      <ModeSelect />
+      <Segment>
+        <DatePickerContainer className="date-picker" />
+      </Segment>
       <Segment>
         <Header as="h3">Section header</Header>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -38,9 +43,6 @@ const Sidebar = (props) => {
           <Checkbox toggle label="Toggle" />
         </Message>
         <Accordion panels={panels} styled />
-      </Segment>
-      <Segment>
-        <DatePickerContainer className="date-picker" />
       </Segment>
       <Segment>
         <Header as="h3">Export</Header>

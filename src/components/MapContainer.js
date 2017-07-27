@@ -2,17 +2,19 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { isEqual } from 'lodash'
+import { isEqual, reject } from 'lodash'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import RouteMarkers from './Map/RouteMarkers'
 import RouteLine from './Map/RouteLine'
 import RouteError from './Map/RouteError'
-import { getRoute, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
+import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { getNewWaypointPosition } from '../lib/routing'
+import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateURL } from '../lib/url-state'
+import { drawBounds } from '../lib/region-bounds'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -31,6 +33,12 @@ class MapContainer extends React.Component {
     this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
     this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
     this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
+  }
+
+  componentDidMount () {
+    if (this.props.bounds) {
+      drawBounds(this.props.bounds)
+    }
   }
 
   componentDidUpdate (prevProps) {
@@ -66,6 +74,8 @@ class MapContainer extends React.Component {
     // a bug where clicking a polyline and then adding a marker causes another
     // onClick to fire in the wrong place.
     if (event.originalEvent.target.tagName === 'CANVAS') {
+      if (this.props.mode !== 'ROUTE') return
+
       this.props.addWaypoint(event.latlng)
     }
   }
@@ -103,6 +113,33 @@ class MapContainer extends React.Component {
       .then(response => {
         const coordinates = valhallaResponseToPolylineCoordinates(response)
         this.props.setRoute(coordinates)
+
+        // Get bounding box for OSMLR tiles
+        const bounds = response.trip.summary
+        const tiles = getTilesForBbox(bounds.min_lon, bounds.min_lat, bounds.max_lon, bounds.max_lat)
+
+        // Get tiles (experimental)
+        const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
+        // For now, reject tiles at level 2
+        const downloadTiles = reject(tiles, (i) => i[0] === 2)
+        const tileUrls = []
+        downloadTiles.forEach(i => {
+          tileUrls.push(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
+        })
+
+        // const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
+        // Promise.all(promises).then(results => {
+        //   console.log(results)
+        // })
+
+        return coordinates
+      })
+      .then(coordinates => {
+        // Experimental.
+        return getTraceAttributes(host, coordinates)
+      })
+      .then(response => {
+        console.log(response)
       })
       .catch(error => {
         let message
@@ -148,9 +185,11 @@ class MapContainer extends React.Component {
 
 function mapStateToProps (state) {
   return {
+    mode: state.app.analysisMode,
     config: state.config,
     route: state.route,
-    map: state.map
+    map: state.map,
+    bounds: state.viewBounds.bounds
   }
 }
 

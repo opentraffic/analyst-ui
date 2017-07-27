@@ -4,6 +4,10 @@
 import polyline from '@mapbox/polyline'
 import { request } from './fetch-utils'
 
+// Valhalla uses a 6-digit precision; the @mapbox/polyline library defaults
+// to 5 when not specified.
+const COORDINATE_PRECISION = 6
+
 /**
  * Given an array of L.LatLng objects (from Leaflet), matching a signature of
  * { lat, lng }, construct an array of location objects compatible with the
@@ -41,7 +45,6 @@ export function leafletLatlngsToValhallaLocations (locations) {
  * @returns {Array} - array of lat/lng points to be displayed on Leaflet.
  */
 export function valhallaResponseToPolylineCoordinates (response) {
-  const COORDINATE_PRECISION = 6
   const coordinates = []
 
   for (let i = 0; i < response.trip.legs.length; i++) {
@@ -56,7 +59,8 @@ export function valhallaResponseToPolylineCoordinates (response) {
 }
 
 /**
- * Makes a Valhalla (or Valhalla-like) request and returns a Promise.
+ * Makes a Valhalla (or Valhalla-like) request and returns a Promise
+ * with the JSON response or an error.
  *
  * @param {string} host - the remote resource to request from
  * @param {string} endpoint - the remote endpoint, e.g. "route"
@@ -76,4 +80,28 @@ export function getRoute (host, waypoints) {
   }
 
   return makeValhallaRequest(host, 'route', payload)
+}
+
+/**
+ * Makes a Valhalla (or Valhalla-like) request to the `trace_attributes`
+ * endpoint and returns a Promise with the JSON response or an error.
+ *
+ * @param {string} host - the remote resource to request from
+ * @param {string} coordinates - array of LatLng coordinate objects matching
+ *          the shape { lat, lng }
+ */
+export function getTraceAttributes (host, coordinates) {
+  const format = coordinates.map(location => [ location.lat, location.lng ])
+  const shape = polyline.encode(format, COORDINATE_PRECISION)
+  const payload = {
+    encoded_polyline: shape,
+    costing: 'auto',
+    shape_match: 'edge_walk'
+  }
+  const url = `https://${host}/trace_attributes`
+
+  return request(url, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  })
 }

@@ -4,8 +4,7 @@ import {
   UPDATE_ROUTE_WAYPOINT,
   INSERT_ROUTE_WAYPOINT,
   SET_ROUTE,
-  SET_ROUTE_ERROR,
-  CLEAR_ANALYSIS_MODE
+  SET_ROUTE_ERROR
 } from '../actions'
 
 export function addWaypoint (waypoint) {
@@ -64,8 +63,4 @@ export function clearRouteError () {
     type: SET_ROUTE_ERROR,
     error: null
   }
-}
-
-export function resetRoute () {
-  return { type: CLEAR_ANALYSIS_MODE }
 }
