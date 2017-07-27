@@ -1,6 +1,7 @@
 /* global map */
 import store from '../store'
 import { setBounds } from '../store/actions/viewBounds'
+import { updateURL } from './url-state'
 
 // Store for existing bounds.
 const bounds = []
@@ -59,18 +60,6 @@ function setBoundToDisabledAppearance (bound) {
   bound.editor.disable()
 }
 
-/**
- * @param {L.LatLngBounds}
- */
-function storeBounds (latLngBounds) {
-  const north = latLngBounds.getNorth()
-  const south = latLngBounds.getSouth()
-  const east = latLngBounds.getEast()
-  const west = latLngBounds.getWest()
-
-  store.dispatch(setBounds({ north, south, east, west }))
-}
-
 function onDrawingFinished (event) {
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
@@ -82,8 +71,23 @@ function onDrawingFinished (event) {
 }
 
 function onDrawingEdited (event) {
-  // Get the bounds object of the layer and store it.
-  storeBounds(event.layer.getBounds())
+  const bounds = event.layer.getBounds()
+  const precision = 6
+  const north = bounds.getNorth().toFixed(precision)
+  const south = bounds.getSouth().toFixed(precision)
+  const east = bounds.getEast().toFixed(precision)
+  const west = bounds.getWest().toFixed(precision)
+
+  // Store it.
+  store.dispatch(setBounds({ north, south, east, west }))
+
+  // Update URL
+  updateURL({
+    rn: north,
+    rs: south,
+    re: east,
+    rw: west
+  })
 }
 
 function addEventListeners () {
