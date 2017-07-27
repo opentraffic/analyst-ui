@@ -1,3 +1,5 @@
+import { SET_DATE } from '../actions'
+
 const initialState = {
   startDate: null,
   endDate: null
@@ -5,7 +7,7 @@ const initialState = {
 
 const date = (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_DATE':
+    case SET_DATE:
       return {
         ...state,
         startDate: action.startDate,

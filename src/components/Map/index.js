@@ -17,7 +17,8 @@ export default class Map extends React.Component {
     center: PropTypes.array,
     zoom: PropTypes.number,
     onChange: PropTypes.func,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    recenterMap: PropTypes.func
   }
 
   static defaultProps = {
