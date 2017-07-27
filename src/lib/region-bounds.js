@@ -107,6 +107,7 @@ function onDrawingEdited (event) {
 function addEventListeners () {
   map.on('editable:drawing:commit', onDrawingFinished)
   map.on('editable:vertex:dragend', onDrawingEdited)
+  map.on('editable:dragend', onDrawingEdited)
 }
 
 /**
