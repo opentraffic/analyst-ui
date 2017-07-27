@@ -6,7 +6,8 @@ export function initUrlUpdate () {
     const state = store.getState()
 
     updateURL({
-      waypoints: getRouteWaypoints(state.route)
+      waypoints: getRouteWaypoints(state.route),
+      ...getRegionBounds(state.viewBounds.bounds)
     })
   })
 }
@@ -30,4 +31,13 @@ function getRouteWaypoints (route) {
   }
 
   return values
+}
+
+function getRegionBounds (bounds) {
+  return {
+    rn: (bounds && bounds.north) || null,
+    rs: (bounds && bounds.south) || null,
+    re: (bounds && bounds.east) || null,
+    rw: (bounds && bounds.west) || null
+  }
 }

@@ -1,7 +1,6 @@
 /* global map, L */
 import store from '../store'
 import { setBounds } from '../store/actions/viewBounds'
-import { updateURL } from '../lib/url-state'
 
 // Store for existing bounds.
 const bounds = []
@@ -19,15 +18,6 @@ store.subscribe(() => {
     map.editTools.stopDrawing()
   }
 })
-
-function removeBoundsFromURL () {
-  updateURL({
-    rn: null,
-    rs: null,
-    re: null,
-    rw: null
-  })
-}
 
 /**
  * Removes an existing bounds.
@@ -50,8 +40,6 @@ function removeAllExistingBounds () {
     bounds[0].remove()
     bounds.shift()
   }
-
-  removeBoundsFromURL()
 }
 
 /**
@@ -80,14 +68,6 @@ function storeBounds (bounds) {
 
   // Store it.
   store.dispatch(setBounds({ north, south, east, west }))
-
-  // Update URL
-  updateURL({
-    rn: north,
-    rs: south,
-    re: east,
-    rw: west
-  })
 }
 
 function onDrawingFinished (event) {
