@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds } from '../../../app/region-bounds'
+import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
 import * as app from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 
@@ -15,9 +15,24 @@ class ModeSelect extends React.PureComponent {
   constructor (props) {
     super(props)
 
+    this.state = {
+      open: false
+    }
+
     this.onClickRegion = this.onClickRegion.bind(this)
     this.onClickRoute = this.onClickRoute.bind(this)
     this.onClickClearAnalysis = this.onClickClearAnalysis.bind(this)
+    this.handleCancel = this.handleCancel.bind(this)
+    this.handleConfirm = this.handleConfirm.bind(this)
+  }
+
+  handleCancel () {
+    this.setState({open: false})
+  }
+
+  handleConfirm () {
+    this.setState({open: false})
+    this.props.dispatch(resetAnalysis())
   }
 
   onClickRegion (event) {
@@ -32,7 +47,14 @@ class ModeSelect extends React.PureComponent {
   }
 
   onClickClearAnalysis (event) {
-    this.props.dispatch(resetAnalysis())
+    const routeExists = this.props.route.length > 0
+    const regionExists = this.props.region !== null
+    // If route is drawn or region is drawn, have user confirm to clear analysis
+    if (routeExists || regionExists) {
+      this.setState({open: true})
+    } else { // Else if route/region is not drawn but was clicked, turn off mode
+      this.props.dispatch(resetAnalysis())
+    }
   }
 
   render () {
@@ -64,6 +86,13 @@ class ModeSelect extends React.PureComponent {
           basic
           style={{ marginTop: '0.5em' }}
         />
+        <Confirm
+          header="Clear analysis"
+          content={'Are you sure you want to clear your ' + this.props.activeMode + '?'}
+          open={this.state.open}
+          onCancel={this.handleCancel}
+          onConfirm={this.handleConfirm}
+        />
       </Segment>
     )
   }
@@ -71,7 +100,9 @@ class ModeSelect extends React.PureComponent {
 
 function mapStateToProps (state) {
   return {
-    activeMode: state.app.analysisMode
+    activeMode: state.app.analysisMode,
+    route: state.route.waypoints,
+    region: state.viewBounds.bounds
   }
 }
 
