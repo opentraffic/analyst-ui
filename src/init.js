@@ -4,7 +4,9 @@ import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
 import { setDate } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
-import { getQueryStringObject, updateURL, parseQueryString } from './lib/url-state'
+import { setRegionAnalysisMode, setRouteAnalysisMode } from './store/actions/app'
+import { getQueryStringObject, updateURL } from './lib/url-state'
+import { drawBounds } from './lib/region-bounds'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
@@ -32,24 +34,37 @@ export function initApp (queryString = window.location.search) {
   store.dispatch(setLocation(coordinates, label))
   // Initializing dates
   store.dispatch(setDate(date.startDate, date.endDate))
-  // Initializing markers and route
-  initRoute(object)
+
+  // Initializing markers and route, or view bounds.
+  // Existence of markers will override existence of bounds.
+  if (object.waypoints) {
+    initRoute(object.waypoints)
+  } else if (object.rw && object.rs && object.re && object.rn) {
+    // All bounds must be present to be valid, otherwise it's discarded.
+    initBounds(object.rw, object.rs, object.re, object.rn)
+  }
 }
 
-export function initRoute (queryObject) {
-  if (parseQueryString('waypoints') !== null) {
-    // Split the string into array of latlng points
-    const waypoints = queryObject.waypoints.split(',')
-    for (var i = 0; i < waypoints.length; i++) {
-      // Get the lat and lng for each waypoint
-      const latlng = waypoints[i].split('/')
-      // Initialize to leaflet latLng
-      const point = L.latLng(
-        Number(latlng[0]),
-        Number(latlng[1])
-      )
-      // Add waypoint to route
-      store.dispatch(addWaypoint(point))
-    }
+function initRoute (value) {
+  // Split the string into array of latlng points
+  const waypoints = value.split(',')
+  for (var i = 0; i < waypoints.length; i++) {
+    // Get the lat and lng for each waypoint
+    const latlng = waypoints[i].split('/')
+    // Initialize to leaflet latLng
+    const point = L.latLng(
+      Number(latlng[0]),
+      Number(latlng[1])
+    )
+    // Add waypoint to route
+    store.dispatch(addWaypoint(point))
   }
+  store.dispatch(setRouteAnalysisMode())
+}
+
+function initBounds (west, south, east, north) {
+  window.setTimeout(() => {
+    drawBounds(west, south, east, north)
+  }, 1000)
+  store.dispatch(setRegionAnalysisMode())
 }

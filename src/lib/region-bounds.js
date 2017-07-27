@@ -1,4 +1,4 @@
-/* global map */
+/* global map, L */
 import store from '../store'
 import { setBounds } from '../store/actions/viewBounds'
 import { updateURL } from './url-state'
@@ -71,18 +71,7 @@ function setBoundToDisabledAppearance (bound) {
   bound.editor.disable()
 }
 
-function onDrawingFinished (event) {
-  // The newly created rectangle is stored at `event.layer`
-  bounds.push(event.layer)
-
-  // Remove previous bounds after the new one has been drawn.
-  if (bounds.length > 1) {
-    removeExistingBounds(0)
-  }
-}
-
-function onDrawingEdited (event) {
-  const bounds = event.layer.getBounds()
+function storeBounds (bounds) {
   const precision = 6
   const north = bounds.getNorth().toFixed(precision)
   const south = bounds.getSouth().toFixed(precision)
@@ -99,6 +88,20 @@ function onDrawingEdited (event) {
     re: east,
     rw: west
   })
+}
+
+function onDrawingFinished (event) {
+  // The newly created rectangle is stored at `event.layer`
+  bounds.push(event.layer)
+
+  // Remove previous bounds after the new one has been drawn.
+  if (bounds.length > 1) {
+    removeExistingBounds(0)
+  }
+}
+
+function onDrawingEdited (event) {
+  storeBounds(event.layer.getBounds())
 }
 
 function addEventListeners () {
@@ -126,4 +129,14 @@ export function startDrawingBounds () {
   }
 
   map.editTools.startRectangle()
+}
+
+export function drawBounds (west, south, east, north) {
+  const rect = L.rectangle([
+    [north, west],
+    [south, east]
+  ]).addTo(map)
+  rect.enableEdit()
+  bounds.push(rect)
+  storeBounds(rect.getBounds())
 }
