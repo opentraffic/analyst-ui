@@ -15,10 +15,19 @@ store.subscribe(() => {
   if (!state.viewBounds.bounds) removeAllExistingBounds()
 
   // If select mode has changed, stop any existing drawing interaction.
-  if (!state.app.analysisMode !== 'REGION' && typeof map !== 'undefined' && map.editTools) {
+  if (state.app.analysisMode !== 'REGION' && typeof map !== 'undefined' && map.editTools) {
     map.editTools.stopDrawing()
   }
 })
+
+function removeBoundsFromURL () {
+  updateURL({
+    rn: null,
+    rs: null,
+    re: null,
+    rw: null
+  })
+}
 
 /**
  * Removes an existing bounds.
@@ -41,6 +50,8 @@ function removeAllExistingBounds () {
     bounds[0].remove()
     bounds.shift()
   }
+
+  removeBoundsFromURL()
 }
 
 /**
