@@ -137,6 +137,11 @@ export function drawBounds (west, south, east, north) {
     [south, east]
   ]).addTo(map)
   rect.enableEdit()
+
+  if (!handlersAdded) {
+    addEventListeners()
+    handlersAdded = true
+  }
   bounds.push(rect)
   storeBounds(rect.getBounds())
 }
