@@ -5,12 +5,12 @@ import { Polyline } from 'react-leaflet'
 export default class RouteLine extends React.PureComponent {
   static propTypes = {
     positions: PropTypes.array,
-    onMouseDown: PropTypes.func
+    insertWaypoint: PropTypes.func
   }
 
   static defaultProps = {
     positions: [],
-    onMouseDown: function () {}
+    insertWaypoint: function () {}
   }
 
   render () {
@@ -20,7 +20,7 @@ export default class RouteLine extends React.PureComponent {
       <Polyline
         positions={this.props.positions}
         color="red"
-        onMouseDown={this.props.onMouseDown}
+        onMouseDown={this.props.insertWaypoint}
       />
     )
   }
