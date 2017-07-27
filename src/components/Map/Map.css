@@ -8,6 +8,7 @@
   background: transparent;
   color: #ddd;
   margin: 0.5em;
+  text-shadow: 0 0 2px rgba(0,0,0,0.85);
 }
 
 .leaflet-control-attribution a,
