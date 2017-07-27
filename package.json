@@ -8,6 +8,7 @@
     "leaflet": "1.0.3",
     "leaflet-editable": "1.0.0",
     "leaflet-extra-markers": "1.0.6",
+    "leaflet.path.drag": "0.0.5",
     "lodash": "4.17.4",
     "moment": "2.18.1",
     "react": "15.6.1",
