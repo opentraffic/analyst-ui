@@ -12,6 +12,7 @@ export const CLEAR_ERRORS = 'CLEAR_ERRORS'
 
 /* map */
 export const SET_MAP_LOCATION = 'SET_MAP_LOCATION'
+export const SET_LABEL = 'SET_LABEL'
 export const SET_MAP_VIEW = 'SET_MAP_VIEW'
 
 /* route */

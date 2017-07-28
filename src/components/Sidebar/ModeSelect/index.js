@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
-import { startDrawingBounds } from '../../../lib/region-bounds'
+import { startDrawingBounds } from '../../../app/region-bounds'
 import * as app from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 

@@ -10,14 +10,14 @@ import './RouteMarkers.css'
 export default class RouteMarkers extends React.PureComponent {
   static propTypes = {
     waypoints: PropTypes.array,
-    handleRemove: PropTypes.func,
-    onDragEnd: PropTypes.func
+    removeWaypoint: PropTypes.func,
+    updateWaypoint: PropTypes.func
   }
 
   static defaultProps = {
     waypoints: [],
-    handleRemove: function () {},
-    onDragEnd: function () {}
+    removeWaypoint: function () {},
+    updateWaypoint: function () {}
   }
 
   constructor (props) {
@@ -30,7 +30,7 @@ export default class RouteMarkers extends React.PureComponent {
     const START_FILL_COLOR = 'green-light'
     const MIDDLE_FILL_COLOR = 'cyan'
     const END_FILL_COLOR = 'orange-dark'
-    const { waypoints, handleRemove, onDragEnd } = this.props
+    const { waypoints, removeWaypoint, updateWaypoint } = this.props
 
     if (waypoints.length === 0) return null
 
@@ -53,13 +53,13 @@ export default class RouteMarkers extends React.PureComponent {
       })
 
       const onClickButton = (event) => {
-        handleRemove(latlng)
+        removeWaypoint(latlng)
       }
 
       const onDragEndMarker = (event) => {
         const oldLatLng = latlng
         const newLatLng = event.target._latlng
-        onDragEnd(oldLatLng, newLatLng)
+        updateWaypoint(oldLatLng, newLatLng)
       }
 
       return (

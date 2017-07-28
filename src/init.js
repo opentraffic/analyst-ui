@@ -6,6 +6,7 @@ import { setDate } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { setBounds } from './store/actions/viewBounds'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from './store/actions/app'
+import { initUrlUpdate } from './app/update-url'
 import { getQueryStringObject, updateURL } from './lib/url-state'
 
 // Initialize application based on url query string params
@@ -43,6 +44,9 @@ export function initApp (queryString = window.location.search) {
     // All bounds must be present to be valid, otherwise it's discarded.
     initBounds(object.rw, object.rs, object.re, object.rn)
   }
+
+  // Listen for updates to store, which updates the URL
+  initUrlUpdate()
 }
 
 function initRoute (value) {
