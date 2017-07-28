@@ -5,16 +5,13 @@ import PropTypes from 'prop-types'
 import { isEqual, reject } from 'lodash'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
-import RouteMarkers from './Map/RouteMarkers'
-import RouteLine from './Map/RouteLine'
+import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { getNewWaypointPosition } from '../lib/routing'
 import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
-import { updateURL } from '../lib/url-state'
-import { drawBounds } from '../lib/region-bounds'
+import { drawBounds } from '../app/region-bounds'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -29,9 +26,6 @@ class MapContainer extends React.Component {
     this.showRoute()
 
     this.onClick = this.onClick.bind(this)
-    this.onMouseDownLine = this.onMouseDownLine.bind(this)
-    this.handleRemoveWaypoint = this.handleRemoveWaypoint.bind(this)
-    this.onDragEndWaypoint = this.onDragEndWaypoint.bind(this)
     this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
   }
 
@@ -45,28 +39,6 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
 
     this.showRoute()
-
-    // Updating URL
-    const waypoints = this.props.route.waypoints
-    const numOfPoints = waypoints.length
-    const points = {
-      waypoints: []
-    }
-
-    if (numOfPoints > 0) {
-      for (var i = 0; i < numOfPoints; i++) {
-        const lat = waypoints[i].lat.toFixed(4)
-        const lng = waypoints[i].lng.toFixed(4)
-        const latlng = lat + '/' + lng
-        // Push latlng point to array of waypoints
-        points.waypoints.push(latlng)
-      }
-      updateURL(points)
-    } else { // If points all removed
-      // Remove waypoints from url query string
-      points.waypoints = null
-      updateURL(points)
-    }
   }
 
   onClick (event) {
@@ -78,24 +50,6 @@ class MapContainer extends React.Component {
 
       this.props.addWaypoint(event.latlng)
     }
-  }
-
-  onMouseDownLine (event) {
-    const { waypoints, lineCoordinates } = this.props.route
-    const index = getNewWaypointPosition(event.latlng, waypoints, lineCoordinates)
-    this.props.insertWaypoint(event.latlng, index)
-  }
-
-  /**
-   * This handler function is passed to the RouteMarkers component, which eats
-   * the original event argument and passes the latlng value of the marker instead.
-   */
-  handleRemoveWaypoint (latlng) {
-    this.props.removeWaypoint(latlng)
-  }
-
-  onDragEndWaypoint (oldLatLng, newLatLng) {
-    this.props.updateWaypoint(oldLatLng, newLatLng)
   }
 
   showRoute () {
@@ -119,7 +73,10 @@ class MapContainer extends React.Component {
         const tiles = getTilesForBbox(bounds.min_lon, bounds.min_lat, bounds.max_lon, bounds.max_lat)
 
         // Get tiles (experimental)
-        const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
+        // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
+        // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
+        // Local web server for files will gzip automatically.
+        const STATIC_TILE_PATH = '/sample-tiles/'
         // For now, reject tiles at level 2
         const downloadTiles = reject(tiles, (i) => i[0] === 2)
         const tileUrls = []
@@ -162,19 +119,24 @@ class MapContainer extends React.Component {
 
     return (
       <div className={this.props.className}>
-        <MapSearchBar config={config} setLocation={this.props.setLocation} recenterMap={this.props.recenterMap} />
+        <MapSearchBar
+          config={config}
+          setLocation={this.props.setLocation}
+          clearLabel={this.props.clearLabel}
+          recenterMap={this.props.recenterMap}
+        />
         <Map
           config={config}
           center={map.coordinates}
-          zoom={config.map.zoom}
+          zoom={map.zoom}
           onClick={this.onClick}
           recenterMap={this.props.recenterMap}
         >
-          <RouteLine positions={this.props.route.lineCoordinates} onMouseDown={this.onMouseDownLine} />
-          <RouteMarkers
-            waypoints={this.props.route.waypoints}
-            handleRemove={this.handleRemoveWaypoint}
-            onDragEnd={this.onDragEndWaypoint}
+          <Route
+            route={this.props.route}
+            insertWaypoint={this.props.insertWaypoint}
+            removeWaypoint={this.props.removeWaypoint}
+            updateWaypoint={this.props.updateWaypoint}
           />
         </Map>
         <RouteError message={this.props.route.error} onClick={this.onClickDismissErrors} />

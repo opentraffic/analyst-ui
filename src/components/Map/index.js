@@ -5,7 +5,6 @@ import { Map as Leaflet, ScaleControl } from 'react-leaflet'
 import 'leaflet-editable'
 import 'leaflet.path.drag'
 // import Tangram from 'tangram'
-import { updateURL } from '../../lib/url-state'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
 
@@ -62,13 +61,8 @@ export default class Map extends React.Component {
   onChange (event) {
     const newCenter = event.target.getCenter()
     const newZoom = event.target.getZoom()
-    const centerParams = {
-      lat: newCenter.lat.toFixed(4),
-      lng: newCenter.lng.toFixed(4),
-      zoom: newZoom.toFixed(4)
-    }
-    updateURL(centerParams)
-    this.props.recenterMap(newCenter, newZoom)
+
+    this.props.recenterMap([newCenter.lat, newCenter.lng], newZoom)
   }
 
   render () {

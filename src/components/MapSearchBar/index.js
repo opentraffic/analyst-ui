@@ -3,12 +3,13 @@ import Autosuggest from 'react-autosuggest'
 import PropTypes from 'prop-types'
 import { Button, Icon } from 'semantic-ui-react'
 import { throttle } from 'lodash'
-import { updateURL, parseQueryString } from '../../lib/url-state'
+import { parseQueryString } from '../../lib/url-state'
 import './MapSearchBar.css'
 
 class MapSearchBar extends React.Component {
   static propTypes = {
     setLocation: PropTypes.func.isRequired,
+    clearLabel: PropTypes.func.isRequired,
     recenterMap: PropTypes.func.isRequired,
     config: PropTypes.object.isRequired
   }
@@ -81,8 +82,6 @@ class MapSearchBar extends React.Component {
     } else {
       this.props.recenterMap(latlng, zoom)
     }
-    // Updating URL with suggestion value
-    updateURL({label: suggestionValue})
   }
 
   renderSuggestion (suggestion, {query, isHighlighted}) {
@@ -148,8 +147,7 @@ class MapSearchBar extends React.Component {
     })
     // Clears suggestions
     this.onSuggestionsClearRequested()
-    // Clear suggestion value from URL
-    updateURL({label: null})
+    this.props.clearLabel()
   }
 
   // Now Autosuggest component is wrapped in a form so that when 'enter' is pressed, suggestions container is not closed automatically

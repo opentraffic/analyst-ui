@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
 import moment from 'moment'
 import store from '../../store'
-import { updateURL } from '../../lib/url-state'
+import { setDate } from '../../store/actions/date'
 import 'react-dates/lib/css/_datepicker.css'
 import './DatePickerContainer.css'
 
@@ -27,17 +27,7 @@ class DatePickerContainer extends React.Component {
     const start = date.startDate instanceof (moment) ? date.startDate.valueOf() : null
     const end = date.endDate instanceof (moment) ? date.endDate.valueOf() : null
 
-    this.props.dispatch({
-      type: 'SET_DATE',
-      startDate: start,
-      endDate: end
-    })
-
-    const dateParam = {
-      startDate: start,
-      endDate: end
-    }
-    updateURL(dateParam)
+    this.props.dispatch(setDate(start, end))
   }
 
   render () {
