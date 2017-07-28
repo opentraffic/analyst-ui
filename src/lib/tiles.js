@@ -96,18 +96,18 @@ export function getTileUrlSuffix (arg1, arg2) {
     }
   }
 
-  function getTileIndex (arg) {
-    if (Array.isArray(arg)) {
-      return arg[1]
-    } else if (typeof arg === 'object' && arg !== null) {
-      return arg.tile
+  function getTileIndex (arg1, arg2) {
+    if (Array.isArray(arg1)) {
+      return arg1[1]
+    } else if (typeof arg1 === 'object' && arg1 !== null) {
+      return arg1.tile
     } else {
-      return arg
+      return arg2
     }
   }
 
   const level = getTileLevel(arg1)
-  const id = getTileIndex(arg2 || arg1)
+  const id = getTileIndex(arg1, arg2)
 
   // Get the right tileset definition for the level we want
   const tileSet = filter(VALHALLA_TILES, { level })[0]

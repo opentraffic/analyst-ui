@@ -30,52 +30,76 @@ it('returns a set of Valhalla tiles given a bounding box, with a buffer', () => 
   expect(result).toEqual(expected)
 })
 
-it('creates a directory/file path from a tile level and id', () => {
-  const result1 = getTileUrlSuffix(2, 1036752)
-  const result2 = getTileUrlSuffix(2, 42)
-  const result3 = getTileUrlSuffix(1, 54)
-  const result4 = getTileUrlSuffix(1, 64001)
-  const result5 = getTileUrlSuffix(0, 79)
-  const result6 = getTileUrlSuffix(0, 4001)
+describe('getTileUrlSuffix', () => {
+  it('creates a directory/file path from a tile level and id', () => {
+    const result1 = getTileUrlSuffix(2, 1036752)
+    const result2 = getTileUrlSuffix(2, 42)
+    const result3 = getTileUrlSuffix(1, 54)
+    const result4 = getTileUrlSuffix(1, 64001)
+    const result5 = getTileUrlSuffix(0, 79)
+    const result6 = getTileUrlSuffix(0, 4001)
 
-  expect(result1).toEqual('2/001/036/752')
-  expect(result2).toEqual('2/000/000/042')
-  expect(result3).toEqual('1/000/054')
-  expect(result4).toEqual('1/064/001')
-  expect(result5).toEqual('0/000/079')
-  expect(result6).toEqual('0/004/001')
-})
+    expect(result1).toEqual('2/001/036/752')
+    expect(result2).toEqual('2/000/000/042')
+    expect(result3).toEqual('1/000/054')
+    expect(result4).toEqual('1/064/001')
+    expect(result5).toEqual('0/000/079')
+    expect(result6).toEqual('0/004/001')
+  })
 
-it('creates a directory/file path from a tile level and id tuple', () => {
-  const result1 = getTileUrlSuffix([2, 1036752])
-  const result2 = getTileUrlSuffix([2, 42])
-  const result3 = getTileUrlSuffix([1, 54])
-  const result4 = getTileUrlSuffix([1, 64001])
-  const result5 = getTileUrlSuffix([0, 79])
-  const result6 = getTileUrlSuffix([0, 4001])
+  it('creates a directory/file path from a tile level and id tuple', () => {
+    const result1 = getTileUrlSuffix([2, 1036752])
+    const result2 = getTileUrlSuffix([2, 42])
+    const result3 = getTileUrlSuffix([1, 54])
+    const result4 = getTileUrlSuffix([1, 64001])
+    const result5 = getTileUrlSuffix([0, 79])
+    const result6 = getTileUrlSuffix([0, 4001])
 
-  expect(result1).toEqual('2/001/036/752')
-  expect(result2).toEqual('2/000/000/042')
-  expect(result3).toEqual('1/000/054')
-  expect(result4).toEqual('1/064/001')
-  expect(result5).toEqual('0/000/079')
-  expect(result6).toEqual('0/004/001')
-})
+    expect(result1).toEqual('2/001/036/752')
+    expect(result2).toEqual('2/000/000/042')
+    expect(result3).toEqual('1/000/054')
+    expect(result4).toEqual('1/064/001')
+    expect(result5).toEqual('0/000/079')
+    expect(result6).toEqual('0/004/001')
+  })
 
-it('creates a directory/file path from a tile level and id objects', () => {
-  const result1 = getTileUrlSuffix({ level: 2, tile: 1036752 })
-  const result2 = getTileUrlSuffix({ level: 2, tile: 42 })
-  const result3 = getTileUrlSuffix({ level: 1, tile: 54 })
-  const result4 = getTileUrlSuffix({ level: 1, tile: 64001 })
-  const result5 = getTileUrlSuffix({ level: 0, tile: 79 })
-  const result6 = getTileUrlSuffix({ level: 0, tile: 4001 })
+  it('creates a directory/file path from a tile level and id objects', () => {
+    const result1 = getTileUrlSuffix({ level: 2, tile: 1036752 })
+    const result2 = getTileUrlSuffix({ level: 2, tile: 42 })
+    const result3 = getTileUrlSuffix({ level: 1, tile: 54 })
+    const result4 = getTileUrlSuffix({ level: 1, tile: 64001 })
+    const result5 = getTileUrlSuffix({ level: 0, tile: 79 })
+    const result6 = getTileUrlSuffix({ level: 0, tile: 4001 })
 
-  expect(result1).toEqual('2/001/036/752')
-  expect(result2).toEqual('2/000/000/042')
-  expect(result3).toEqual('1/000/054')
-  expect(result4).toEqual('1/064/001')
-  expect(result5).toEqual('0/000/079')
-  expect(result6).toEqual('0/004/001')
+    expect(result1).toEqual('2/001/036/752')
+    expect(result2).toEqual('2/000/000/042')
+    expect(result3).toEqual('1/000/054')
+    expect(result4).toEqual('1/064/001')
+    expect(result5).toEqual('0/000/079')
+    expect(result6).toEqual('0/004/001')
+  })
+
+  it('works with Array.map', () => {
+    const suffixes = [
+      { level: 2, tile: 1036752 },
+      { level: 2, tile: 42 },
+      { level: 1, tile: 54 },
+      { level: 1, tile: 64001 },
+      { level: 0, tile: 79 },
+      { level: 0, tile: 4001 }
+    ]
+    const expected = [
+      '2/001/036/752',
+      '2/000/000/042',
+      '1/000/054',
+      '1/064/001',
+      '0/000/079',
+      '0/004/001'
+    ]
+
+    const results = suffixes.map(getTileUrlSuffix)
+    expect(results).toEqual(expected)
+  })
 })
 
 it('parses a segment id from trace_attributes', () => {
