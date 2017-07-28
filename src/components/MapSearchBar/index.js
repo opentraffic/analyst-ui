@@ -167,6 +167,7 @@ class MapSearchBar extends React.Component {
     // Display search bar and expand search icon size when clicked on
     inputContainer.classList.toggle('search-bar__expanded')
     searchButton.classList.toggle('search-bar__expanded')
+    this.autosuggestBar.input.focus()
   }
 
   render () {
