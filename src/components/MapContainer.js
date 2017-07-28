@@ -123,7 +123,7 @@ class MapContainer extends React.Component {
         <Map
           config={config}
           center={map.coordinates}
-          zoom={config.map.zoom}
+          zoom={map.zoom}
           onClick={this.onClick}
           recenterMap={this.props.recenterMap}
         >

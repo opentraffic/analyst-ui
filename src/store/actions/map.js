@@ -9,7 +9,12 @@ export function setLocation (latlng, name) {
   }
 }
 
-// recenters map when location chosen from MapSearchBar
+/**
+ * recenters map when location chosen from MapSearchBar (and other places)
+ *
+ * @param {Array} coordinates - [lat, lng]
+ * @param {Number} zoom - zoom level, can be fractional
+ */
 export function recenterMap (coordinates, zoom) {
   return {
     type: SET_MAP_VIEW,

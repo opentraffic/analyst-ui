@@ -8,7 +8,8 @@ export function initUrlUpdate () {
     updateURL({
       waypoints: getRouteWaypoints(state.route),
       ...getRegionBounds(state.viewBounds.bounds),
-      ...getDateRange(state.date)
+      ...getDateRange(state.date),
+      ...getMapView(state.map)
     })
   })
 }
@@ -47,5 +48,15 @@ function getDateRange (date) {
   return {
     startDate: (date && date.startDate) || null,
     endDate: (date && date.endDate) || null
+  }
+}
+
+function getMapView (map) {
+  if (!(map && Array.isArray(map.coordinates) && map.zoom)) return null
+
+  return {
+    lat: map.coordinates[0].toFixed(4),
+    lng: map.coordinates[1].toFixed(4),
+    zoom: map.zoom.toFixed(4)
   }
 }
