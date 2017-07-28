@@ -1,9 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
+import { Segment, Header, Accordion, Checkbox, Button, Message, Input, Label } from 'semantic-ui-react'
 import DatePickerContainer from '../DatePickerContainer'
 import ErrorMessage from './ErrorMessage'
 import ModeSelect from './ModeSelect'
+import AnalysisName from '../AnalysisName'
 import './Sidebar.css'
 
 const panels = [
@@ -43,6 +44,9 @@ const Sidebar = (props) => {
           <Checkbox toggle label="Toggle" />
         </Message>
         <Accordion panels={panels} styled />
+      </Segment>
+      <Segment>
+        <AnalysisName />
       </Segment>
       <Segment>
         <Header as="h3">Export</Header>
