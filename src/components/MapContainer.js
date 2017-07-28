@@ -119,7 +119,12 @@ class MapContainer extends React.Component {
 
     return (
       <div className={this.props.className}>
-        <MapSearchBar config={config} setLocation={this.props.setLocation} recenterMap={this.props.recenterMap} />
+        <MapSearchBar
+          config={config}
+          setLocation={this.props.setLocation}
+          clearLabel={this.props.clearLabel}
+          recenterMap={this.props.recenterMap}
+        />
         <Map
           config={config}
           center={map.coordinates}

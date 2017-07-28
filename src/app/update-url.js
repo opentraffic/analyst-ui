@@ -9,7 +9,8 @@ export function initUrlUpdate () {
       waypoints: getRouteWaypoints(state.route),
       ...getRegionBounds(state.viewBounds.bounds),
       ...getDateRange(state.date),
-      ...getMapView(state.map)
+      ...getMapView(state.map),
+      label: getMapLabel(state.map)
     })
   })
 }
@@ -59,4 +60,8 @@ function getMapView (map) {
     lng: map.coordinates[1].toFixed(4),
     zoom: map.zoom.toFixed(4)
   }
+}
+
+function getMapLabel (map) {
+  return (map && map.label) || null
 }

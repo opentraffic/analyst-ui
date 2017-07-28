@@ -1,5 +1,5 @@
 import config from '../../config'
-import { SET_MAP_LOCATION, SET_MAP_VIEW } from '../actions'
+import { SET_MAP_LOCATION, SET_LABEL, SET_MAP_VIEW } from '../actions'
 
 const initialState = {
   coordinates: config.map.center,
@@ -13,7 +13,12 @@ const map = (state = initialState, action) => {
       return {
         ...state,
         coordinates: action.latlng,
-        label: action.name
+        label: action.label
+      }
+    case SET_LABEL:
+      return {
+        ...state,
+        label: action.label
       }
     case SET_MAP_VIEW:
       return {
