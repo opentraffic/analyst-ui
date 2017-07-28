@@ -179,9 +179,7 @@ class MapSearchBar extends React.Component {
 
     return (
       <div className="map-search-panel">
-        <Button icon size="tiny" className="search-button" onClick={this.handleClick} ref="searchButton">
-          <Icon name="search" className="search-icon" />
-        </Button>
+        <Button icon="search" size="tiny" className="search-button" onClick={this.handleClick} ref="searchButton" />
         <form ref="searchBar" onSubmit={this.handleSubmit} className="inputContainer">
           <Autosuggest
             ref={(ref) => { this.autosuggestBar = ref }}
