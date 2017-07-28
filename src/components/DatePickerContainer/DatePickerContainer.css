@@ -3,3 +3,7 @@
 	border-top: 1px solid #dce0e0;
 	color: #484848;
 }
+
+.DateRangePicker__picker {
+  z-index: 3;
+}
