@@ -2,13 +2,13 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { isEqual, reject } from 'lodash'
+import { isEqual, reject, uniq } from 'lodash'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
+import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { drawBounds } from '../app/region-bounds'
@@ -63,6 +63,15 @@ class MapContainer extends React.Component {
       return
     }
 
+    // Get tiles (experimental)
+    // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
+    // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
+    // Local web server for files will gzip automatically.
+    const STATIC_TILE_PATH = '/sample-tiles/'
+
+    // const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
+    const OSMLR_TILE_PATH = '/sample-tiles/geojson/'
+
     getRoute(host, waypoints)
       .then(response => {
         const coordinates = valhallaResponseToPolylineCoordinates(response)
@@ -72,11 +81,6 @@ class MapContainer extends React.Component {
         const bounds = response.trip.summary
         const tiles = getTilesForBbox(bounds.min_lon, bounds.min_lat, bounds.max_lon, bounds.max_lat)
 
-        // Get tiles (experimental)
-        // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
-        // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
-        // Local web server for files will gzip automatically.
-        const STATIC_TILE_PATH = '/sample-tiles/'
         // For now, reject tiles at level 2
         const downloadTiles = reject(tiles, (i) => i[0] === 2)
         const tileUrls = []
@@ -95,9 +99,7 @@ class MapContainer extends React.Component {
         // Experimental.
         return getTraceAttributes(host, coordinates)
       })
-      .then(response => {
-        console.log(response)
-      })
+      // Put this here to only catch errors in fetch
       .catch(error => {
         let message
         if (typeof error === 'object' && error.error) {
@@ -106,6 +108,77 @@ class MapContainer extends React.Component {
           message = error
         }
         this.props.setRouteError(message)
+      })
+      // Do stuff with trace_attributes. TEST!
+      .then(response => {
+        console.log(response)
+        const segments = []
+        const segmentIds = []
+
+        response.edges.forEach(edge => {
+          // it is possible for an edge not to have traffic_segments
+          if (edge.traffic_segments) {
+            edge.traffic_segments.forEach(segment => {
+              segments.push(segment)
+              segmentIds.push(segment.segment_id)
+            })
+          }
+        })
+
+        console.log(segments)
+
+        // It is possible for multiple edges to have the same segmentId, so
+        // collapse all segmentIds
+        const parsedIds = segmentIds.map(parseSegmentId)
+
+        // todo: reject any segments at level 2, but right now, assume they
+        // are already not included.
+        const suffixes = parsedIds.map(getTileUrlSuffix)
+        // Remove all duplicate suffixes
+        const uniqueSuffixes = uniq(suffixes)
+        const urls = uniqueSuffixes.map(suffix => `${STATIC_TILE_PATH}${suffix}.json`)
+        console.log(urls)
+
+        // Note: determining tiles this way based on only the route is more
+        // efficient because it means we download the minimum required tiles.
+        // Based only on rectangular bounds, a 45-degree angle kind of route,
+        // or a route that travels only on level 0 roads, will download more
+        // tiles than we actually need. This helps save on bandwidth and
+        // memory for qualifying requests.
+        const promises = urls.map(url => fetch(url).then(res => res.json()))
+        Promise.all(promises).then(results => {
+          // results is an array of all response objects.
+          segmentIds.forEach(id => {
+            // console.log(id.toString())
+            // console.log(results[0].segments[id.toString()])
+          })
+          console.log(segmentIds)
+          console.log(Object.keys(results[0].segments)) //['205655133048']
+          console.log(results[0].segments['849766009720'])
+        })
+
+        const geomTileUrls = uniqueSuffixes.map(suffix => `${OSMLR_TILE_PATH}${suffix}.json`)
+        const geomTiles = geomTileUrls.map(url => fetch(url).then(res => res.json()))
+        Promise.all(geomTiles).then(results => {
+          // results is an array of all response objects.
+          // we should merge geojsons here
+          console.log('---- geojson ----')
+          console.log(results)
+
+          // lets see if we can find the segmentId as osmlr_id
+          const geo = results[0].features
+          let found = false
+          for (let i = 0, j = geo.length; i < j; i++) {
+            if (geo[i].properties.osmlr_id === '849766009720') {
+              console.log(geo[i])
+              found = true
+              break
+            }
+          }
+          if (found === false) {
+            console.log('not found')
+          }
+        })
       })
   }
 
