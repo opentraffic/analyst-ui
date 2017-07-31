@@ -33,6 +33,10 @@ const Sidebar = (props) => {
   return (
     <div className={'Sidebar ' + props.className}>
       {errors}
+      <Segment>
+        <Header as="h3"> Analysis name </Header>
+        <AnalysisName />
+      </Segment>
       <ModeSelect />
       <Segment>
         <DatePickerContainer className="date-picker" />
@@ -44,9 +48,6 @@ const Sidebar = (props) => {
           <Checkbox toggle label="Toggle" />
         </Message>
         <Accordion panels={panels} styled />
-      </Segment>
-      <Segment>
-        <AnalysisName />
       </Segment>
       <Segment>
         <Header as="h3">Export</Header>
