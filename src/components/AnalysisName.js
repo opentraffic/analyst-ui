@@ -6,14 +6,14 @@ import * as app from '../store/actions/app'
 
 class AnalysisName extends React.Component {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired
   }
 
   constructor (props) {
     super(props)
 
     this.state = {
-      isEditing: false,
+      isEditing: false
     }
 
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -39,8 +39,7 @@ class AnalysisName extends React.Component {
     this.setState({ isEditing: false })
   }
 
-  render() {
-    console.log(this.props.viewName)
+  render () {
     if (this.state.isEditing) {
       return (
         <div className="editText">

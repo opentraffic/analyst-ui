@@ -13,6 +13,7 @@ const MAP_LATITUDE = 'lat'
 const MAP_LONGITUDE = 'lng'
 const MAP_ZOOM = 'zoom'
 const MAP_LABEL = 'label'
+const ANALYSIS_NAME = 'viewName'
 
 export function initUrlUpdate () {
   store.subscribe(() => {
