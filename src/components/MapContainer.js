@@ -9,6 +9,7 @@ import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
+import { merge } from '../lib/geojson'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { drawBounds } from '../app/region-bounds'
@@ -69,8 +70,8 @@ class MapContainer extends React.Component {
     // Local web server for files will gzip automatically.
     const STATIC_TILE_PATH = '/sample-tiles/'
 
-    // const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
-    const OSMLR_TILE_PATH = '/sample-tiles/geojson/'
+    const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
+    // const OSMLR_TILE_PATH = '/sample-tiles/geojson/'
 
     getRoute(host, waypoints)
       .then(response => {
@@ -153,7 +154,7 @@ class MapContainer extends React.Component {
             // console.log(results[0].segments[id.toString()])
           })
           console.log(segmentIds)
-          console.log(Object.keys(results[0].segments)) //['205655133048']
+          console.log(Object.keys(results[0].segments)) // ['205655133048']
           console.log(results[0].segments['849766009720'])
         })
 
@@ -162,11 +163,11 @@ class MapContainer extends React.Component {
         Promise.all(geomTiles).then(results => {
           // results is an array of all response objects.
           // we should merge geojsons here
-          console.log('---- geojson ----')
-          console.log(results)
+          const mergedGeo = merge(results)
+          console.log(mergedGeo)
 
           // lets see if we can find the segmentId as osmlr_id
-          const geo = results[0].features
+          const geo = mergedGeo.features
           let found = false
           for (let i = 0, j = geo.length; i < j; i++) {
             if (geo[i].properties.osmlr_id === '849766009720') {

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/polyline": "0.2.0",
     "big-integer": "1.6.23",
     "leaflet": "1.0.3",
