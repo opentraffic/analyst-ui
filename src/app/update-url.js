@@ -13,7 +13,7 @@ const MAP_LATITUDE = 'lat'
 const MAP_LONGITUDE = 'lng'
 const MAP_ZOOM = 'zoom'
 const MAP_LABEL = 'label'
-const ANALYSIS_NAME = 'viewName'
+const ANALYSIS_NAME = 'name'
 
 export function initUrlUpdate () {
   store.subscribe(() => {
@@ -25,7 +25,7 @@ export function initUrlUpdate () {
       ...getDateRange(state.date),
       ...getMapView(state.map),
       [MAP_LABEL]: getMapLabel(state.map),
-      [ANALYSIS_NAME]: state.app.viewName
+      [ANALYSIS_NAME]: getAnalysisName(state.app)
     })
   })
 }
@@ -79,4 +79,8 @@ function getMapView (map) {
 
 function getMapLabel (map) {
   return (map && map.label) || null
+}
+
+function getAnalysisName (app) {
+  return app.viewName !== '' ? app.viewName : null
 }

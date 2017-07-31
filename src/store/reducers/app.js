@@ -2,7 +2,7 @@ import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS, SET_ANALYSIS_NAME } from '../actions
 
 const initialState = {
   analysisMode: null,
-  viewName: 'Untitled Analysis'
+  viewName: ''
 }
 
 const app = (state = initialState, action) => {

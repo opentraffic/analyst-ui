@@ -38,9 +38,8 @@ export function initApp (queryString = window.location.search) {
   store.dispatch(setDate(date.startDate, date.endDate))
 
   // Initializing analysis view name
-  if (object.viewName) {
-    const viewName = object.viewName
-    document.title = viewName + ' | OpenTraffic Analyst UI '
+  if (object.name) {
+    const viewName = object.name
     store.dispatch(setAnalysisName(viewName))
   }
 

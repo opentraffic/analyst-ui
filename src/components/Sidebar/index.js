@@ -34,7 +34,7 @@ const Sidebar = (props) => {
     <div className={'Sidebar ' + props.className}>
       {errors}
       <Segment>
-        <Header as="h3"> Analysis name </Header>
+        <Header as="h3">Analysis name</Header>
         <AnalysisName />
       </Segment>
       <ModeSelect />

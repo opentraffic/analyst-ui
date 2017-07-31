@@ -16,18 +16,34 @@ class AnalysisName extends React.Component {
       isEditing: false
     }
 
+    const defaultTitle = 'OpenTraffic Analyst UI'
+    if (this.props.viewName !== '') {
+      document.title = this.props.viewName + ' | ' + defaultTitle
+    } else {
+      document.title = defaultTitle
+    }
+
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleClick = this.handleClick.bind(this)
     this.handleCancel = this.handleCancel.bind(this)
   }
 
+  componentDidUpdate() {
+    if (this.refs.viewName) {
+      this.refs.viewName.inputRef.focus()
+      this.refs.viewName.inputRef.select()
+    }
+  }
+
   handleSubmit (event) {
-    let input = this.refs.viewName.inputRef.value
-    if (input === '') {
-      input = 'Untitled Analysis'
+    const input = this.refs.viewName.inputRef.value
+    const defaultTitle = 'OpenTraffic Analyst UI'
+    if (input !== '') {
+      document.title = input + ' | ' + defaultTitle
+    } else {
+      document.title = defaultTitle
     }
     this.setState({ isEditing: false })
-    document.title = input + ' | OpenTraffic Analyst UI'
     this.props.dispatch(app.setAnalysisName(input))
   }
 
@@ -40,12 +56,13 @@ class AnalysisName extends React.Component {
   }
 
   render () {
+    const inputValue = (this.props.viewName === '') ? 'Untitled Analysis' : this.props.viewName
     if (this.state.isEditing) {
       return (
         <div className="editText">
           <form onSubmit={this.handleSubmit}>
             <Input type="text" action ref="viewName">
-              <input defaultValue={this.props.viewName} />
+              <input defaultValue={inputValue} placeholder="Untitled" />
               <Button color="blue" content="Save" />
               <Button content="Cancel" onClick={this.handleCancel} />
             </Input>
@@ -54,8 +71,8 @@ class AnalysisName extends React.Component {
       )
     } else {
       return (
-        <div className="analysisName">
-          {this.props.viewName}
+        <div className="analysis-name">
+          {inputValue}
           <Button onClick={this.handleClick} content="Edit" icon="edit" labelPosition="right" size="mini" color="blue" floated="right" compact />
         </div>
       )
