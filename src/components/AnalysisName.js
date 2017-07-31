@@ -7,7 +7,6 @@ import * as app from '../store/actions/app'
 class AnalysisName extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    viewName: PropTypes.string.isRequired
   }
 
   constructor (props) {
@@ -23,7 +22,10 @@ class AnalysisName extends React.Component {
   }
 
   handleSubmit (event) {
-    const input = this.refs.viewName.inputRef.value
+    let input = this.refs.viewName.inputRef.value
+    if (input === '') {
+      input = 'Untitled Analysis'
+    }
     this.setState({ isEditing: false })
     document.title = input + ' | OpenTraffic Analyst UI'
     this.props.dispatch(app.setAnalysisName(input))
@@ -38,12 +40,13 @@ class AnalysisName extends React.Component {
   }
 
   render() {
+    console.log(this.props.viewName)
     if (this.state.isEditing) {
       return (
         <div className="editText">
           <form onSubmit={this.handleSubmit}>
             <Input type="text" action ref="viewName">
-              <input defaultValue={this.props.viewName} />
+              <input defaultValue={this.props.viewName} placeholder="Untitled" />
               <Button color="blue" content="Submit" />
               <Button content="Cancel" onClick={this.handleCancel} />
             </Input>

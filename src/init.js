@@ -24,7 +24,6 @@ export function initApp (queryString = window.location.search) {
   }
   const coordinates = [mapView.lat, mapView.lng]
   const label = object.label || ''
-  const viewName = object.viewName
 
   // If no query string, just bare URL, update URL
   if (queryString.length === 0) {
@@ -37,9 +36,13 @@ export function initApp (queryString = window.location.search) {
   store.dispatch(setLocation(coordinates, label))
   // Initializing dates
   store.dispatch(setDate(date.startDate, date.endDate))
+
   // Initializing analysis view name
-  store.dispatch(setAnalysisName(viewName))
-  document.title = viewName + ' | OpenTraffic Analyst UI'
+  if (object.viewName) {
+    const viewName = object.viewName
+    document.title = viewName + ' | OpenTraffic Analyst UI '
+    store.dispatch(setAnalysisName(viewName))
+  }
 
   // Initializing markers and route, or view bounds.
   // Existence of markers will override existence of bounds.

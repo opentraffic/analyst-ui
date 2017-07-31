@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Segment, Header, Accordion, Checkbox, Button, Message, Input, Label } from 'semantic-ui-react'
+import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
 import DatePickerContainer from '../DatePickerContainer'
 import ErrorMessage from './ErrorMessage'
 import ModeSelect from './ModeSelect'
