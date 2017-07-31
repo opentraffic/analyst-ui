@@ -24,8 +24,8 @@ export function initUrlUpdate () {
       ...getRegionBounds(state.viewBounds.bounds),
       ...getDateRange(state.date),
       ...getMapView(state.map),
-      label: getMapLabel(state.map),
-      viewName: state.app.viewName
+      [MAP_LABEL]: getMapLabel(state.map),
+      [ANALYSIS_NAME]: state.app.viewName
     })
   })
 }
