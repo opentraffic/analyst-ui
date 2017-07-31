@@ -45,7 +45,7 @@ class AnalysisName extends React.Component {
         <div className="editText">
           <form onSubmit={this.handleSubmit}>
             <Input type="text" action ref="viewName">
-              <input defaultValue={this.props.viewName} placeholder="Untitled" />
+              <input defaultValue={this.props.viewName} />
               <Button color="blue" content="Save" />
               <Button content="Cancel" onClick={this.handleCancel} />
             </Input>
