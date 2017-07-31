@@ -1,7 +1,8 @@
-import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS } from '../actions'
+import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS, SET_ANALYSIS_NAME } from '../actions'
 
 const initialState = {
-  analysisMode: null
+  analysisMode: null,
+  viewName: 'Untitled Analysis'
 }
 
 const app = (state = initialState, action) => {
@@ -15,6 +16,11 @@ const app = (state = initialState, action) => {
       return {
         ...state,
         analysisMode: null
+      }
+    case SET_ANALYSIS_NAME:
+      return {
+        ...state,
+        viewName: action.viewName
       }
     default:
       return state
