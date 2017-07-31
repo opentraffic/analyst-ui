@@ -158,20 +158,32 @@ class MapContainer extends React.Component {
           console.log(results[0].segments['849766009720'])
         })
 
-        const geomTileUrls = uniqueSuffixes.map(suffix => `${OSMLR_TILE_PATH}${suffix}.json`)
-        const geomTiles = geomTileUrls.map(url => fetch(url).then(res => res.json()))
-        Promise.all(geomTiles).then(results => {
-          // results is an array of all response objects.
-          // we should merge geojsons here
-          const mergedGeo = merge(results)
-          console.log(mergedGeo)
+        /**
+         * Fetch requested OSMLR geometry tiles and return its result as a
+         * single GeoJSON file.
+         *
+         * @param {Array<String>} suffixes - an array of tile path suffixes,
+         *            in the form of `x/xxx/xxx`.
+         * @return {Promise} - a Promise is returned passing the value of all
+         *            OSMLR geometry tiles, merged into a single GeoJSON.
+         */
+        function fetchOSMLRGeometryTiles (suffixes) {
+          const urls = suffixes.map(suffix => `${OSMLR_TILE_PATH}${suffix}.json`)
+          const fetchTiles = urls.map(url => fetch(url).then(res => res.json()))
 
+          // Results is an array of all GeoJSON tiles. Next, merge into one file
+          // and return the result as a single GeoJSON.
+          return Promise.all(fetchTiles).then(merge)
+        }
+
+        fetchOSMLRGeometryTiles(uniqueSuffixes).then((geo) => {
           // lets see if we can find the segmentId as osmlr_id
-          const geo = mergedGeo.features
+          const features = geo.features
           let found = false
-          for (let i = 0, j = geo.length; i < j; i++) {
-            if (geo[i].properties.osmlr_id === '849766009720') {
-              console.log(geo[i])
+          for (let i = 0, j = features.length; i < j; i++) {
+            // This property is a number, not a string
+            if (features[i].properties.osmlr_id === 849766009720) {
+              console.log(features[i])
               found = true
               break
             }
