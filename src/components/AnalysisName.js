@@ -28,7 +28,7 @@ class AnalysisName extends React.Component {
     this.handleCancel = this.handleCancel.bind(this)
   }
 
-  componentDidUpdate() {
+  componentDidUpdate () {
     if (this.refs.viewName) {
       this.refs.viewName.inputRef.focus()
       this.refs.viewName.inputRef.select()
