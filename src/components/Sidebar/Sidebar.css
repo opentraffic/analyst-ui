@@ -4,3 +4,8 @@
   overflow-x: hidden;
   overflow-y: auto;
 }
+
+.analysis-name {
+  font-size: 18px;
+  font-style: italic;
+}
