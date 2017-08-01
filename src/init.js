@@ -5,7 +5,7 @@ import { recenterMap, setLocation } from './store/actions/map'
 import { setDate } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { setBounds } from './store/actions/viewBounds'
-import { setRegionAnalysisMode, setRouteAnalysisMode } from './store/actions/app'
+import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './store/actions/app'
 import { initUrlUpdate } from './app/update-url'
 import { getQueryStringObject, updateURL } from './lib/url-state'
 
@@ -29,12 +29,19 @@ export function initApp (queryString = window.location.search) {
   if (queryString.length === 0) {
     updateURL(mapView)
   }
+
   // Initializing lat/lng and zoom
   store.dispatch(recenterMap(coordinates, mapView.zoom))
   // Initializing map search bar
   store.dispatch(setLocation(coordinates, label))
   // Initializing dates
   store.dispatch(setDate(date.startDate, date.endDate))
+
+  // Initializing analysis view name
+  if (object.name) {
+    const viewName = object.name
+    store.dispatch(setAnalysisName(viewName))
+  }
 
   // Initializing markers and route, or view bounds.
   // Existence of markers will override existence of bounds.

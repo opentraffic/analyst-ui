@@ -4,6 +4,7 @@ import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-
 import DatePickerContainer from '../DatePickerContainer'
 import ErrorMessage from './ErrorMessage'
 import ModeSelect from './ModeSelect'
+import AnalysisName from '../AnalysisName'
 import './Sidebar.css'
 
 const panels = [
@@ -32,6 +33,10 @@ const Sidebar = (props) => {
   return (
     <div className={'Sidebar ' + props.className}>
       {errors}
+      <Segment>
+        <Header as="h3">Analysis name</Header>
+        <AnalysisName />
+      </Segment>
       <ModeSelect />
       <Segment>
         <DatePickerContainer className="date-picker" />
