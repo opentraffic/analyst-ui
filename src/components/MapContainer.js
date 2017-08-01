@@ -126,11 +126,11 @@ class MapContainer extends React.Component {
           recenterMap={this.props.recenterMap}
         />
         <Map
-          config={config}
           center={map.coordinates}
           zoom={map.zoom}
           onClick={this.onClick}
           recenterMap={this.props.recenterMap}
+          scene={this.props.scene}
         >
           <Route
             route={this.props.route}
@@ -151,7 +151,8 @@ function mapStateToProps (state) {
     config: state.config,
     route: state.route,
     map: state.map,
-    bounds: state.viewBounds.bounds
+    bounds: state.viewBounds.bounds,
+    scene: state.tangram.scene
   }
 }
 
