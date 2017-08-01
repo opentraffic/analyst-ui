@@ -42,7 +42,6 @@ class AnalysisName extends React.Component {
 
   handleSubmit (event) {
     const input = this.refs.viewName.inputRef.value
-    const defaultTitle = 'OpenTraffic Analyst UI'
     this.setState({ isEditing: false })
     this.props.dispatch(app.setAnalysisName(input))
     this.updateDocTitle(input)
