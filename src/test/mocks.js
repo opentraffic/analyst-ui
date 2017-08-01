@@ -3,7 +3,8 @@
 export const Tangram = {
   leafletLayer: function () {
     return {
-      addTo: function () {}
+      addTo: function () {},
+      _layerAdd: function () {}
     }
   }
 }
