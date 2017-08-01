@@ -16,16 +16,12 @@ class AnalysisName extends React.Component {
       isEditing: false
     }
 
-    const defaultTitle = 'OpenTraffic Analyst UI'
-    if (this.props.viewName !== '') {
-      document.title = this.props.viewName + ' | ' + defaultTitle
-    } else {
-      document.title = defaultTitle
-    }
+    this.updateDocTitle(this.props.viewName)
 
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleClick = this.handleClick.bind(this)
     this.handleCancel = this.handleCancel.bind(this)
+    this.updateDocTitle = this.updateDocTitle.bind(this)
   }
 
   componentDidUpdate () {
@@ -35,16 +31,21 @@ class AnalysisName extends React.Component {
     }
   }
 
-  handleSubmit (event) {
-    const input = this.refs.viewName.inputRef.value
+  updateDocTitle (value) {
     const defaultTitle = 'OpenTraffic Analyst UI'
-    if (input !== '') {
-      document.title = input + ' | ' + defaultTitle
+    if (value !== '') {
+      document.title = value + ' | ' + defaultTitle
     } else {
       document.title = defaultTitle
     }
+  }
+
+  handleSubmit (event) {
+    const input = this.refs.viewName.inputRef.value
+    const defaultTitle = 'OpenTraffic Analyst UI'
     this.setState({ isEditing: false })
     this.props.dispatch(app.setAnalysisName(input))
+    this.updateDocTitle(input)
   }
 
   handleClick (event) {
