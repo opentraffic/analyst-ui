@@ -1,10 +1,9 @@
-/* global Tangram */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Map as Leaflet, ScaleControl } from 'react-leaflet'
 import 'leaflet-editable'
 import 'leaflet.path.drag'
-// import Tangram from 'tangram'
+import TangramLayer from './TangramLayer'
 import 'leaflet/dist/leaflet.css'
 import './Map.css'
 
@@ -36,22 +35,6 @@ export default class Map extends React.Component {
   }
 
   componentDidMount () {
-    const layer = Tangram.leafletLayer({
-      scene: {
-        import: [
-          'https://mapzen.com/carto/refill-style/7/refill-style.zip',
-          // 'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
-          'https://mapzen.com/carto/refill-style/7/themes/gray-gold.zip'
-        ],
-        global: {
-          'sdk_mapzen_api_key': this.props.config.mapzen.apiKey
-        }
-      },
-      attribution: ATTRIBUTION
-    })
-
-    layer.addTo(this.map.leafletElement)
-
     // Expose map globally for debug
     window.map = this.map.leafletElement
   }
@@ -67,6 +50,16 @@ export default class Map extends React.Component {
 
   render () {
     const { className, children, center, zoom, onClick } = this.props
+    const scene = {
+      import: [
+        'https://mapzen.com/carto/refill-style/7/refill-style.zip',
+        // 'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
+        'https://mapzen.com/carto/refill-style/7/themes/gray-gold.zip'
+      ],
+      global: {
+        'sdk_mapzen_api_key': this.props.config.mapzen.apiKey
+      }
+    }
 
     // The `editable` option is not provided by Leaflet but by Leaflet.Editable.
     // It is passed to the options object via props.
@@ -80,6 +73,7 @@ export default class Map extends React.Component {
         ref={(ref) => { this.map = ref }}
         editable
       >
+        <TangramLayer scene={scene} attribution={ATTRIBUTION} />
         <ScaleControl />
         {children}
       </Leaflet>
