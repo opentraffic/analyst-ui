@@ -16,6 +16,28 @@
   color: #ddd;
 }
 
+.leaflet-top .leaflet-control {
+  margin-top: 55px;
+}
+
+.leaflet-top {
+  z-index: 800;
+}
+
+.leaflet-control-zoom-in {
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: 22px !important;
+}
+
+.leaflet-control-zoom-out {
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: 24px !important;
+}
+
 .map-bounding-box-disabled {
   cursor: inherit;
 }
