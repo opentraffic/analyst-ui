@@ -22,7 +22,7 @@ export default class TangramLayer extends GridLayer {
   }
 
   shouldComponentUpdate (nextProps) {
-    if (isEqual(nextProps.scene, this.props.scene)) return false
+    return isEqual(nextProps.scene, this.props.scene)
   }
 
   componentDidUpdate () {
