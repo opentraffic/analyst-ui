@@ -5,6 +5,7 @@ import date from './date'
 import errors from './errors'
 import map from './map'
 import route from './route'
+import tangram from './tangram'
 import viewBounds from './viewBounds'
 
 const reducers = combineReducers({
@@ -14,6 +15,7 @@ const reducers = combineReducers({
   errors,
   map,
   route,
+  tangram,
   viewBounds
 })
 
