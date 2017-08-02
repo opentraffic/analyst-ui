@@ -41,6 +41,7 @@ class AnalysisName extends React.Component {
   }
 
   handleSubmit (event) {
+    event.preventDefault()
     const input = this.refs.viewName.inputRef.value
     this.setState({ isEditing: false })
     this.props.dispatch(app.setAnalysisName(input))
