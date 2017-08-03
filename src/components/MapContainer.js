@@ -12,7 +12,9 @@ import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import { merge } from '../lib/geojson'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
+import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
+import { setDataSource } from '../lib/tangram'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -177,6 +179,17 @@ class MapContainer extends React.Component {
         }
 
         fetchOSMLRGeometryTiles(uniqueSuffixes).then((geo) => {
+          setDataSource('routes', { type: 'GeoJSON', data: geo })
+          // this.props.updateScene({
+          //   sources: {
+          //     counties: {
+          //       type: 'GeoJSON',
+          //       url: URL.createObjectURL(geo)
+          //     }
+          //   },
+          //
+          // })
+
           // lets see if we can find the segmentId as osmlr_id
           const features = geo.features
           let found = false
@@ -243,7 +256,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators, updateScene }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)
