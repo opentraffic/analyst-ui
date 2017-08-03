@@ -60,19 +60,46 @@ export function valhallaResponseToPolylineCoordinates (response) {
 
 /**
  * Makes a Valhalla (or Valhalla-like) request and returns a Promise
- * with the JSON response or an error.
+ * with the JSON response or an error. Uses a specially wrapped `fetch` which
+ * can handle a JSON payload response in addition to an HTTP error code.
  *
  * @param {string} host - the remote resource to request from
  * @param {string} endpoint - the remote endpoint, e.g. "route"
  * @param {Object} payload - serializable object containing Valhalla query
- * @param {Object} options - additional Fetch API options
+ * @return {Promise}
  */
-function makeValhallaRequest (host, endpoint, payload, options) {
-  const url = `https://${host}/${endpoint}?json=${JSON.stringify(payload)}`
+function makeValhallaRequest (host, endpoint, payload) {
+  const options = {}
+  const baseUrl = `https://${host}/${endpoint}`
+  const stringPayload = JSON.stringify(payload)
+
+  let url
+
+  switch (endpoint) {
+    case 'route':
+      options.method = 'GET'
+      url = baseUrl + `?json=${stringPayload}`
+      break
+    case 'trace_attributes':
+      options.method = 'POST'
+      options.body = stringPayload
+      url = baseUrl
+      break
+    default:
+      break
+  }
 
   return request(url, options)
 }
 
+/**
+ * Makes a Valhalla (or Valhalla-like) request to the `route`
+ * endpoint and returns a Promise with the JSON response or an error.
+ *
+ * @param {string} host - the remote resource to request from
+ * @param {string} waypoints - array of LatLng coordinate objects matching
+ *          the shape { lat, lng }
+ */
 export function getRoute (host, waypoints) {
   const payload = {
     locations: leafletLatlngsToValhallaLocations(waypoints),
@@ -98,10 +125,6 @@ export function getTraceAttributes (host, coordinates) {
     costing: 'auto',
     shape_match: 'edge_walk'
   }
-  const url = `https://${host}/trace_attributes`
 
-  return request(url, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  })
+  return makeValhallaRequest(host, 'trace_attributes', payload)
 }
