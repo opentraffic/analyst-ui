@@ -14,6 +14,7 @@ import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
+import { getSpeedTiles } from '../app/data'
 import { setDataSource } from '../lib/tangram'
 
 class MapContainer extends React.Component {
@@ -67,16 +68,15 @@ class MapContainer extends React.Component {
     }
 
     // Get tiles (experimental)
-    // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
-    // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
+    const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
     // Local web server for files will gzip automatically.
-    const STATIC_TILE_PATH = '/sample-tiles/'
+    // const STATIC_DATA_TILE_PATH = '/sample-tiles/'
 
     const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
-    // const OSMLR_TILE_PATH = '/sample-tiles/geojson/'
 
     getRoute(host, waypoints)
       .then(response => {
+        // Transform Valhalla response to polyline coordinates and send to map
         const coordinates = valhallaResponseToPolylineCoordinates(response)
         this.props.setRoute(coordinates)
 
@@ -86,12 +86,12 @@ class MapContainer extends React.Component {
 
         // For now, reject tiles at level 2
         const downloadTiles = reject(tiles, (i) => i[0] === 2)
-        const tileUrls = []
-        downloadTiles.forEach(i => {
-          tileUrls.push(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
-        })
-
-        // const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
+        const tileUrls = downloadTiles.map(i => `${STATIC_DATA_TILE_PATH}${getTileUrlSuffix(i)}.json`)
+        console.log(tileUrls)
+        // const promises = tileUrls.map(url => fetch(url)
+        //   .then(res => res.json())
+        //   .catch(e => console.log(e)))
+        //
         // Promise.all(promises).then(results => {
         //   console.log(results)
         // })
@@ -114,7 +114,7 @@ class MapContainer extends React.Component {
       })
       // Do stuff with trace_attributes. TEST!
       .then(response => {
-        console.log(response)
+        // console.log(response)
         const segments = []
         const segmentIds = []
 
@@ -128,8 +128,6 @@ class MapContainer extends React.Component {
           }
         })
 
-        console.log(segments)
-
         // It is possible for multiple edges to have the same segmentId, so
         // collapse all segmentIds
         const parsedIds = segmentIds.map(parseSegmentId)
@@ -139,8 +137,17 @@ class MapContainer extends React.Component {
         const suffixes = parsedIds.map(getTileUrlSuffix)
         // Remove all duplicate suffixes
         const uniqueSuffixes = uniq(suffixes)
-        const urls = uniqueSuffixes.map(suffix => `${STATIC_TILE_PATH}${suffix}.json`)
-        console.log(urls)
+        const urls = uniqueSuffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.json`)
+
+        console.log(parsedIds)
+
+        getSpeedTiles(urls)
+          .then((what) => {
+            console.log(what)
+          })
+          .catch((error) => {
+            console.log('[getSpeedTiles error]', error)
+          })
 
         // Note: determining tiles this way based on only the route is more
         // efficient because it means we download the minimum required tiles.
@@ -148,17 +155,20 @@ class MapContainer extends React.Component {
         // or a route that travels only on level 0 roads, will download more
         // tiles than we actually need. This helps save on bandwidth and
         // memory for qualifying requests.
-        const promises = urls.map(url => fetch(url).then(res => res.json()))
-        Promise.all(promises).then(results => {
-          // results is an array of all response objects.
-          segmentIds.forEach(id => {
-            // console.log(id.toString())
-            // console.log(results[0].segments[id.toString()])
-          })
-          console.log(segmentIds)
-          console.log(Object.keys(results[0].segments)) // ['205655133048']
-          console.log(results[0].segments['849766009720'])
-        })
+        // const promises = urls.map(url => fetch(url)
+        //   .then(res => res.json())
+        //   .catch(e => console.log(e)))
+        //
+        // Promise.all(promises).then(results => {
+        //   // results is an array of all response objects.
+        //   segmentIds.forEach(id => {
+        //     // console.log(id.toString())
+        //     // console.log(results[0].segments[id.toString()])
+        //   })
+        //   // console.log(segmentIds)
+        //   // console.log(Object.keys(results[0].segments)) // ['205655133048']
+        //   // console.log(results[0].segments['849766009720'])
+        // })
 
         /**
          * Fetch requested OSMLR geometry tiles and return its result as a
@@ -180,15 +190,6 @@ class MapContainer extends React.Component {
 
         fetchOSMLRGeometryTiles(uniqueSuffixes).then((geo) => {
           setDataSource('routes', { type: 'GeoJSON', data: geo })
-          // this.props.updateScene({
-          //   sources: {
-          //     counties: {
-          //       type: 'GeoJSON',
-          //       url: URL.createObjectURL(geo)
-          //     }
-          //   },
-          //
-          // })
 
           // lets see if we can find the segmentId as osmlr_id
           const features = geo.features
@@ -196,7 +197,7 @@ class MapContainer extends React.Component {
           for (let i = 0, j = features.length; i < j; i++) {
             // This property is a number, not a string
             if (features[i].properties.osmlr_id === 849766009720) {
-              console.log(features[i])
+              // console.log(features[i])
               found = true
               break
             }

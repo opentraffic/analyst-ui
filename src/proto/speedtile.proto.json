@@ -1,0 +1,146 @@
+{
+  "nested": {
+    "SizeTest": {
+      "nested": {
+        "SpeedTile": {
+          "fields": {
+            "subtiles": {
+              "rule": "repeated",
+              "type": "SubTile",
+              "id": 1,
+              "options": {
+                "packed": false
+              }
+            }
+          },
+          "nested": {
+            "SubTile": {
+              "fields": {
+                "level": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "index": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "startSegmentIndex": {
+                  "type": "uint32",
+                  "id": 3
+                },
+                "totalSegments": {
+                  "type": "uint32",
+                  "id": 11
+                },
+                "rangeStart": {
+                  "type": "uint32",
+                  "id": 4
+                },
+                "rangeEnd": {
+                  "type": "uint32",
+                  "id": 5
+                },
+                "unitSize": {
+                  "type": "uint32",
+                  "id": 6
+                },
+                "entrySize": {
+                  "type": "uint32",
+                  "id": 7
+                },
+                "description": {
+                  "type": "string",
+                  "id": 8
+                },
+                "segments": {
+                  "rule": "repeated",
+                  "type": "Segment",
+                  "id": 9,
+                  "options": {
+                    "packed": false
+                  }
+                },
+                "nextSegments": {
+                  "rule": "repeated",
+                  "type": "NextSegment",
+                  "id": 10,
+                  "options": {
+                    "packed": false
+                  }
+                }
+              },
+              "nested": {
+                "Segment": {
+                  "fields": {
+                    "referenceSpeed": {
+                      "type": "uint32",
+                      "id": 1
+                    },
+                    "entries": {
+                      "rule": "repeated",
+                      "type": "Entry",
+                      "id": 2,
+                      "options": {
+                        "packed": false
+                      }
+                    }
+                  },
+                  "nested": {
+                    "Entry": {
+                      "fields": {
+                        "speed": {
+                          "type": "uint32",
+                          "id": 1
+                        },
+                        "speedVariance": {
+                          "type": "float",
+                          "id": 2
+                        },
+                        "prevalence": {
+                          "type": "uint32",
+                          "id": 3
+                        },
+                        "nextSegmentIndex": {
+                          "type": "uint32",
+                          "id": 4
+                        },
+                        "nextSegmentCount": {
+                          "type": "uint32",
+                          "id": 5
+                        }
+                      }
+                    }
+                  }
+                },
+                "NextSegment": {
+                  "fields": {
+                    "id": {
+                      "type": "uint64",
+                      "id": 1
+                    },
+                    "delay": {
+                      "type": "uint32",
+                      "id": 2
+                    },
+                    "delayVariance": {
+                      "type": "float",
+                      "id": 3
+                    },
+                    "queueLength": {
+                      "type": "uint32",
+                      "id": 4
+                    },
+                    "queueLengthVariance": {
+                      "type": "float",
+                      "id": 5
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
