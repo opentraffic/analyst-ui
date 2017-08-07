@@ -71,6 +71,7 @@ class MapContainer extends React.Component {
     const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
     // Local web server for files will gzip automatically.
     // const STATIC_DATA_TILE_PATH = '/sample-tiles/'
+    // https://s3.amazonaws.com/speed-extracts/2017/0/0/002/415.spd.0.gz',
 
     const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
 
@@ -86,7 +87,7 @@ class MapContainer extends React.Component {
 
         // For now, reject tiles at level 2
         const downloadTiles = reject(tiles, (i) => i[0] === 2)
-        const tileUrls = downloadTiles.map(i => `${STATIC_DATA_TILE_PATH}${getTileUrlSuffix(i)}.json`)
+        const tileUrls = downloadTiles.map(i => `${STATIC_DATA_TILE_PATH}${getTileUrlSuffix(i)}.spd.0.gz`)
         console.log(tileUrls)
         // const promises = tileUrls.map(url => fetch(url)
         //   .then(res => res.json())
@@ -137,13 +138,20 @@ class MapContainer extends React.Component {
         const suffixes = parsedIds.map(getTileUrlSuffix)
         // Remove all duplicate suffixes
         const uniqueSuffixes = uniq(suffixes)
-        const urls = uniqueSuffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.json`)
+        // const urls = uniqueSuffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
+        const urls = ['https://s3.amazonaws.com/speed-extracts/2017/0/0/002/415.spd.0.gz']
 
-        console.log(parsedIds)
+        // console.log(parsedIds)
 
         getSpeedTiles(urls)
           .then((what) => {
-            console.log(what)
+            parsedIds.forEach(item => {
+              try {
+                const yup = what[item.level][item.tile].segments[item.segment]
+                item.speed = yup
+              } catch (e) {}
+            })
+            console.log(parsedIds)
           })
           .catch((error) => {
             console.log('[getSpeedTiles error]', error)
