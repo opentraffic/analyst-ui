@@ -39,7 +39,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint-js": "eslint src/ test/ --ext .js,.jsx",
-    "make-proto": "curl https://s3.amazonaws.com/speed-extracts/speedtile.proto -o /dev/stdout | pbjs -t json - -o ./src/speedtile.proto.json"
+    "make-proto": "curl https://s3.amazonaws.com/speed-extracts/speedtile.proto -o /dev/stdout | pbjs -t json - -o ./src/proto/speedtile.proto.json"
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",

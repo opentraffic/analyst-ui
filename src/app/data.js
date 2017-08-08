@@ -21,8 +21,7 @@ function readProtobuf (buffer) {
 
 /**
  * Consolidates an array of tiles into an object with tile level and index
- * keys so it's easier to look up, and concatenates segments back into one
- * array
+ * keys so it's easier to look up
  *
  * @param {Array} tiles
  * @return {Object}
@@ -35,9 +34,9 @@ export function consolidateTiles (tiles) {
     if (!construct[lv]) construct[lv] = {}
 
     if (!construct[lv][ix]) {
-      construct[lv][ix] = Object.assign({}, source) // Clone source object.
+      construct[lv][ix] = [source]
     } else {
-      construct[lv][ix].segments = construct[lv][ix].segments.concat(source.segments)
+      construct[lv][ix].push(source)
     }
 
     return construct
