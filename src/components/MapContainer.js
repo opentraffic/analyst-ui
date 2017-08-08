@@ -131,14 +131,13 @@ class MapContainer extends React.Component {
 
         // It is possible for multiple edges to have the same segmentId, so
         // collapse all segmentIds
-        const parsedIds = segmentIds.map(parseSegmentId)
+        const parsedIds = uniq(segmentIds).map(parseSegmentId)
 
         // todo: reject any segments at level 2, but right now, assume they
         // are already not included.
         const suffixes = parsedIds.map(getTileUrlSuffix)
         // Remove all duplicate suffixes
-        const uniqueSuffixes = uniq(suffixes)
-        // const urls = uniqueSuffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
+        // const urls = suffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
         const urls = ['https://s3.amazonaws.com/speed-extracts/2017/0/0/002/415.spd.0.gz']
 
         // console.log(parsedIds)
@@ -146,12 +145,23 @@ class MapContainer extends React.Component {
         getSpeedTiles(urls)
           .then((what) => {
             parsedIds.forEach(item => {
+              // not all levels and tiles are available yet, so try()
+              // skips it if it doesn't work
               try {
-                const yup = what[item.level][item.tile].segments[item.segment]
-                item.speed = yup
+                const segmentId = item.segment
+                const tiles = what[item.level][item.tile] // array
+                // find which tile contains this segment id
+                for (let i = 0, j = tiles.length; i < j; i++) {
+                  const tile = tiles[i]
+                  const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
+                  if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
+                    item.referenceSpeed = tile.referenceSpeeds[segmentId % tile.subtileSegments]
+                    break
+                  }
+                }
               } catch (e) {}
             })
-            console.log(parsedIds)
+            console.log(JSON.stringify(parsedIds))
           })
           .catch((error) => {
             console.log('[getSpeedTiles error]', error)
@@ -196,7 +206,7 @@ class MapContainer extends React.Component {
           return Promise.all(fetchTiles).then(merge)
         }
 
-        fetchOSMLRGeometryTiles(uniqueSuffixes).then((geo) => {
+        fetchOSMLRGeometryTiles(suffixes).then((geo) => {
           setDataSource('routes', { type: 'GeoJSON', data: geo })
 
           // lets see if we can find the segmentId as osmlr_id
