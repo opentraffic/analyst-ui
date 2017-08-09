@@ -136,7 +136,7 @@ class MapContainer extends React.Component {
         // todo: reject any segments at level 2, but right now, assume they
         // are already not included.
         const suffixes = parsedIds.map(getTileUrlSuffix)
-        // Remove all duplicate suffixes
+
         // const urls = suffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
         const urls = ['https://s3.amazonaws.com/speed-extracts/2017/0/0/002/415.spd.0.gz']
 
@@ -206,7 +206,12 @@ class MapContainer extends React.Component {
           return Promise.all(fetchTiles).then(merge)
         }
 
-        fetchOSMLRGeometryTiles(suffixes).then((geo) => {
+        // Fetch all OSMLR geometry tiles.
+        // Remove all duplicate suffixes first so that we don't make more requests
+        // than we need. Memory management is important here. More than a certain
+        // number of tiles and we'll run out of memory.
+        fetchOSMLRGeometryTiles(uniq(suffixes)).then((geo) => {
+          console.log(geo)
           setDataSource('routes', { type: 'GeoJSON', data: geo })
 
           // lets see if we can find the segmentId as osmlr_id
