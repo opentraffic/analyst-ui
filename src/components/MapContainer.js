@@ -143,16 +143,16 @@ class MapContainer extends React.Component {
         // console.log(parsedIds)
 
         getSpeedTiles(urls)
-          .then((what) => {
+          .then((tiles) => {
             parsedIds.forEach(item => {
               // not all levels and tiles are available yet, so try()
               // skips it if it doesn't work
               try {
                 const segmentId = item.segment
-                const tiles = what[item.level][item.tile] // array
-                // find which tile contains this segment id
-                for (let i = 0, j = tiles.length; i < j; i++) {
-                  const tile = tiles[i]
+                const subtiles = tiles[item.level][item.tile] // array
+                // find which subtile contains this segment id
+                for (let i = 0, j = subtiles.length; i < j; i++) {
+                  const tile = subtiles[i]
                   const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
                   if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
                     item.referenceSpeed = tile.referenceSpeeds[segmentId % tile.subtileSegments]
