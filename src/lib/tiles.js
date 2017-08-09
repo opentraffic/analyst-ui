@@ -161,13 +161,14 @@ function getSegmentIndexFromSegmentId (id) {
 
 /**
  * Given an segment id from trace_attributes, convert it to reference OSMLR
- * level, tile, and segment indices.
+ * level, tile, and segment indices. Retain original id for reference.
  *
  * @param {Number} id
  * @returns {Object}
  */
 export function parseSegmentId (id) {
   return {
+    id,
     level: getLevelFromSegmentId(id),
     tile: getTileIndexFromSegmentId(id),
     segment: getSegmentIndexFromSegmentId(id)

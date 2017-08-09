@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { isEqual, reject, uniq } from 'lodash'
+import polyline from '@mapbox/polyline'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import Route from './Map/Route'
@@ -14,6 +15,7 @@ import * as routeActionCreators from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
+import { getSpeedColor } from '../lib/color-ramps'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -70,20 +72,11 @@ class MapContainer extends React.Component {
 
     // Fetch route from Valhalla-based routing service, given waypoints.
     getRoute(host, waypoints)
-      .then(response => {
-        // Transform Valhalla response to polyline coordinates that can be
-        // rendered to the map, and send it to map state store.
-        const coordinates = valhallaResponseToPolylineCoordinates(response)
-        this.props.setRoute(coordinates)
-
-        return coordinates
-      })
-      // With the coordinates we obtained for the route, we make an additional
-      // trace_attributes request to the routing service. We will parse this
-      // response further down in this chain.
-      .then(coordinates => {
-        return getTraceAttributes(host, coordinates)
-      })
+      // Transform Valhalla response to polyline coordinates for trace_attributes request
+      .then(valhallaResponseToPolylineCoordinates)
+      // Make an additional trace_attributes request. This gives us information
+      // we need for the visualization.
+      .then(coordinates => getTraceAttributes(host, coordinates))
       // This `catch` statement is placed here to handle errors from Fetch API.
       .catch(error => {
         const message = (typeof error === 'object' && error.error)
@@ -98,6 +91,10 @@ class MapContainer extends React.Component {
       .then(response => {
         const segments = []
         const segmentIds = []
+
+        // Decode the polyline and render it to the map
+        const coordinates = polyline.decode(response.shape, 6)
+        this.props.setRoute(coordinates)
 
         // Documentation for trace_attributes response:
         // https://mapzen.com/documentation/mobility/map-matching/api-reference/#outputs-of-trace_attributes
@@ -127,8 +124,7 @@ class MapContainer extends React.Component {
         // that contain the tile level, tile index, and segment index. The
         // result is an array of objects [{ level, tile, segment }, ...].
         // Also, reject any segments at level 2; we won't have any data for those.
-        const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj =>
-          obj.level === 2)
+        const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
 
         // We now create data tile filepath suffixes from the parsed IDs, which
         // are used to build URLs for fetching data tiles. By looking at the
@@ -156,6 +152,8 @@ class MapContainer extends React.Component {
                 for (let i = 0, j = subtiles.length; i < j; i++) {
                   const tile = subtiles[i]
                   const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
+                  // if this is the right tile, get the reference speed for the
+                  // current segment and attach it to the item.
                   if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
                     item.referenceSpeed = tile.referenceSpeeds[segmentId % tile.subtileSegments]
                     break
@@ -163,7 +161,32 @@ class MapContainer extends React.Component {
                 }
               } catch (e) {}
             })
-            console.log(JSON.stringify(parsedIds))
+
+            // Now parsedIds contain reference speeds, if provided.
+            // Now let's draw this
+            const speeds = []
+            response.edges.forEach(edge => {
+              // Create individual segments for drawing, later.
+              const begin = edge.begin_shape_index
+              const end = edge.end_shape_index
+              const coordsSlice = coordinates.slice(begin, end + 1)
+              const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
+              let found
+              for (let i = 0, j = parsedIds.length; i < j; i++) {
+                if (id === parsedIds[i].id) {
+                  found = parsedIds[i]
+                  break
+                }
+              }
+              const refSpeed = found ? found.referenceSpeed : null
+              const color = getSpeedColor(refSpeed)
+              speeds.push({
+                coordinates: coordsSlice,
+                color: color
+              })
+            })
+
+            this.props.setMultiSegments(speeds)
           })
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)

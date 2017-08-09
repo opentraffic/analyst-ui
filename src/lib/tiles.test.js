@@ -103,8 +103,10 @@ describe('getTileUrlSuffix', () => {
 })
 
 it('parses a segment id from trace_attributes', () => {
-  const result = parseSegmentId(983044211424)
+  const id = 983044211424
+  const result = parseSegmentId(id)
 
+  expect(result.id).toEqual(id)
   expect(result.level).toEqual(0)
   expect(result.tile).toEqual(2140)
   expect(result.segment).toEqual(29297)

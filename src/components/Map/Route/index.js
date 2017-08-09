@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { LayerGroup } from 'react-leaflet'
 import RouteMarkers from './RouteMarkers'
 import RouteLine from './RouteLine'
+import RouteMultiLine from './RouteMultiLine'
 import { getNewWaypointPosition } from '../../../lib/routing'
 
 class Route extends React.PureComponent {
@@ -51,12 +52,21 @@ class Route extends React.PureComponent {
   }
 
   render () {
+    const routeType = (this.props.route.multiSegments) ? (
+      <RouteMultiLine
+        segments={this.props.route.multiSegments}
+        inserWaypoint={this.insertWaypoint}
+      />
+    ) : (
+      <RouteLine
+        positions={this.props.route.lineCoordinates}
+        inserWaypoint={this.insertWaypoint}
+      />
+    )
+
     return (
       <LayerGroup>
-        <RouteLine
-          positions={this.props.route.lineCoordinates}
-          inserWaypoint={this.insertWaypoint}
-        />
+        {routeType}
         <RouteMarkers
           waypoints={this.props.route.waypoints}
           removeWaypoint={this.removeWaypoint}

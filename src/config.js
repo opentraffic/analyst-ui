@@ -1,4 +1,5 @@
 const config = {
+  name: 'analyst-ui',
   mapzen: {
     apiKey: 'mapzen-YFrX5jt'
   },
