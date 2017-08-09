@@ -8,14 +8,12 @@ import MapSearchBar from './MapSearchBar'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
-import { merge } from '../lib/geojson'
+import { getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
-import { getSpeedTiles } from '../app/data'
-import { setDataSource } from '../lib/tangram'
+import { fetchDataTiles } from '../app/data'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -67,82 +65,86 @@ class MapContainer extends React.Component {
       return
     }
 
-    // Get tiles (experimental)
+    // Fetch data tiles from various sources.
     const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
-    // Local web server for files will gzip automatically.
-    // const STATIC_DATA_TILE_PATH = '/sample-tiles/'
-    // https://s3.amazonaws.com/speed-extracts/2017/0/0/002/415.spd.0.gz',
 
-    const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
-
+    // Fetch route from Valhalla-based routing service, given waypoints.
     getRoute(host, waypoints)
       .then(response => {
-        // Transform Valhalla response to polyline coordinates and send to map
+        // Transform Valhalla response to polyline coordinates that can be
+        // rendered to the map, and send it to map state store.
         const coordinates = valhallaResponseToPolylineCoordinates(response)
         this.props.setRoute(coordinates)
 
-        // Get bounding box for OSMLR tiles
-        const bounds = response.trip.summary
-        const tiles = getTilesForBbox(bounds.min_lon, bounds.min_lat, bounds.max_lon, bounds.max_lat)
-
-        // For now, reject tiles at level 2
-        const downloadTiles = reject(tiles, (i) => i[0] === 2)
-        const tileUrls = downloadTiles.map(i => `${STATIC_DATA_TILE_PATH}${getTileUrlSuffix(i)}.spd.0.gz`)
-        console.log(tileUrls)
-        // const promises = tileUrls.map(url => fetch(url)
-        //   .then(res => res.json())
-        //   .catch(e => console.log(e)))
-        //
-        // Promise.all(promises).then(results => {
-        //   console.log(results)
-        // })
-
         return coordinates
       })
+      // With the coordinates we obtained for the route, we make an additional
+      // trace_attributes request to the routing service. We will parse this
+      // response further down in this chain.
       .then(coordinates => {
-        // Experimental.
         return getTraceAttributes(host, coordinates)
       })
-      // Put this here to only catch errors in fetch
+      // This `catch` statement is placed here to handle errors from Fetch API.
       .catch(error => {
-        let message
-        if (typeof error === 'object' && error.error) {
-          message = error.error
-        } else {
-          message = error
-        }
+        const message = (typeof error === 'object' && error.error)
+          ? error.error
+          : error
+
         this.props.setRouteError(message)
       })
-      // Do stuff with trace_attributes. TEST!
+      // If we're here, the network requests have succeeded. We now need to
+      // parse the response from `trace_attributes`. Here, we obtain the
+      // OSMLR segment ids for each edge.
       .then(response => {
-        // console.log(response)
         const segments = []
         const segmentIds = []
 
+        // Documentation for trace_attributes response:
+        // https://mapzen.com/documentation/mobility/map-matching/api-reference/#outputs-of-trace_attributes
+        // The response contains an `edges` property. Each `edge` may include
+        // a `traffic_segments` property that correlates this edge with the OSMLR
+        // segment. This property is unique to the routing service deployed for
+        // OpenTraffic and is not part of the original Valhalla specification.
         response.edges.forEach(edge => {
-          // it is possible for an edge not to have traffic_segments
-          if (edge.traffic_segments) {
-            edge.traffic_segments.forEach(segment => {
-              segments.push(segment)
-              segmentIds.push(segment.segment_id)
-            })
-          }
+          // It is possible for an edge not to have `traffic_segments`. These
+          // are likely edges that are not routable or not meaningful in the
+          // OpenTraffic system, or they are routes that have not yet been
+          // parsed and given an OSMLR id.
+          if (!edge.traffic_segments) return
+
+          // For each segment in `traffic_segments`, record all segments in one
+          // array, and segment ids in another array.
+          edge.traffic_segments.forEach((segment) => {
+            segments.push(segment)
+            segmentIds.push(segment.segment_id)
+          })
         })
 
-        // It is possible for multiple edges to have the same segmentId, so
-        // collapse all segmentIds
-        const parsedIds = uniq(segmentIds).map(parseSegmentId)
+        // OSMLR segments and Valhalla edges do not share a 1:1 relationship.
+        // It is possible for a sequence of edges to share the same segment ID,
+        // so there may be repetition in the array. First, remove all duplicate
+        // segment IDs, then parse each one. Each ID is a mask of three numbers
+        // that contain the tile level, tile index, and segment index. The
+        // result is an array of objects [{ level, tile, segment }, ...].
+        // Also, reject any segments at level 2; we won't have any data for those.
+        const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj =>
+          obj.level === 2)
 
-        // todo: reject any segments at level 2, but right now, assume they
-        // are already not included.
-        const suffixes = parsedIds.map(getTileUrlSuffix)
+        // We now create data tile filepath suffixes from the parsed IDs, which
+        // are used to build URLs for fetching data tiles. By looking at the
+        // ids from the route segments, this allows us to fetch only the tiles
+        // we need. (If we looked only at the bounding box of the route, we
+        // would be downloading more tiles than we need to use.)
+        // We also filter out duplicate suffixes to avoid downloading the same
+        // tiles more than once.
+        const suffixes = uniq(parsedIds.map(getTileUrlSuffix))
+        const urls = suffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
 
-        // const urls = suffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
-        const urls = ['https://s3.amazonaws.com/speed-extracts/2017/0/0/002/415.spd.0.gz']
+        // TODO: We should also cache any tile that's already been retrieved.
+        // See the `data.js` module. Cache should be handled transparently there.
 
-        // console.log(parsedIds)
-
-        getSpeedTiles(urls)
+        // Download all data tiles
+        fetchDataTiles(urls)
           .then((tiles) => {
             parsedIds.forEach(item => {
               // not all levels and tiles are available yet, so try()
@@ -164,71 +166,8 @@ class MapContainer extends React.Component {
             console.log(JSON.stringify(parsedIds))
           })
           .catch((error) => {
-            console.log('[getSpeedTiles error]', error)
+            console.log('[fetchDataTiles error]', error)
           })
-
-        // Note: determining tiles this way based on only the route is more
-        // efficient because it means we download the minimum required tiles.
-        // Based only on rectangular bounds, a 45-degree angle kind of route,
-        // or a route that travels only on level 0 roads, will download more
-        // tiles than we actually need. This helps save on bandwidth and
-        // memory for qualifying requests.
-        // const promises = urls.map(url => fetch(url)
-        //   .then(res => res.json())
-        //   .catch(e => console.log(e)))
-        //
-        // Promise.all(promises).then(results => {
-        //   // results is an array of all response objects.
-        //   segmentIds.forEach(id => {
-        //     // console.log(id.toString())
-        //     // console.log(results[0].segments[id.toString()])
-        //   })
-        //   // console.log(segmentIds)
-        //   // console.log(Object.keys(results[0].segments)) // ['205655133048']
-        //   // console.log(results[0].segments['849766009720'])
-        // })
-
-        /**
-         * Fetch requested OSMLR geometry tiles and return its result as a
-         * single GeoJSON file.
-         *
-         * @param {Array<String>} suffixes - an array of tile path suffixes,
-         *            in the form of `x/xxx/xxx`.
-         * @return {Promise} - a Promise is returned passing the value of all
-         *            OSMLR geometry tiles, merged into a single GeoJSON.
-         */
-        function fetchOSMLRGeometryTiles (suffixes) {
-          const urls = suffixes.map(suffix => `${OSMLR_TILE_PATH}${suffix}.json`)
-          const fetchTiles = urls.map(url => fetch(url).then(res => res.json()))
-
-          // Results is an array of all GeoJSON tiles. Next, merge into one file
-          // and return the result as a single GeoJSON.
-          return Promise.all(fetchTiles).then(merge)
-        }
-
-        // Fetch all OSMLR geometry tiles.
-        // Remove all duplicate suffixes first so that we don't make more requests
-        // than we need. Memory management is important here. More than a certain
-        // number of tiles and we'll run out of memory.
-        fetchOSMLRGeometryTiles(uniq(suffixes)).then((geo) => {
-          console.log(geo)
-          setDataSource('routes', { type: 'GeoJSON', data: geo })
-
-          // lets see if we can find the segmentId as osmlr_id
-          const features = geo.features
-          let found = false
-          for (let i = 0, j = features.length; i < j; i++) {
-            // This property is a number, not a string
-            if (features[i].properties.osmlr_id === 849766009720) {
-              // console.log(features[i])
-              found = true
-              break
-            }
-          }
-          if (found === false) {
-            console.log('not found')
-          }
-        })
       })
   }
 
