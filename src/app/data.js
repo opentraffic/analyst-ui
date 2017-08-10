@@ -1,6 +1,9 @@
 import protobuf from 'protobufjs'
-import { filter } from 'lodash'
+import { filter, uniqWith, isEqual } from 'lodash'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
+import { getTileUrlSuffix } from '../lib/tiles'
+
+const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
 
 /**
  * Uses `protobuf.js` module to parse and read a `SpeedTile` protocol buffer.
@@ -52,6 +55,10 @@ export function consolidateTiles (tiles) {
       construct[lv][ix].push(source)
     }
 
+    // console.log(source.speeds.forEach((i) => {
+    //   if (i > 0) console.log(source.level, source.index, source.startSegmentIndex, i)
+    // }))
+
     return construct
   }, {})
 }
@@ -65,27 +72,42 @@ export function consolidateTiles (tiles) {
  * in cache do not need to be re-fetched. We may need to set a dynamic
  * cache limit based on available memory, if that's something we can determine.
  *
- * @param {Array<String>} urls - a list of URLs to fetch.
+ * @param {Array<Object>} ids - a list of ids in the format { level, tile }
  * @return {Promise} - resolved with an object where tiles with level and
  *            tile index mapped to a nested key structure.
  */
-export function fetchDataTiles (urls) {
-  const promises = urls.map(url =>
-    window.fetch(url)
-      .then((response) => {
-        // If a data tile fails to fetch, don't immediately reject; instead,
-        // resolve with an error object. We'll deal with these later.
-        if (!response.ok) {
-          return Promise.resolve({
-            url,
-            error: true,
-            status: response.status
-          })
-        }
+export function fetchDataTiles (ids) {
+  // Obtain a list of ids of just level and tile, which allows us to easily
+  // filter out duplicates.
+  const simpleIds = ids.map(id => { return { level: id.level, tile: id.tile } })
+  const uniqueIds = uniqWith(simpleIds, isEqual)
 
-        return response.arrayBuffer()
-      })
-  )
+  const promises = uniqueIds.reduce((array, id) => {
+    const suffix = getTileUrlSuffix(id)
+
+    // Temporary: download all subtiles cheat
+    const subtiles = [0, 1, 2]
+    const toDownload = subtiles.map((subtile) => {
+      const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
+
+      return window.fetch(url)
+        .then((response) => {
+          // If a data tile fails to fetch, don't immediately reject; instead,
+          // resolve with an error object. We'll deal with these later.
+          if (!response.ok) {
+            return Promise.resolve({
+              url,
+              error: true,
+              status: response.status
+            })
+          }
+
+          return response.arrayBuffer()
+        })
+    })
+
+    return array.concat(toDownload)
+  }, [])
 
   return Promise.all(promises)
     // Reject from the responses all tiles that have errored out. Log the

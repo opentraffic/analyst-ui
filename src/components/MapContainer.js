@@ -10,7 +10,7 @@ import Loader from './Loader'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
+import { parseSegmentId } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
@@ -70,9 +70,6 @@ class MapContainer extends React.Component {
 
     this.props.startLoading()
 
-    // Fetch data tiles from various sources.
-    const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
-
     // Fetch route from Valhalla-based routing service, given waypoints.
     getRoute(host, waypoints)
       // Transform Valhalla response to polyline coordinates for trace_attributes request
@@ -120,6 +117,14 @@ class MapContainer extends React.Component {
           })
         })
 
+        // We parse all segment ids for level, tile and segment indices, which
+        // are used to build URLs for fetching data tiles. By looking at the
+        // ids from the route segments, this allows us to fetch only the tiles
+        // we need. (If we looked only at the bounding box of the route, we
+        // would be downloading more tiles than we need to use.)
+        // We also filter out duplicate suffixes to avoid downloading the same
+        // tiles more than once.
+
         // OSMLR segments and Valhalla edges do not share a 1:1 relationship.
         // It is possible for a sequence of edges to share the same segment ID,
         // so there may be repetition in the array. First, remove all duplicate
@@ -129,21 +134,8 @@ class MapContainer extends React.Component {
         // Also, reject any segments at level 2; we won't have any data for those.
         const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
 
-        // We now create data tile filepath suffixes from the parsed IDs, which
-        // are used to build URLs for fetching data tiles. By looking at the
-        // ids from the route segments, this allows us to fetch only the tiles
-        // we need. (If we looked only at the bounding box of the route, we
-        // would be downloading more tiles than we need to use.)
-        // We also filter out duplicate suffixes to avoid downloading the same
-        // tiles more than once.
-        const suffixes = uniq(parsedIds.map(getTileUrlSuffix))
-        const urls = suffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
-
-        // TODO: We should also cache any tile that's already been retrieved.
-        // See the `data.js` module. Cache should be handled transparently there.
-
         // Download all data tiles
-        fetchDataTiles(urls)
+        fetchDataTiles(parsedIds)
           .then((tiles) => {
             parsedIds.forEach(item => {
               // not all levels and tiles are available yet, so try()
