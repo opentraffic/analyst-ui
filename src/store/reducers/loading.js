@@ -1,4 +1,4 @@
-import { SET_LOADING, STOP_LOADING } from '../actions'
+import { START_LOADING, STOP_LOADING } from '../actions'
 
 const initialState = {
   isLoading: false,
@@ -7,7 +7,7 @@ const initialState = {
 
 const loading = (state = initialState, action) => {
   switch (action.type) {
-    case SET_LOADING:
+    case START_LOADING:
       return {
         ...state,
         isLoading: true,

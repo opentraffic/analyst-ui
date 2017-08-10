@@ -1,7 +1,7 @@
-import { SET_LOADING, STOP_LOADING } from '../actions'
+import { START_LOADING, STOP_LOADING } from '../actions'
 
 export function setLoading() {
-  type: SET_LOADING
+  type: START_LOADING
 }
 
 export function stopLoading() {

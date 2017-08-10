@@ -3,7 +3,7 @@ export const SET_ANALYSIS_MODE = 'SET_ANALYSIS_MODE'
 export const CLEAR_ANALYSIS = 'CLEAR_ANALYSIS'
 export const SET_ANALYSIS_NAME = 'SET_ANALYSIS_NAME'
 
-export const SET_LOADING = 'SET_LOADING'
+export const START_LOADING = 'START_LOADING'
 export const STOP_LOADING = 'STOP_LOADING'
 
 /* date */
