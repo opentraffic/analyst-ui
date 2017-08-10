@@ -27,6 +27,9 @@ export const INSERT_ROUTE_WAYPOINT = 'INSERT_ROUTE_WAYPOINT'
 export const SET_ROUTE = 'SET_ROUTE'
 export const SET_ROUTE_ERROR = 'SET_ROUTE_ERROR'
 
+/* tangram */
+export const UPDATE_SCENE = 'UPDATE_SCENE'
+
 /* view bounds */
 export const SET_VIEW_BOUNDS = 'SET_VIEW_BOUNDS'
 export const CLEAR_VIEW_BOUNDS = 'CLEAR_VIEW_BOUNDS'

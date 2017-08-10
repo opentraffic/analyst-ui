@@ -43,14 +43,6 @@ i.icon.search-icon {
   color: #c9caca;
 }
 
-.leaflet-top .leaflet-control {
-  margin-top: 55px;
-}
-
-.leaflet-top {
-  z-index: 800;
-}
-
 .inputContainer {
   display: none;
 }

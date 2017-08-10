@@ -16,6 +16,35 @@
   color: #ddd;
 }
 
+.leaflet-top .leaflet-control {
+  margin-top: 55px;
+}
+
+.leaflet-top {
+  z-index: 800;
+}
+
+/* leaflet-touch styling for zoom buttons */
+.leaflet-bar {
+  border: solid 2px rgba(0,0,0,0.2) !important;
+  background-clip: padding-box !important;
+  box-shadow: none !important;
+}
+
+.leaflet-bar a {
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+}
+
+.leaflet-control-zoom-in {
+  font-size: 22px !important;
+}
+
+.leaflet-control-zoom-out {
+  font-size: 24px !important;
+}
+
 .map-bounding-box-disabled {
   cursor: inherit;
 }
