@@ -15,7 +15,6 @@ import * as routeActionCreators from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
-import { getSpeedColor } from '../lib/color-ramps'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -178,11 +177,9 @@ class MapContainer extends React.Component {
                   break
                 }
               }
-              const refSpeed = found ? found.referenceSpeed : null
-              const color = getSpeedColor(refSpeed)
               speeds.push({
                 coordinates: coordsSlice,
-                color: color
+                refSpeed: found ? found.referenceSpeed : null
               })
             })
 
