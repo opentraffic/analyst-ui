@@ -25,4 +25,3 @@ const loading = (state = initialState, action) => {
 }
 
 export default loading
-

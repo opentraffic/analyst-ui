@@ -8,9 +8,9 @@ class Loader extends React.Component {
     const { isLoading } = this.props
 
     if (isLoading) {
-      return(
-        <div className='loading-indicator'>
-          <Icon name='spinner' loading />
+      return (
+        <div className="loading-indicator">
+          <Icon name="spinner" loading />
           <i> Loading... </i>
         </div>
       )
@@ -19,7 +19,7 @@ class Loader extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps (state) {
   return {
     isLoading: state.loading.isLoading
   }
