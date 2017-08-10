@@ -6,12 +6,14 @@ import {
   INSERT_ROUTE_WAYPOINT,
   SET_ROUTE,
   SET_ROUTE_ERROR,
+  SET_MULTI_SEGMENTS,
   CLEAR_ANALYSIS
 } from '../actions'
 
 const initialState = {
   waypoints: [],
   lineCoordinates: [],
+  multiSegments: [],
   error: null
 }
 
@@ -60,6 +62,12 @@ const route = (state = initialState, action) => {
         ...state,
         lineCoordinates: [],
         error: action.error
+      }
+    case SET_MULTI_SEGMENTS:
+      return {
+        ...state,
+        multiSegments: action.multiSegments,
+        error: null
       }
     case CLEAR_ANALYSIS:
       return initialState

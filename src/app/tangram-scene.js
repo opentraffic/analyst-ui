@@ -8,6 +8,18 @@ const scene = {
   ],
   global: {
     'sdk_mapzen_api_key': config.mapzen.apiKey
+  },
+  layers: {
+    routes: {
+      data: { source: 'routes' },
+      draw: {
+        lines: {
+          order: 500,
+          color: 'red',
+          width: '2px'
+        }
+      }
+    }
   }
 }
 

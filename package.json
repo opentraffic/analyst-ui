@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/polyline": "0.2.0",
     "big-integer": "1.6.23",
     "leaflet": "1.0.3",
@@ -11,6 +12,7 @@
     "leaflet.path.drag": "0.0.5",
     "lodash": "4.17.4",
     "moment": "2.18.1",
+    "protobufjs": "6.8.0",
     "react": "15.6.1",
     "react-addons-shallow-compare": "15.6.0",
     "react-autosuggest": "9.3.1",
@@ -36,7 +38,8 @@
     "pretest": "npm run lint-js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint-js": "eslint src/ test/ --ext .js,.jsx"
+    "lint-js": "eslint src/ test/ --ext .js,.jsx",
+    "make-proto": "curl https://s3.amazonaws.com/speed-extracts/speedtile.proto -o /dev/stdout | pbjs -t json - -o ./src/proto/speedtile.proto.json"
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",
