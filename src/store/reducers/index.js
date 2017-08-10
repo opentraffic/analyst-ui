@@ -6,6 +6,7 @@ import errors from './errors'
 import map from './map'
 import route from './route'
 import viewBounds from './viewBounds'
+import loading from './loading'
 
 const reducers = combineReducers({
   app,
@@ -14,7 +15,8 @@ const reducers = combineReducers({
   errors,
   map,
   route,
-  viewBounds
+  viewBounds,
+  loading
 })
 
 export default reducers
