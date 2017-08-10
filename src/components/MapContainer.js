@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { isEqual, reject } from 'lodash'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
+import Loader from './Loader'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
@@ -125,6 +126,7 @@ class MapContainer extends React.Component {
           clearLabel={this.props.clearLabel}
           recenterMap={this.props.recenterMap}
         />
+        <Loader />
         <Map
           center={map.coordinates}
           zoom={map.zoom}

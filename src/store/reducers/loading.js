@@ -16,7 +16,7 @@ const loading = (state = initialState, action) => {
     case STOP_LOADING:
       return {
         ...state,
-        isLoading: state.counter - 1 === 0,
+        isLoading: state.counter - 1 !== 0,
         counter: state.counter - 1
       }
     default:
