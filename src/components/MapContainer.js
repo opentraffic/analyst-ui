@@ -6,6 +6,7 @@ import { isEqual, reject, uniq } from 'lodash'
 import polyline from '@mapbox/polyline'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
+import Loader from './Loader'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
@@ -13,6 +14,7 @@ import { getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
+import * as loadingActionCreators from '../store/actions/loading'
 import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
 import { getSpeedColor } from '../lib/color-ramps'
@@ -66,6 +68,8 @@ class MapContainer extends React.Component {
       this.props.clearRouteError()
       return
     }
+
+    this.props.startLoading()
 
     // Fetch data tiles from various sources.
     const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
@@ -187,6 +191,7 @@ class MapContainer extends React.Component {
             })
 
             this.props.setMultiSegments(speeds)
+            this.props.stopLoading()
           })
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)
@@ -210,6 +215,7 @@ class MapContainer extends React.Component {
           clearLabel={this.props.clearLabel}
           recenterMap={this.props.recenterMap}
         />
+        <Loader />
         <Map
           center={map.coordinates}
           zoom={map.zoom}
@@ -242,7 +248,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators, updateScene }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators, ...loadingActionCreators, updateScene }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)

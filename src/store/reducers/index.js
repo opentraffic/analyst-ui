@@ -7,6 +7,7 @@ import map from './map'
 import route from './route'
 import tangram from './tangram'
 import viewBounds from './viewBounds'
+import loading from './loading'
 
 const reducers = combineReducers({
   app,
@@ -16,7 +17,8 @@ const reducers = combineReducers({
   map,
   route,
   tangram,
-  viewBounds
+  viewBounds,
+  loading
 })
 
 export default reducers
