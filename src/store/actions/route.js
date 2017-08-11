@@ -4,7 +4,8 @@ import {
   UPDATE_ROUTE_WAYPOINT,
   INSERT_ROUTE_WAYPOINT,
   SET_ROUTE,
-  SET_ROUTE_ERROR
+  SET_ROUTE_ERROR,
+  SET_MULTI_SEGMENTS
 } from '../actions'
 
 export function addWaypoint (waypoint) {
@@ -62,5 +63,12 @@ export function clearRouteError () {
   return {
     type: SET_ROUTE_ERROR,
     error: null
+  }
+}
+
+export function setMultiSegments (segments) {
+  return {
+    type: SET_MULTI_SEGMENTS,
+    multiSegments: segments
   }
 }

@@ -1,0 +1,154 @@
+{
+  "nested": {
+    "SizeTest": {
+      "nested": {
+        "SpeedTile": {
+          "fields": {
+            "subtiles": {
+              "rule": "repeated",
+              "type": "SubTile",
+              "id": 1,
+              "options": {
+                "packed": false
+              }
+            }
+          },
+          "nested": {
+            "SubTile": {
+              "fields": {
+                "level": {
+                  "type": "uint32",
+                  "id": 1
+                },
+                "index": {
+                  "type": "uint32",
+                  "id": 2
+                },
+                "startSegmentIndex": {
+                  "type": "uint32",
+                  "id": 3
+                },
+                "totalSegments": {
+                  "type": "uint32",
+                  "id": 4
+                },
+                "subtileSegments": {
+                  "type": "uint32",
+                  "id": 5
+                },
+                "rangeStart": {
+                  "type": "uint32",
+                  "id": 6
+                },
+                "rangeEnd": {
+                  "type": "uint32",
+                  "id": 7
+                },
+                "unitSize": {
+                  "type": "uint32",
+                  "id": 8
+                },
+                "entrySize": {
+                  "type": "uint32",
+                  "id": 9
+                },
+                "description": {
+                  "type": "string",
+                  "id": 10
+                },
+                "referenceSpeeds": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 11,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "speeds": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 12,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "speedVariances": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 13,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "prevalences": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 14,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "nextSegmentIndices": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 15,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "nextSegmentCounts": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 16,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "nextSegmentIds": {
+                  "rule": "repeated",
+                  "type": "uint64",
+                  "id": 17,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "nextSegmentDelays": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 18,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "nextSegmentDelayVariances": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 19,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "nextSegmentQueueLengths": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 20,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "nextSegmentQueueLengthVariances": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 21,
+                  "options": {
+                    "packed": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

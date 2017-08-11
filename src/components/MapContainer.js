@@ -2,17 +2,21 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { isEqual, reject } from 'lodash'
+import { isEqual, reject, uniq } from 'lodash'
+import polyline from '@mapbox/polyline'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import Loader from './Loader'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
+import { getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
+import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
+import { fetchDataTiles } from '../app/data'
+import { getSpeedColor } from '../lib/color-ramps'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -64,49 +68,130 @@ class MapContainer extends React.Component {
       return
     }
 
+    // Fetch data tiles from various sources.
+    const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
+
+    // Fetch route from Valhalla-based routing service, given waypoints.
     getRoute(host, waypoints)
+      // Transform Valhalla response to polyline coordinates for trace_attributes request
+      .then(valhallaResponseToPolylineCoordinates)
+      // Make an additional trace_attributes request. This gives us information
+      // we need for the visualization.
+      .then(coordinates => getTraceAttributes(host, coordinates))
+      // This `catch` statement is placed here to handle errors from Fetch API.
+      .catch(error => {
+        const message = (typeof error === 'object' && error.error)
+          ? error.error
+          : error
+
+        this.props.setRouteError(message)
+      })
+      // If we're here, the network requests have succeeded. We now need to
+      // parse the response from `trace_attributes`. Here, we obtain the
+      // OSMLR segment ids for each edge.
       .then(response => {
-        const coordinates = valhallaResponseToPolylineCoordinates(response)
+        const segments = []
+        const segmentIds = []
+
+        // Decode the polyline and render it to the map
+        const coordinates = polyline.decode(response.shape, 6)
         this.props.setRoute(coordinates)
 
-        // Get bounding box for OSMLR tiles
-        const bounds = response.trip.summary
-        const tiles = getTilesForBbox(bounds.min_lon, bounds.min_lat, bounds.max_lon, bounds.max_lat)
+        // Documentation for trace_attributes response:
+        // https://mapzen.com/documentation/mobility/map-matching/api-reference/#outputs-of-trace_attributes
+        // The response contains an `edges` property. Each `edge` may include
+        // a `traffic_segments` property that correlates this edge with the OSMLR
+        // segment. This property is unique to the routing service deployed for
+        // OpenTraffic and is not part of the original Valhalla specification.
+        response.edges.forEach(edge => {
+          // It is possible for an edge not to have `traffic_segments`. These
+          // are likely edges that are not routable or not meaningful in the
+          // OpenTraffic system, or they are routes that have not yet been
+          // parsed and given an OSMLR id.
+          if (!edge.traffic_segments) return
 
-        // Get tiles (experimental)
-        // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/week0_2017/'
-        // const STATIC_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
-        // Local web server for files will gzip automatically.
-        const STATIC_TILE_PATH = '/sample-tiles/'
-        // For now, reject tiles at level 2
-        const downloadTiles = reject(tiles, (i) => i[0] === 2)
-        const tileUrls = []
-        downloadTiles.forEach(i => {
-          tileUrls.push(`${STATIC_TILE_PATH}${getTileUrlSuffix(i)}.json`)
+          // For each segment in `traffic_segments`, record all segments in one
+          // array, and segment ids in another array.
+          edge.traffic_segments.forEach((segment) => {
+            segments.push(segment)
+            segmentIds.push(segment.segment_id)
+          })
         })
 
-        // const promises = tileUrls.map(url => fetch(url).then(res => res.json()))
-        // Promise.all(promises).then(results => {
-        //   console.log(results)
-        // })
+        // OSMLR segments and Valhalla edges do not share a 1:1 relationship.
+        // It is possible for a sequence of edges to share the same segment ID,
+        // so there may be repetition in the array. First, remove all duplicate
+        // segment IDs, then parse each one. Each ID is a mask of three numbers
+        // that contain the tile level, tile index, and segment index. The
+        // result is an array of objects [{ level, tile, segment }, ...].
+        // Also, reject any segments at level 2; we won't have any data for those.
+        const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
 
-        return coordinates
-      })
-      .then(coordinates => {
-        // Experimental.
-        return getTraceAttributes(host, coordinates)
-      })
-      .then(response => {
-        console.log(response)
-      })
-      .catch(error => {
-        let message
-        if (typeof error === 'object' && error.error) {
-          message = error.error
-        } else {
-          message = error
-        }
-        this.props.setRouteError(message)
+        // We now create data tile filepath suffixes from the parsed IDs, which
+        // are used to build URLs for fetching data tiles. By looking at the
+        // ids from the route segments, this allows us to fetch only the tiles
+        // we need. (If we looked only at the bounding box of the route, we
+        // would be downloading more tiles than we need to use.)
+        // We also filter out duplicate suffixes to avoid downloading the same
+        // tiles more than once.
+        const suffixes = uniq(parsedIds.map(getTileUrlSuffix))
+        const urls = suffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
+
+        // TODO: We should also cache any tile that's already been retrieved.
+        // See the `data.js` module. Cache should be handled transparently there.
+
+        // Download all data tiles
+        fetchDataTiles(urls)
+          .then((tiles) => {
+            parsedIds.forEach(item => {
+              // not all levels and tiles are available yet, so try()
+              // skips it if it doesn't work
+              try {
+                const segmentId = item.segment
+                const subtiles = tiles[item.level][item.tile] // array
+                // find which subtile contains this segment id
+                for (let i = 0, j = subtiles.length; i < j; i++) {
+                  const tile = subtiles[i]
+                  const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
+                  // if this is the right tile, get the reference speed for the
+                  // current segment and attach it to the item.
+                  if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
+                    item.referenceSpeed = tile.referenceSpeeds[segmentId % tile.subtileSegments]
+                    break
+                  }
+                }
+              } catch (e) {}
+            })
+
+            // Now parsedIds contain reference speeds, if provided.
+            // Now let's draw this
+            const speeds = []
+            response.edges.forEach(edge => {
+              // Create individual segments for drawing, later.
+              const begin = edge.begin_shape_index
+              const end = edge.end_shape_index
+              const coordsSlice = coordinates.slice(begin, end + 1)
+              const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
+              let found
+              for (let i = 0, j = parsedIds.length; i < j; i++) {
+                if (id === parsedIds[i].id) {
+                  found = parsedIds[i]
+                  break
+                }
+              }
+              const refSpeed = found ? found.referenceSpeed : null
+              const color = getSpeedColor(refSpeed)
+              speeds.push({
+                coordinates: coordsSlice,
+                color: color
+              })
+            })
+
+            this.props.setMultiSegments(speeds)
+          })
+          .catch((error) => {
+            console.log('[fetchDataTiles error]', error)
+          })
       })
   }
 
@@ -159,7 +244,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators, updateScene }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)
