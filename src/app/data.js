@@ -4,6 +4,7 @@ import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
 const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
+const tileCache = {}
 
 /**
  * Uses `protobuf.js` module to parse and read a `SpeedTile` protocol buffer.
@@ -60,6 +61,14 @@ export function consolidateTiles (tiles) {
 }
 
 /**
+ * Test: tile cache
+ */
+function cacheTiles (tiles) {
+  Object.assign(tileCache, tiles)
+  return tiles
+}
+
+/**
  * Fetches all requested OpenTraffic data tiles and concatenates them into
  * a single object. If tiles are cached, retrieve those instead of performing
  * the actual network request.
@@ -73,6 +82,11 @@ export function consolidateTiles (tiles) {
  *            tile index mapped to a nested key structure.
  */
 export function fetchDataTiles (ids) {
+  // Temporary. If tilecache has values, return Promise-resolving as-is.
+  if (Object.keys(tileCache).length > 0) {
+    return Promise.resolve(tileCache)
+  }
+
   // Obtain a list of ids of just level and tile, which allows us to easily
   // filter out duplicates.
   const simpleIds = ids.map(id => { return { level: id.level, tile: id.tile } })
@@ -129,4 +143,5 @@ export function fetchDataTiles (ids) {
     .then(array => array.sort((a, b) => a.startSegmentIndex - b.startSegmentIndex))
     // Consolidate all subtiles into a single object with lookup keys
     .then(consolidateTiles)
+    .then(cacheTiles)
 }
