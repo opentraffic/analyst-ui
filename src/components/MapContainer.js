@@ -41,7 +41,8 @@ class MapContainer extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
+    if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
+      prevProps.tempHour === this.props.tempHour) return
 
     this.showRoute()
   }
@@ -153,8 +154,8 @@ class MapContainer extends React.Component {
                   // if this is the right tile, get the reference speed for the
                   // current segment and attach it to the item.
                   if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-                    // Test hour, hard-coded
-                    const hour = 23
+                    // Test hour
+                    const hour = this.props.tempHour
                     // Get the local id of the segment
                     // (eg. id 21000 is local id 1000 if tile segment size is 10000)
                     const subtileSegmentId = segmentId % tile.subtileSegments
@@ -251,7 +252,8 @@ function mapStateToProps (state) {
     route: state.route,
     map: state.map,
     bounds: state.viewBounds.bounds,
-    scene: state.tangram.scene
+    scene: state.tangram.scene,
+    tempHour: state.app.tempHour
   }
 }
 
