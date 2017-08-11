@@ -55,10 +55,6 @@ export function consolidateTiles (tiles) {
       construct[lv][ix].push(source)
     }
 
-    // console.log(source.speeds.forEach((i) => {
-    //   if (i > 0) console.log(source.level, source.index, source.startSegmentIndex, i)
-    // }))
-
     return construct
   }, {})
 }

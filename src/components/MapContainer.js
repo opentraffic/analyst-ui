@@ -150,14 +150,26 @@ class MapContainer extends React.Component {
                   // if this is the right tile, get the reference speed for the
                   // current segment and attach it to the item.
                   if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-                    item.referenceSpeed = tile.referenceSpeeds[segmentId % tile.subtileSegments]
+                    // Test hour, hard-coded
+                    const hour = 23
+                    // Get the local id of the segment
+                    // (eg. id 21000 is local id 1000 if tile segment size is 10000)
+                    const subtileSegmentId = segmentId % tile.subtileSegments
+                    // There is one array for every attribute. Divide unitSize by
+                    // entrySize to know how many entries belong to each segment,
+                    // and find the base index for that segment
+                    const entryBaseIndex = subtileSegmentId * (tile.unitSize / tile.entrySize)
+                    // Add the desired hour (0-index) to get the correct index value
+                    const desiredIndex = entryBaseIndex + hour
+
+                    // Append the data point to the return value for rendering later
+                    item.speed = tile.speeds[desiredIndex]
                     break
                   }
                 }
               } catch (e) {}
             })
 
-            // Now parsedIds contain reference speeds, if provided.
             // Now let's draw this
             const speeds = []
             response.edges.forEach(edge => {
@@ -173,9 +185,10 @@ class MapContainer extends React.Component {
                   break
                 }
               }
+
               speeds.push({
                 coordinates: coordsSlice,
-                refSpeed: found ? found.referenceSpeed : null
+                speed: found ? found.speed : null
               })
             })
 
