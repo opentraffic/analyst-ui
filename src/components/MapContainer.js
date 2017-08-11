@@ -84,6 +84,9 @@ class MapContainer extends React.Component {
           : error
 
         this.props.setRouteError(message)
+
+        // re-throw to prevent the later chain from executing
+        throw new Error(message)
       })
       // If we're here, the network requests have succeeded. We now need to
       // parse the response from `trace_attributes`. Here, we obtain the
@@ -198,6 +201,9 @@ class MapContainer extends React.Component {
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)
           })
+      })
+      .catch((error) => {
+        console.log(error)
       })
   }
 
