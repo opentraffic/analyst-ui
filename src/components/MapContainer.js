@@ -146,10 +146,11 @@ class MapContainer extends React.Component {
               // skips it if it doesn't work
               try {
                 const segmentId = item.segment
-                const subtiles = tiles[item.level][item.tile] // array
+                const subtiles = tiles[item.level][item.tile] // object
                 // find which subtile contains this segment id
-                for (let i = 0, j = subtiles.length; i < j; i++) {
-                  const tile = subtiles[i]
+                const subtileIds = Object.keys(subtiles)
+                for (let i = 0, j = subtileIds.length; i < j; i++) {
+                  const tile = subtiles[subtileIds[i]]
                   const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
                   // if this is the right tile, get the reference speed for the
                   // current segment and attach it to the item.

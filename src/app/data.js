@@ -45,16 +45,14 @@ function readDataTiles (buffer) {
  */
 export function consolidateTiles (tiles) {
   return tiles.reduce((construct, source) => {
-    const lv = source.level
-    const ix = source.index
+    const level = source.level
+    const index = source.index
+    const subtile = source.startSegmentIndex / source.subtileSegments
 
-    if (!construct[lv]) construct[lv] = {}
+    if (!construct[level]) construct[level] = {}
+    if (!construct[level][index]) construct[level][index] = {}
 
-    if (!construct[lv][ix]) {
-      construct[lv][ix] = [source]
-    } else {
-      construct[lv][ix].push(source)
-    }
+    construct[level][index][subtile] = source
 
     return construct
   }, {})
