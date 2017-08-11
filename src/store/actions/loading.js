@@ -1,6 +1,6 @@
 import { START_LOADING, STOP_LOADING } from '../actions'
 
-export function setLoading () {
+export function startLoading () {
   return {
     type: START_LOADING
   }
