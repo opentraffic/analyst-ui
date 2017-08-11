@@ -14,7 +14,6 @@
   "dependencies": {
     "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/polyline": "0.2.0",
-    "big-integer": "1.6.23",
     "leaflet": "1.0.3",
     "leaflet-editable": "1.0.0",
     "leaflet-extra-markers": "1.0.6",
