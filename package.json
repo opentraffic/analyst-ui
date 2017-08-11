@@ -2,6 +2,15 @@
   "name": "analyst-ui",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "pretest": "npm run lint-js",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint-js": "eslint src/ test/ --ext .js,.jsx",
+    "make-proto": "curl https://s3.amazonaws.com/speed-extracts/speedtile.proto -o /dev/stdout | pbjs -t json - -o ./src/proto/speedtile.proto.json"
+  },
   "dependencies": {
     "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/polyline": "0.2.0",
@@ -31,15 +40,6 @@
     "string.prototype.padstart": "3.0.0",
     "tangram": "0.13.0",
     "url-search-params-polyfill": "2.0.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "pretest": "npm run lint-js",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "lint-js": "eslint src/ test/ --ext .js,.jsx",
-    "make-proto": "curl https://s3.amazonaws.com/speed-extracts/speedtile.proto -o /dev/stdout | pbjs -t json - -o ./src/proto/speedtile.proto.json"
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",

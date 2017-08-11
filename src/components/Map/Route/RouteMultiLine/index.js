@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Polyline, LayerGroup } from 'react-leaflet'
+import { getSpeedColor } from '../../../../lib/color-ramps'
 
 export default class RouteMultiLine extends React.PureComponent {
   static propTypes = {
@@ -34,7 +35,7 @@ export default class RouteMultiLine extends React.PureComponent {
       return (
         <Polyline
           positions={segment.coordinates}
-          color={segment.color}
+          color={getSpeedColor(segment.refSpeed)}
           weight={4}
           onMouseDown={this.props.insertWaypoint}
           key={index}

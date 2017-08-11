@@ -6,14 +6,15 @@
 
 .leaflet-container .leaflet-control-attribution {
   background: transparent;
-  color: #ddd;
+  color: #444;
   margin: 0.5em;
-  text-shadow: 0 0 2px rgba(0,0,0,0.85);
+  text-shadow: 0 0 2px rgba(255,255,255,0.85);
 }
 
 .leaflet-control-attribution a,
-.leaflet-control-attribution a:hover {
-  color: #ddd;
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:visited {
+  color: #444;
 }
 
 .leaflet-top .leaflet-control {
