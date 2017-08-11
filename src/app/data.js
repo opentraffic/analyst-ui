@@ -67,6 +67,14 @@ function cacheTiles (tiles) {
 }
 
 /**
+ * Given 0-level tiles, figure out how many subtiles there are
+ */
+function figureOutHowManySubtilesThereAre (tile) {
+  const thisMany = Math.ceil(tile.totalSegments / tile.subtileSegments)
+  return `Tile at level ${tile.level} and index ${tile.index} has ${thisMany} subtiles`
+}
+
+/**
  * Fetches all requested OpenTraffic data tiles and concatenates them into
  * a single object. If tiles are cached, retrieve those instead of performing
  * the actual network request.
@@ -137,8 +145,12 @@ export function fetchDataTiles (ids) {
     .then(results => results.map(readDataTiles))
     // Move all subtiles into one array
     .then(objs => objs.reduce((a, b) => a.concat(b.subtiles), []))
-    // Sort all subtiles according to lowest `startSegmentIndex`
-    .then(array => array.sort((a, b) => a.startSegmentIndex - b.startSegmentIndex))
+    // ^^ above, break, repeat?
+    .then(tiles => {
+      const yeah = tiles.map(figureOutHowManySubtilesThereAre)
+      console.log(yeah)
+      return tiles
+    })
     // Consolidate all subtiles into a single object with lookup keys
     .then(consolidateTiles)
     .then(cacheTiles)
