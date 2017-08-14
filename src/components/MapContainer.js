@@ -80,18 +80,15 @@ class MapContainer extends React.Component {
       .then(coordinates => getTraceAttributes(host, coordinates))
       // This `catch` statement is placed here to handle errors from Fetch API.
       .catch(error => {
+        this.props.stopLoading()
         const message = (typeof error === 'object' && error.error)
           ? error.error
           : error
 
         this.props.setRouteError(message)
-<<<<<<< HEAD
-        this.props.stopLoading()
-=======
-
         // re-throw to prevent the later chain from executing
         throw new Error(message)
->>>>>>> fe9b672b8e0111afee19d26493cde312641797a9
+
       })
       // If we're here, the network requests have succeeded. We now need to
       // parse the response from `trace_attributes`. Here, we obtain the
@@ -202,10 +199,8 @@ class MapContainer extends React.Component {
             })
 
             this.props.setMultiSegments(speeds)
-            this.props.stopLoading()
           })
           .catch((error) => {
-            this.props.stopLoading()
             console.log('[fetchDataTiles error]', error)
           })
       })
