@@ -75,6 +75,36 @@ function figureOutHowManySubtilesThereAre (tile) {
 }
 
 /**
+ * Fetch one data tile given a parsed ID and a subtile number
+ *
+ * @param {Object} id - object of shape { level, tile, id, segment }
+ * @param {Number} subtile - number of subtile to download (default is 0)
+ * @returns {Promise} - resolved to either a plain JS object of the data tile,
+ *            _or_ an error object { error: true } if it failed. We don't
+ *            want this to throw because data tile fetch errors should be
+ *            skipped
+ */
+function fetchDataTile (id, subtile = 0) {
+  const suffix = getTileUrlSuffix(id)
+  const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
+  return window.fetch(url)
+    .then((response) => {
+      // If a data tile fails to fetch, don't immediately reject; instead,
+      // resolve with an error object. We'll deal with these later.
+      if (!response.ok) {
+        console.warn(`[analyst-ui] Unable to fetch a data tile from ${response.url}. The status code given was ${response.status}.`)
+        return Promise.resolve({ error: true })
+      }
+
+      return response.arrayBuffer()
+        // Read protobuf message and convert to plain object
+        .then(readDataTiles)
+        // We only want the child data object
+        .then(protobufMessage => protobufMessage.subtiles[0])
+    })
+}
+
+/**
  * Fetches all requested OpenTraffic data tiles and concatenates them into
  * a single object. If tiles are cached, retrieve those instead of performing
  * the actual network request.
@@ -99,29 +129,9 @@ export function fetchDataTiles (ids) {
   const uniqueIds = uniqWith(simpleIds, isEqual)
 
   const promises = uniqueIds.reduce((array, id) => {
-    const suffix = getTileUrlSuffix(id)
-
     // Temporary: download all subtiles cheat
     const subtiles = [0, 1, 2]
-    const toDownload = subtiles.map((subtile) => {
-      const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
-
-      return window.fetch(url)
-        .then((response) => {
-          // If a data tile fails to fetch, don't immediately reject; instead,
-          // resolve with an error object. We'll deal with these later.
-          if (!response.ok) {
-            return Promise.resolve({
-              url,
-              error: true,
-              status: response.status
-            })
-          }
-
-          return response.arrayBuffer()
-        })
-    })
-
+    const toDownload = subtiles.map((subtile) => fetchDataTile(id, subtile))
     return array.concat(toDownload)
   }, [])
 
@@ -129,23 +139,7 @@ export function fetchDataTiles (ids) {
     // Reject from the responses all tiles that have errored out. Log the
     // broken tile url with status code to the console. Return a final array
     // of ArrayBuffers.
-    .then(responses => {
-      return filter(responses, (response) => {
-        if (response.constructor === ArrayBuffer) {
-          return true
-        } else {
-          if (typeof response === 'object' && response.error === true) {
-            console.warn(`[analyst-ui] Unable to fetch a data tile from ${response.url}. The status code given was ${response.status}.`)
-          }
-          return false
-        }
-      })
-    })
-    // Read all protobuf messages and convert to plain objects
-    .then(results => results.map(readDataTiles))
-    // Move all subtiles into one array
-    .then(objs => objs.reduce((a, b) => a.concat(b.subtiles), []))
-    // ^^ above, break, repeat?
+    .then(responses => filter(responses, response => response.error !== true))
     .then(tiles => {
       const yeah = tiles.map(figureOutHowManySubtilesThereAre)
       console.log(yeah)
