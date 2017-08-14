@@ -70,8 +70,7 @@ function cacheTiles (tiles) {
  * Given 0-level tiles, figure out how many subtiles there are
  */
 function figureOutHowManySubtilesThereAre (tile) {
-  const thisMany = Math.ceil(tile.totalSegments / tile.subtileSegments)
-  return `Tile at level ${tile.level} and index ${tile.index} has ${thisMany} subtiles`
+  return Math.ceil(tile.totalSegments / tile.subtileSegments)
 }
 
 /**
@@ -87,6 +86,7 @@ function figureOutHowManySubtilesThereAre (tile) {
 function fetchDataTile (id, subtile = 0) {
   const suffix = getTileUrlSuffix(id)
   const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
+  console.log(url)
   return window.fetch(url)
     .then((response) => {
       // If a data tile fails to fetch, don't immediately reject; instead,
@@ -128,12 +128,7 @@ export function fetchDataTiles (ids) {
   const simpleIds = ids.map(id => { return { level: id.level, tile: id.tile } })
   const uniqueIds = uniqWith(simpleIds, isEqual)
 
-  const promises = uniqueIds.reduce((array, id) => {
-    // Temporary: download all subtiles cheat
-    const subtiles = [0, 1, 2]
-    const toDownload = subtiles.map((subtile) => fetchDataTile(id, subtile))
-    return array.concat(toDownload)
-  }, [])
+  const promises = uniqueIds.map((id) => fetchDataTile(id))
 
   return Promise.all(promises)
     // Reject from the responses all tiles that have errored out. Log the
@@ -141,9 +136,19 @@ export function fetchDataTiles (ids) {
     // of ArrayBuffers.
     .then(responses => filter(responses, response => response.error !== true))
     .then(tiles => {
-      const yeah = tiles.map(figureOutHowManySubtilesThereAre)
-      console.log(yeah)
-      return tiles
+      const newTiles = tiles.map(tile => {
+        const numSubtiles = figureOutHowManySubtilesThereAre(tile)
+        const toDownload = []
+        // Start at 1 because we already downloaded subtile at 0
+        for (let i = 1; i < numSubtiles; i++) {
+          const id = { level: tile.level, tile: tile.index }
+          toDownload.push(fetchDataTile(id, i))
+        }
+        return Promise.all(toDownload)
+          .then(responses => filter(responses, response => response.error !== true))
+      })
+
+      return tiles.concat(newTiles)
     })
     // Consolidate all subtiles into a single object with lookup keys
     .then(consolidateTiles)
