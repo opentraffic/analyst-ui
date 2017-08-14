@@ -35,7 +35,7 @@ export default class RouteMultiLine extends React.PureComponent {
       return (
         <Polyline
           positions={segment.coordinates}
-          color={getSpeedColor(segment.refSpeed)}
+          color={getSpeedColor(segment.speed)}
           weight={4}
           onMouseDown={this.props.insertWaypoint}
           key={index}

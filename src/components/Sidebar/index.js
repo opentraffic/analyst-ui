@@ -1,60 +1,72 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Segment, Header, Accordion, Checkbox, Button, Message } from 'semantic-ui-react'
+import { Segment, Header, Button } from 'semantic-ui-react'
 import DatePickerContainer from '../DatePickerContainer'
 import ErrorMessage from './ErrorMessage'
 import ModeSelect from './ModeSelect'
+import Legend from './Legend'
 import AnalysisName from '../AnalysisName'
 import './Sidebar.css'
+import store from '../../store'
 
-const panels = [
-  {
-    title: 'Test1',
-    content: 'This is a sentence1'
-  },
-  {
-    title: 'Test2',
-    content: 'This is a sentence2'
-  },
-  {
-    title: 'Test3',
-    content: 'This is a sentence3'
-  }
-]
+class Sidebar extends React.Component {
+  constructor (props) {
+    super(props)
 
-const Sidebar = (props) => {
-  let errors = null
-  if (props.errors.length > 0) {
-    errors = props.errors.map(error => (
-      <ErrorMessage header="Routing error" message={error.error} />
-    ))
+    this.state = {
+      hourValue: 23
+    }
+
+    this.onChangeSelect = this.onChangeSelect.bind(this)
   }
 
-  return (
-    <div className={'Sidebar ' + props.className}>
-      {errors}
-      <Segment>
-        <Header as="h3">Analysis name</Header>
-        <AnalysisName />
-      </Segment>
-      <ModeSelect />
-      <Segment>
-        <DatePickerContainer className="date-picker" />
-      </Segment>
-      <Segment>
-        <Header as="h3">Section header</Header>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        <Message>
-          <Checkbox toggle label="Toggle" />
-        </Message>
-        <Accordion panels={panels} styled />
-      </Segment>
-      <Segment>
-        <Header as="h3">Export</Header>
-        <Button icon="download" content="Download" color="blue" fluid />
-      </Segment>
-    </div>
-  )
+  onChangeSelect (event) {
+    const value = event.target.value
+    this.setState({ hourValue: value })
+    store.dispatch({
+      type: 'set_hour',
+      value: Number(value)
+    })
+  }
+
+  render () {
+    let errors = null
+    if (this.props.errors.length > 0) {
+      errors = this.props.errors.map(error => (
+        <ErrorMessage header="Routing error" message={error.error} />
+      ))
+    }
+
+    function generateHours () {
+      const arr = [...Array(168).keys()]
+      return arr.map(i => {
+        return <option value={i} key={i}>{i}</option>
+      })
+    }
+
+    return (
+      <div className={'Sidebar ' + this.props.className}>
+        {errors}
+        <Segment>
+          <Header as="h3">Analysis name</Header>
+          <AnalysisName />
+        </Segment>
+        <ModeSelect />
+        <Segment>
+          <DatePickerContainer className="date-picker" />
+          <Header as="h3">Budget time picker</Header>
+          <select value={this.state.value} onChange={this.onChangeSelect}>
+            {generateHours()}
+          </select>
+        </Segment>
+        <Legend />
+        <Segment>
+          <Header as="h3">Export</Header>
+          <Button icon="download" content="Download" color="blue" fluid />
+        </Segment>
+      </div>
+    )
+  }
 }
 
 function mapStateToProps (state) {

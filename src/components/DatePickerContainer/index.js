@@ -18,11 +18,9 @@ class DatePickerContainer extends React.Component {
     this.state = {
       focusedInput: null
     }
-
-    this.handleDateChange = this.handleDateChange.bind(this)
   }
 
-  handleDateChange (date) {
+  handleDateChange = (date) => {
     // if start/end is not equal to null then take unix of timestamp of start/end
     const start = date.startDate instanceof (moment) ? date.startDate.valueOf() : null
     const end = date.endDate instanceof (moment) ? date.endDate.valueOf() : null

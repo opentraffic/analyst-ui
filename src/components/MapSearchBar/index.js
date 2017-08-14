@@ -26,8 +26,6 @@ class MapSearchBar extends React.Component {
 
     this.throttleMakeRequest = throttle(this.makeRequest, 250)
     this.onChangeAutosuggest = this.onChangeAutosuggest.bind(this)
-    this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
-    this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this)
     this.getSuggestionValue = this.getSuggestionValue.bind(this)
     this.renderSuggestion = this.renderSuggestion.bind(this)
     this.makeRequest = this.makeRequest.bind(this)
@@ -46,15 +44,16 @@ class MapSearchBar extends React.Component {
       this.refs.searchButton.ref.classList.add('search-bar__expanded')
     }
   }
+
   // Will be called every time you need to recalculate suggestions
-  onSuggestionsFetchRequested ({value}) {
+  onSuggestionsFetchRequested = ({value}) => {
     if (value.length >= 2) {
       this.autocomplete(value)
     }
   }
 
   // Will be called every time you need to set suggestions to []
-  onSuggestionsClearRequested () {
+  onSuggestionsClearRequested = () => {
     this.setState({
       suggestions: []
     })

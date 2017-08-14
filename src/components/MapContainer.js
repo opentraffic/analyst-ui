@@ -10,7 +10,7 @@ import Loader from './Loader'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
+import { parseSegmentId } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
 import * as routeActionCreators from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
@@ -41,7 +41,8 @@ class MapContainer extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (isEqual(prevProps.route.waypoints, this.props.route.waypoints)) return
+    if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
+      prevProps.tempHour === this.props.tempHour) return
 
     this.showRoute()
   }
@@ -70,9 +71,6 @@ class MapContainer extends React.Component {
 
     this.props.startLoading()
 
-    // Fetch data tiles from various sources.
-    const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
-
     // Fetch route from Valhalla-based routing service, given waypoints.
     getRoute(host, waypoints)
       // Transform Valhalla response to polyline coordinates for trace_attributes request
@@ -87,7 +85,13 @@ class MapContainer extends React.Component {
           : error
 
         this.props.setRouteError(message)
+<<<<<<< HEAD
         this.props.stopLoading()
+=======
+
+        // re-throw to prevent the later chain from executing
+        throw new Error(message)
+>>>>>>> fe9b672b8e0111afee19d26493cde312641797a9
       })
       // If we're here, the network requests have succeeded. We now need to
       // parse the response from `trace_attributes`. Here, we obtain the
@@ -121,6 +125,14 @@ class MapContainer extends React.Component {
           })
         })
 
+        // We parse all segment ids for level, tile and segment indices, which
+        // are used to build URLs for fetching data tiles. By looking at the
+        // ids from the route segments, this allows us to fetch only the tiles
+        // we need. (If we looked only at the bounding box of the route, we
+        // would be downloading more tiles than we need to use.)
+        // We also filter out duplicate suffixes to avoid downloading the same
+        // tiles more than once.
+
         // OSMLR segments and Valhalla edges do not share a 1:1 relationship.
         // It is possible for a sequence of edges to share the same segment ID,
         // so there may be repetition in the array. First, remove all duplicate
@@ -130,43 +142,43 @@ class MapContainer extends React.Component {
         // Also, reject any segments at level 2; we won't have any data for those.
         const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
 
-        // We now create data tile filepath suffixes from the parsed IDs, which
-        // are used to build URLs for fetching data tiles. By looking at the
-        // ids from the route segments, this allows us to fetch only the tiles
-        // we need. (If we looked only at the bounding box of the route, we
-        // would be downloading more tiles than we need to use.)
-        // We also filter out duplicate suffixes to avoid downloading the same
-        // tiles more than once.
-        const suffixes = uniq(parsedIds.map(getTileUrlSuffix))
-        const urls = suffixes.map(suffix => `${STATIC_DATA_TILE_PATH}${suffix}.spd.0.gz`)
-
-        // TODO: We should also cache any tile that's already been retrieved.
-        // See the `data.js` module. Cache should be handled transparently there.
-
         // Download all data tiles
-        fetchDataTiles(urls)
+        fetchDataTiles(parsedIds)
           .then((tiles) => {
             parsedIds.forEach(item => {
               // not all levels and tiles are available yet, so try()
               // skips it if it doesn't work
               try {
                 const segmentId = item.segment
-                const subtiles = tiles[item.level][item.tile] // array
+                const subtiles = tiles[item.level][item.tile] // object
                 // find which subtile contains this segment id
-                for (let i = 0, j = subtiles.length; i < j; i++) {
-                  const tile = subtiles[i]
+                const subtileIds = Object.keys(subtiles)
+                for (let i = 0, j = subtileIds.length; i < j; i++) {
+                  const tile = subtiles[subtileIds[i]]
                   const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
                   // if this is the right tile, get the reference speed for the
                   // current segment and attach it to the item.
                   if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-                    item.referenceSpeed = tile.referenceSpeeds[segmentId % tile.subtileSegments]
+                    // Test hour
+                    const hour = this.props.tempHour
+                    // Get the local id of the segment
+                    // (eg. id 21000 is local id 1000 if tile segment size is 10000)
+                    const subtileSegmentId = segmentId % tile.subtileSegments
+                    // There is one array for every attribute. Divide unitSize by
+                    // entrySize to know how many entries belong to each segment,
+                    // and find the base index for that segment
+                    const entryBaseIndex = subtileSegmentId * (tile.unitSize / tile.entrySize)
+                    // Add the desired hour (0-index) to get the correct index value
+                    const desiredIndex = entryBaseIndex + hour
+
+                    // Append the data point to the return value for rendering later
+                    item.speed = tile.speeds[desiredIndex]
                     break
                   }
                 }
               } catch (e) {}
             })
 
-            // Now parsedIds contain reference speeds, if provided.
             // Now let's draw this
             const speeds = []
             response.edges.forEach(edge => {
@@ -182,9 +194,10 @@ class MapContainer extends React.Component {
                   break
                 }
               }
+
               speeds.push({
                 coordinates: coordsSlice,
-                refSpeed: found ? found.referenceSpeed : null
+                speed: found ? found.speed : null
               })
             })
 
@@ -195,6 +208,9 @@ class MapContainer extends React.Component {
             this.props.stopLoading()
             console.log('[fetchDataTiles error]', error)
           })
+      })
+      .catch((error) => {
+        console.log(error)
       })
   }
 
@@ -242,7 +258,8 @@ function mapStateToProps (state) {
     route: state.route,
     map: state.map,
     bounds: state.viewBounds.bounds,
-    scene: state.tangram.scene
+    scene: state.tangram.scene,
+    tempHour: state.app.tempHour
   }
 }
 
