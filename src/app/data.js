@@ -86,7 +86,7 @@ function figureOutHowManySubtilesThereAre (tile) {
 function fetchDataTile (id, subtile = 0) {
   const suffix = getTileUrlSuffix(id)
   const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
-  console.log(url)
+
   return window.fetch(url)
     .then((response) => {
       // If a data tile fails to fetch, don't immediately reject; instead,
