@@ -80,7 +80,7 @@ class MapContainer extends React.Component {
       .then(coordinates => getTraceAttributes(host, coordinates))
       // This `catch` statement is placed here to handle errors from Fetch API.
       .catch(error => {
-        this.props.stopLoading()
+        this.props.hideLoading()
         const message = (typeof error === 'object' && error.error)
           ? error.error
           : error
@@ -198,6 +198,7 @@ class MapContainer extends React.Component {
             })
 
             this.props.setMultiSegments(speeds)
+            this.props.stopLoading()
           })
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)

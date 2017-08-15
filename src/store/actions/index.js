@@ -5,6 +5,7 @@ export const SET_ANALYSIS_NAME = 'SET_ANALYSIS_NAME'
 
 export const START_LOADING = 'START_LOADING'
 export const STOP_LOADING = 'STOP_LOADING'
+export const HIDE_LOADING = 'HIDE_LOADING'
 
 /* date */
 export const SET_DATE = 'SET_DATE'

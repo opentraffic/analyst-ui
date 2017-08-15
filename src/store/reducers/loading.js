@@ -1,4 +1,4 @@
-import { START_LOADING, STOP_LOADING } from '../actions'
+import { START_LOADING, STOP_LOADING, HIDE_LOADING } from '../actions'
 
 const initialState = {
   isLoading: false,
@@ -18,6 +18,12 @@ const loading = (state = initialState, action) => {
         ...state,
         isLoading: state.counter - 1 !== 0,
         counter: state.counter - 1
+      }
+    case HIDE_LOADING:
+      return {
+        ...state,
+        isLoading: false,
+        counter: 0
       }
     default:
       return state
