@@ -80,12 +80,12 @@ class MapContainer extends React.Component {
       .then(coordinates => getTraceAttributes(host, coordinates))
       // This `catch` statement is placed here to handle errors from Fetch API.
       .catch(error => {
+        this.props.hideLoading()
         const message = (typeof error === 'object' && error.error)
           ? error.error
           : error
 
         this.props.setRouteError(message)
-
         // re-throw to prevent the later chain from executing
         throw new Error(message)
       })
@@ -202,6 +202,7 @@ class MapContainer extends React.Component {
           })
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)
+            this.props.hideLoading()
           })
       })
       .catch((error) => {
