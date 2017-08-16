@@ -17,6 +17,7 @@ import { updateScene } from '../store/actions/tangram'
 import * as loadingActionCreators from '../store/actions/loading'
 import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
+import { showRegion } from '../app/test'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -37,6 +38,7 @@ class MapContainer extends React.Component {
   componentDidMount () {
     if (this.props.bounds) {
       drawBounds(this.props.bounds)
+      showRegion(this.props.bounds)
     }
   }
 
@@ -137,7 +139,6 @@ class MapContainer extends React.Component {
         // result is an array of objects [{ level, tile, segment }, ...].
         // Also, reject any segments at level 2; we won't have any data for those.
         const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
-
         // Download all data tiles
         fetchDataTiles(parsedIds)
           .then((tiles) => {
@@ -177,6 +178,7 @@ class MapContainer extends React.Component {
 
             // Now let's draw this
             const speeds = []
+            console.log(response)
             response.edges.forEach(edge => {
               // Create individual segments for drawing, later.
               const begin = edge.begin_shape_index
