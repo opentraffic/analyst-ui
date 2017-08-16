@@ -184,6 +184,7 @@ class MapContainer extends React.Component {
               const begin = edge.begin_shape_index
               const end = edge.end_shape_index
               const coordsSlice = coordinates.slice(begin, end + 1)
+              console.log(coordsSlice)
               const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
               let found
               for (let i = 0, j = parsedIds.length; i < j; i++) {
