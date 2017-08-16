@@ -81,6 +81,7 @@ class MapContainer extends React.Component {
       // This `catch` statement is placed here to handle errors from Fetch API.
       .catch(error => {
         this.props.hideLoading()
+        console.log('I stopped loading here')
         const message = (typeof error === 'object' && error.error)
           ? error.error
           : error
@@ -196,12 +197,14 @@ class MapContainer extends React.Component {
                 speed: found ? found.speed : null
               })
             })
-
             this.props.setMultiSegments(speeds)
             this.props.stopLoading()
+            console.log('I stopped loading here')
           })
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)
+            this.props.hideLoading()
+            console.log('I stopped loading here')
           })
       })
       .catch((error) => {
