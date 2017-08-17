@@ -1,12 +1,14 @@
+/* eslint-disable */
 import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
 import { getRoute } from '../lib/valhalla'
 import { merge } from '../lib/geojson'
 import { fetchDataTiles } from './data'
-import { setDataSource, getCurrentScene } from '../lib/tangram'
+import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import L from 'leaflet'
 import { uniq } from 'lodash'
 import { parseSegmentId } from '../lib/tiles'
 import store from '../store'
+import { getSpeedColor } from '../lib/color-ramps'
 
 const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
 //const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
@@ -28,6 +30,7 @@ function getSpeedsCoords (parsedIds, features) {
     if (parsedIds[i].id === osmlr_id) {
       const coordinates = features[i].geometry.coordinates
       const speed = parsedIds[i]['speed']
+      features[i].properties.speed = (typeof speed === 'undefined') ? null : speed
       speeds.push({
         coordinates: coordinates,
         speed: (typeof speed === 'undefined') ? null : speed
@@ -35,6 +38,30 @@ function getSpeedsCoords (parsedIds, features) {
     }
   }
   return speeds
+}
+
+function withinBbox (coordinates) {
+  const good_indices = []
+  for (let lineIndex = 0, j = coordinates.length; lineIndex < j; lineIndex++) {
+    const line = coordinates[lineIndex]
+    for (let pointsIndex = 0, j = line.length; pointsIndex < j; pointsIndex++) {
+      const points = line[pointsIndex]
+      const good = points.filter(function(latlng) {
+        const lng = latlng[0]
+        const lat = latlng[1]
+        if (!(lng < Number(bounds.west) || lng > Number(bounds.east) || lat < Number(bounds.south) || lat > Number(bounds.north))) {
+          return latlng
+        }
+      })
+      if (good.length !== 0) {
+        good_indices.push({
+          lineIndex: lineIndex,
+          pointsIndex: pointsIndex
+        })
+      }
+    }
+  }
+  return good_indices
 }
 
 export function showRegion (bounds) {
@@ -53,12 +80,51 @@ export function showRegion (bounds) {
     .then((suffixes) => {
       fetchOSMLRGeometryTiles(suffixes)
         .then((results) => {
-          console.log(results)
-          setDataSource('routes', { type: 'GeoJSON', data: results })
-          console.log(getCurrentScene())
+          // Remove from geojson, routes outside bounding box (bounds)
+
+          // Features is an ARRAY of type feature that is an object
+          // containing GEOMETRY and PROPERTIES
           const features = results.features
+          // We need to check the geometry.coordinates to check if they're within bounds
+          // If not within bound, remove entire feature from features
+          const coordinates = features.map(feature => {
+            return feature.geometry.coordinates
+          })
+
+          // Coordinates have array of lines
+          // Lines have array of points
+          // Points have one array of latlngs [lng, lat]
+          for (let lineIndex = coordinates.length-1; lineIndex >= 0; lineIndex--) {
+            const line = coordinates[lineIndex]
+            for (let pointsIndex = line.length-1; pointsIndex >= 0; pointsIndex--) {
+              const points = line[pointsIndex]
+              for (let coordIndex = points.length-1; coordIndex >= 0; coordIndex--) {
+                const point = points[coordIndex]
+                const lat = point[1]
+                const lng = point[0]
+                // Checking if latlng is within bounding box
+                // If not remove from points
+                if (lng < Number(bounds.west) || lng > Number(bounds.east) || lat < Number(bounds.south) || lat > Number(bounds.north)) {
+                  points.splice(coordIndex,1)
+                }
+              }
+              // If no points in line, remove from line
+              if (points.length === 0) { line.splice(pointsIndex, 1)}
+            }
+            // If no lines in coordinates, remove from coordinates
+            if (line.length === 0) { coordinates.splice(lineIndex, 1)}
+          }
+
+          // If no coordinates, remove entire feature from array of features
+          for (let i = features.length-1; i >= 0; i--) {
+            const feature = features[i]
+            if (feature.geometry.coordinates.length === 0) { features.splice(i, 1)}
+          }
+          // Since we removed within the array, not a clone,
+          // We can set the data source for tangram directly
+          setDataSource('routes', { type: 'GeoJSON', data: results })
           // Get segment IDs to use later
-          const segmentIds = features.map(key => {
+          /*const segmentIds = features.map(key => {
             return key.properties.osmlr_id
           })
           // Removing duplicates of segment IDs
@@ -95,7 +161,10 @@ export function showRegion (bounds) {
                 }
               })
               getSpeedsCoords(parsedIds, features)
-            })
+              const scene = getCurrentScene()
+              scene.layers.routes.draw.lines.color = getSpeedColor(55)
+              setCurrentScene(scene)
+            })*/
         })
     })
 }
