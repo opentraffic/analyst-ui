@@ -44,9 +44,11 @@ class MapContainer extends React.Component {
 
   componentDidUpdate (prevProps) {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
-      prevProps.tempHour === this.props.tempHour) return
+        isEqual(prevProps.bounds, this.props.bounds) &&
+        prevProps.tempHour === this.props.tempHour) return
 
     this.showRoute()
+    showRegion(this.props.bounds)
   }
 
   onClick (event) {

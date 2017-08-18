@@ -9,6 +9,7 @@ import { uniq } from 'lodash'
 import { parseSegmentId } from '../lib/tiles'
 import store from '../store'
 import { getSpeedColor } from '../lib/color-ramps'
+import { startLoading, stopLoading } from '../store/actions/loading'
 
 const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
 //const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
@@ -40,8 +41,12 @@ function getSpeedsCoords (parsedIds, features) {
   return speeds
 }
 
-function withinBbox (coordinates) {
+function withinBbox1 (features, bounds) {
   const good_indices = []
+  const coordinates = features.map(feature => {
+    return feature.geometry.coordinates
+  })
+
   for (let lineIndex = 0, j = coordinates.length; lineIndex < j; lineIndex++) {
     const line = coordinates[lineIndex]
     for (let pointsIndex = 0, j = line.length; pointsIndex < j; pointsIndex++) {
@@ -61,7 +66,91 @@ function withinBbox (coordinates) {
       }
     }
   }
-  return good_indices
+
+  for (let i = good_indices.length-1; i > 0; i--) {
+    const curr = good_indices[i]
+    const prev = good_indices[i-1]
+    if (curr.lineIndex === prev.lineIndex) {
+      if (Array.isArray(curr.pointsIndex)) {
+        curr.pointsIndex.push(prev.pointsIndex)
+        prev.pointsIndex = curr.pointsIndex
+      } else {
+        const newPoints = [curr.pointsIndex, prev.pointsIndex]
+        prev.pointsIndex = newPoints
+      }
+      good_indices.splice(i,1)
+    }
+  }
+
+  const new_features = []
+  for (let i = 0; i < good_indices.length; i++) {
+    const lineIndex = good_indices[i].lineIndex
+    new_features.push(features[lineIndex])
+    const feature = new_features[i]
+    const coordinates = feature.geometry.coordinates
+    const pointsIndex = good_indices[i].pointsIndex
+    if (Array.isArray(pointsIndex)) {
+      for (let i = coordinates.length-1; i >= 0; i--) {
+        if (!pointsIndex.includes(i)) {
+          coordinates.splice(i, 1)
+        }
+      }
+    }
+  }
+  return new_features
+
+}
+
+/**
+ * More specific in that it removes all latlngs within features that are outside bounding box
+ * This causes some parts of lines to not be drawn since the endpoint is outisde bounding box
+ *
+ * Goes through each coordinate, each line, each point, and removes (in place)
+ * latlngs that are outside bounding box
+ * It then removes array of points if empty, array of lines if empty, array of coordinates if empty,
+ * and finally, if that feature has no coordinates, it removes the feature from the array of features
+ *
+ * @param {array} features - geojson from OSMLR geometry tile
+ * @param {object} bounds - the latlngs of the bounding box
+ * @returns {array} - features that are within the bounding box
+*/
+
+function withinBbox (features, bounds) {
+  // We need to check the geometry.coordinates to check if they're within bounds
+  // If not within bound, remove entire feature from features
+  const buffer = 0.0005
+  const coordinates = features.map(feature => {
+    return feature.geometry.coordinates
+  })
+  // Coordinates have array of lines
+  // Lines have array of points
+  // Points have one array of latlngs [lng, lat]
+  for (let lineIndex = coordinates.length-1; lineIndex >= 0; lineIndex--) {
+    const line = coordinates[lineIndex]
+    for (let pointsIndex = line.length-1; pointsIndex >= 0; pointsIndex--) {
+      const points = line[pointsIndex]
+      for (let coordIndex = points.length-1; coordIndex >= 0; coordIndex--) {
+        const point = points[coordIndex]
+        const lat = point[1]
+        const lng = point[0]
+        // Checking if latlng is within bounding box
+        // If not remove from points
+        if (lng < Number(bounds.west) - buffer || lng > Number(bounds.east) + buffer || lat < Number(bounds.south) - buffer || lat > Number(bounds.north) + buffer) {
+          points.splice(coordIndex,1)
+        }
+      }
+      // If no points in line, remove from line
+      if (points.length === 0) { line.splice(pointsIndex, 1)}
+    }
+    // If no lines in coordinates, remove from coordinates
+    if (line.length === 0) { coordinates.splice(lineIndex, 1)}
+  }
+
+  // If no coordinates, remove entire feature from array of features
+  for (let i = features.length-1; i >= 0; i--) {
+    const feature = features[i]
+    if (feature.geometry.coordinates.length === 0) { features.splice(i, 1)}
+  }
 }
 
 export function showRegion (bounds) {
@@ -78,53 +167,16 @@ export function showRegion (bounds) {
     })
     // Second, fetch the OSMLR Geometry tiles using the suffixes
     .then((suffixes) => {
+      store.dispatch(startLoading())
       fetchOSMLRGeometryTiles(suffixes)
         .then((results) => {
-          // Remove from geojson, routes outside bounding box (bounds)
-
-          // Features is an ARRAY of type feature that is an object
-          // containing GEOMETRY and PROPERTIES
           const features = results.features
-          // We need to check the geometry.coordinates to check if they're within bounds
-          // If not within bound, remove entire feature from features
-          const coordinates = features.map(feature => {
-            return feature.geometry.coordinates
-          })
+          // Remove from geojson, routes outside bounding box (bounds)
+          withinBbox(features, bounds)
+          //results.features = withinBbox1(features, bounds)
 
-          // Coordinates have array of lines
-          // Lines have array of points
-          // Points have one array of latlngs [lng, lat]
-          for (let lineIndex = coordinates.length-1; lineIndex >= 0; lineIndex--) {
-            const line = coordinates[lineIndex]
-            for (let pointsIndex = line.length-1; pointsIndex >= 0; pointsIndex--) {
-              const points = line[pointsIndex]
-              for (let coordIndex = points.length-1; coordIndex >= 0; coordIndex--) {
-                const point = points[coordIndex]
-                const lat = point[1]
-                const lng = point[0]
-                // Checking if latlng is within bounding box
-                // If not remove from points
-                if (lng < Number(bounds.west) || lng > Number(bounds.east) || lat < Number(bounds.south) || lat > Number(bounds.north)) {
-                  points.splice(coordIndex,1)
-                }
-              }
-              // If no points in line, remove from line
-              if (points.length === 0) { line.splice(pointsIndex, 1)}
-            }
-            // If no lines in coordinates, remove from coordinates
-            if (line.length === 0) { coordinates.splice(lineIndex, 1)}
-          }
-
-          // If no coordinates, remove entire feature from array of features
-          for (let i = features.length-1; i >= 0; i--) {
-            const feature = features[i]
-            if (feature.geometry.coordinates.length === 0) { features.splice(i, 1)}
-          }
-          // Since we removed within the array, not a clone,
-          // We can set the data source for tangram directly
-          setDataSource('routes', { type: 'GeoJSON', data: results })
           // Get segment IDs to use later
-          /*const segmentIds = features.map(key => {
+          const segmentIds = features.map(key => {
             return key.properties.osmlr_id
           })
           // Removing duplicates of segment IDs
@@ -132,39 +184,39 @@ export function showRegion (bounds) {
           // Using segmentIds, fetch data tiles
           fetchDataTiles(parsedIds)
             .then((tiles) => {
-              parsedIds.forEach(item => {
-                const segmentId = item.segment
-                const subtiles = tiles[item.level][item.tile]
-                const subtileIds = Object.keys(subtiles)
-                for (let i = 0, j = subtileIds.length; i < j; i++) {
-                  const tile = subtiles[subtileIds[i]]
-                  const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
-                  // if this is the right tile, get the reference speed for the
-                  // current segment and attach it to the item.
-                  if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-                    // Test hour
-                    const hour = store.getState().app.tempHour
-                    // Get the local id of the segment
-                    // (eg. id 21000 is local id 1000 if tile segment size is 10000)
-                    const subtileSegmentId = segmentId % tile.subtileSegments
-                    // There is one array for every attribute. Divide unitSize by
-                    // entrySize to know how many entries belong to each segment,
-                    // and find the base index for that segment
-                    const entryBaseIndex = subtileSegmentId * (tile.unitSize / tile.entrySize)
-                    // Add the desired hour (0-index) to get the correct index value
-                    const desiredIndex = entryBaseIndex + hour
+              parsedIds.forEach((item,index) => {
+                try {
+                  const segmentId = item.segment
+                  const subtiles = tiles[item.level][item.tile]
+                  const subtileIds = Object.keys(subtiles)
+                  for (let i = 0, j = subtileIds.length; i < j; i++) {
+                    const tile = subtiles[subtileIds[i]]
+                    const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
+                    // if this is the right tile, get the reference speed for the
+                    // current segment and attach it to the item.
+                    if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
+                      // Test hour
+                      const hour = store.getState().app.tempHour
+                      // Get the local id of the segment
+                      // (eg. id 21000 is local id 1000 if tile segment size is 10000)
+                      const subtileSegmentId = segmentId % tile.subtileSegments
+                      // There is one array for every attribute. Divide unitSize by
+                      // entrySize to know how many entries belong to each segment,
+                      // and find the base index for that segment
+                      const entryBaseIndex = subtileSegmentId * (tile.unitSize / tile.entrySize)
+                      // Add the desired hour (0-index) to get the correct index value
+                      const desiredIndex = entryBaseIndex + hour
 
-                    // Append the data point to the return value for rendering later
-                    item.speed = tile.speeds[desiredIndex]
-                    break
+                      // Append the data point to the features.properties for tangram to render later
+                      features[index].properties.speed = tile.speeds[desiredIndex]
+                      break
+                    }
                   }
-                }
+                } catch (e) {}
               })
-              getSpeedsCoords(parsedIds, features)
-              const scene = getCurrentScene()
-              scene.layers.routes.draw.lines.color = getSpeedColor(55)
-              setCurrentScene(scene)
-            })*/
+              setDataSource('routes', { type: 'GeoJSON', data: results })
+              store.dispatch(stopLoading())
+            })
         })
     })
 }
