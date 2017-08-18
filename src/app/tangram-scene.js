@@ -16,10 +16,10 @@ const scene = {
         lines: {
           order: 500,
           width: '3px',
-          color: function() {
+          color: function () {
             /* global feature */
-            var speed = feature.speed
-            var color = speed >= 70 ? '#313695' :
+            const speed = feature.speed
+            const color = speed >= 70 ? '#313695' :
                         speed >= 65 ? '#4575b4' :
                         speed >= 60 ? '#74add1' :
                         speed >= 55 ? '#abd9e9' :

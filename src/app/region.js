@@ -1,23 +1,20 @@
 import L from 'leaflet'
 import { uniq } from 'lodash'
-import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
+import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import { getRoute } from '../lib/valhalla'
 import { merge } from '../lib/geojson'
 import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
-import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
 import store from '../store'
 import { startLoading, stopLoading } from '../store/actions/loading'
 
-
 const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
-//const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
 const host = 'routing-prod.opentraffic.io'
 
 function getSuffixes (bbox) {
   const tiles = getTilesForBbox(bbox.min_lon, bbox.min_lat, bbox.max_lon, bbox.max_lat)
   // Filter out tiles with level 2, no data for those
-  const downloadTiles = tiles.filter(function(tile) { return tile[0] !== 2 })
+  const downloadTiles = tiles.filter(function (tile) { return tile[0] !== 2 })
   // Get suffixes of these tiles
   const suffixes = downloadTiles.map(i => getTileUrlSuffix(i))
   return suffixes
@@ -44,31 +41,31 @@ function withinBbox (features, bounds) {
   // Coordinates have array of lines
   // Lines have array of points
   // Points have one array of latlngs [lng, lat]
-  for (let lineIndex = coordinates.length-1; lineIndex >= 0; lineIndex--) {
+  for (let lineIndex = coordinates.length - 1; lineIndex >= 0; lineIndex--) {
     const line = coordinates[lineIndex]
-    for (let pointsIndex = line.length-1; pointsIndex >= 0; pointsIndex--) {
+    for (let pointsIndex = line.length - 1; pointsIndex >= 0; pointsIndex--) {
       const points = line[pointsIndex]
-      for (let coordIndex = points.length-1; coordIndex >= 0; coordIndex--) {
+      for (let coordIndex = points.length - 1; coordIndex >= 0; coordIndex--) {
         const point = points[coordIndex]
         const lat = point[1]
         const lng = point[0]
         // Checking if latlng is within bounding box
         // If not remove from points
         if (lng < Number(bounds.west) - buffer || lng > Number(bounds.east) + buffer || lat < Number(bounds.south) - buffer || lat > Number(bounds.north) + buffer) {
-          points.splice(coordIndex,1)
+          points.splice(coordIndex, 1)
         }
       }
       // If no points in line, remove from line
-      if (points.length === 0) { line.splice(pointsIndex, 1)}
+      if (points.length === 0) { line.splice(pointsIndex, 1) }
     }
     // If no lines in coordinates, remove from coordinates
-    if (line.length === 0) { coordinates.splice(lineIndex, 1)}
+    if (line.length === 0) { coordinates.splice(lineIndex, 1) }
   }
 
   // If no coordinates, remove entire feature from array of features
-  for (let i = features.length-1; i >= 0; i--) {
+  for (let i = features.length - 1; i >= 0; i--) {
     const feature = features[i]
-    if (feature.geometry.coordinates.length === 0) { features.splice(i, 1)}
+    if (feature.geometry.coordinates.length === 0) { features.splice(i, 1) }
   }
 }
 
@@ -110,7 +107,7 @@ export function showRegion (bounds) {
           // Using segmentIds, fetch data tiles
           fetchDataTiles(parsedIds)
             .then((tiles) => {
-              parsedIds.forEach((item,index) => {
+              parsedIds.forEach((item, index) => {
                 try {
                   const segmentId = item.segment
                   const subtiles = tiles[item.level][item.tile]
@@ -141,12 +138,11 @@ export function showRegion (bounds) {
                 } catch (e) {}
               })
               setDataSource('routes', { type: 'GeoJSON', data: results })
-              store.dispatch(stopLoading())
             })
+          store.dispatch(stopLoading())
         })
     })
 }
-
 
 /**
  * Fetch requested OSMLR geometry tiles and return its result as a
@@ -164,4 +160,3 @@ function fetchOSMLRGeometryTiles (suffixes) {
   // and return the result as a single GeoJSON.
   return Promise.all(fetchTiles).then(merge)
 }
-

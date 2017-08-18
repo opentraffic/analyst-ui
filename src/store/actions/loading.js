@@ -12,7 +12,7 @@ export function stopLoading () {
   }
 }
 
-export function hideLoading() {
+export function hideLoading () {
   return {
     type: HIDE_LOADING
   }
