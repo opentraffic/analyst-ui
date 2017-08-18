@@ -1,15 +1,14 @@
-/* eslint-disable */
+import L from 'leaflet'
+import { uniq } from 'lodash'
 import { getTilesForBbox, getTileUrlSuffix } from '../lib/tiles'
 import { getRoute } from '../lib/valhalla'
 import { merge } from '../lib/geojson'
-import { fetchDataTiles } from './data'
 import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
-import L from 'leaflet'
-import { uniq } from 'lodash'
 import { parseSegmentId } from '../lib/tiles'
+import { fetchDataTiles } from './data'
 import store from '../store'
-import { getSpeedColor } from '../lib/color-ramps'
 import { startLoading, stopLoading } from '../store/actions/loading'
+
 
 const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
 //const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
@@ -25,9 +24,6 @@ function getSuffixes (bbox) {
 }
 
 /**
- * More specific in that it removes all latlngs within features that are outside bounding box
- * This causes some parts of lines to not be drawn since the endpoint is outisde bounding box
- *
  * Goes through each coordinate, each line, each point, and removes (in place)
  * latlngs that are outside bounding box
  * It then removes array of points if empty, array of lines if empty, array of coordinates if empty,
@@ -77,9 +73,16 @@ function withinBbox (features, bounds) {
 }
 
 export function showRegion (bounds) {
-  if (!bounds) { return }
+  // If bounds are cleared, remove data source from tangram
+  if (!bounds) {
+    const scene = getCurrentScene()
+    delete scene.sources.routes
+    setCurrentScene(scene)
+    return
+  }
+
   // First, convert bounds to waypoints
-  // This way we can get the routes and bounding box from valhalla
+  // This way we can get the bounding box from valhalla and suffixes
   const waypoints = [L.latLng(bounds.south, bounds.west), L.latLng(bounds.north, bounds.east)]
   // Go get route using Valhalla
   getRoute(host, waypoints)
@@ -97,7 +100,6 @@ export function showRegion (bounds) {
           const features = results.features
           // Remove from geojson, routes outside bounding box (bounds)
           withinBbox(features, bounds)
-          //results.features = withinBbox1(features, bounds)
 
           // Get segment IDs to use later
           const segmentIds = features.map(key => {
@@ -131,7 +133,7 @@ export function showRegion (bounds) {
                       // Add the desired hour (0-index) to get the correct index value
                       const desiredIndex = entryBaseIndex + hour
 
-                      // Append the data point to the features.properties for tangram to render later
+                      // Append the speed to the features.properties for tangram to render later
                       features[index].properties.speed = tile.speeds[desiredIndex]
                       break
                     }

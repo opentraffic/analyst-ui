@@ -1,6 +1,4 @@
-/* global feature */
 import config from '../config'
-import { getSpeedColor } from '../lib/color-ramps'
 
 const scene = {
   import: [
@@ -17,8 +15,9 @@ const scene = {
       draw: {
         lines: {
           order: 500,
-          width: '2px',
+          width: '3px',
           color: function() {
+            /* global feature */
             var speed = feature.speed
             var color = speed >= 70 ? '#313695' :
                         speed >= 65 ? '#4575b4' :
@@ -29,11 +28,13 @@ const scene = {
                         speed >= 40 ? '#fdae61' :
                         speed >= 35 ? '#f46d43' :
                         speed >= 30 ? '#d73027' :
-                        speed >= 0 ? '#a50026' :
-                        '#000'
+                        speed > 0 ? '#a50026' :
+                        '#ccc'
             return color
-            //return getSpeedColor(speed)
-            //  ReferenceError: __webpack_require__ is not defined
+          },
+          outline: {
+            width: '1px',
+            color: '#222'
           }
         }
       }

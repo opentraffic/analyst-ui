@@ -17,7 +17,7 @@ import { updateScene } from '../store/actions/tangram'
 import * as loadingActionCreators from '../store/actions/loading'
 import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
-import { showRegion } from '../app/test'
+import { showRegion } from '../app/region'
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -180,13 +180,11 @@ class MapContainer extends React.Component {
 
             // Now let's draw this
             const speeds = []
-            console.log(response)
             response.edges.forEach(edge => {
               // Create individual segments for drawing, later.
               const begin = edge.begin_shape_index
               const end = edge.end_shape_index
               const coordsSlice = coordinates.slice(begin, end + 1)
-              console.log(coordsSlice)
               const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
               let found
               for (let i = 0, j = parsedIds.length; i < j; i++) {
