@@ -24,83 +24,6 @@ function getSuffixes (bbox) {
   return suffixes
 }
 
-function getSpeedsCoords (parsedIds, features) {
-  const speeds = []
-  for (let i = 0, j = parsedIds.length; i < j; i++) {
-    const osmlr_id = features[i].properties.osmlr_id
-    if (parsedIds[i].id === osmlr_id) {
-      const coordinates = features[i].geometry.coordinates
-      const speed = parsedIds[i]['speed']
-      features[i].properties.speed = (typeof speed === 'undefined') ? null : speed
-      speeds.push({
-        coordinates: coordinates,
-        speed: (typeof speed === 'undefined') ? null : speed
-      })
-    }
-  }
-  return speeds
-}
-
-function withinBbox1 (features, bounds) {
-  const good_indices = []
-  const coordinates = features.map(feature => {
-    return feature.geometry.coordinates
-  })
-
-  for (let lineIndex = 0, j = coordinates.length; lineIndex < j; lineIndex++) {
-    const line = coordinates[lineIndex]
-    for (let pointsIndex = 0, j = line.length; pointsIndex < j; pointsIndex++) {
-      const points = line[pointsIndex]
-      const good = points.filter(function(latlng) {
-        const lng = latlng[0]
-        const lat = latlng[1]
-        if (!(lng < Number(bounds.west) || lng > Number(bounds.east) || lat < Number(bounds.south) || lat > Number(bounds.north))) {
-          return latlng
-        }
-      })
-      if (good.length !== 0) {
-        good_indices.push({
-          lineIndex: lineIndex,
-          pointsIndex: pointsIndex
-        })
-      }
-    }
-  }
-
-  for (let i = good_indices.length-1; i > 0; i--) {
-    const curr = good_indices[i]
-    const prev = good_indices[i-1]
-    if (curr.lineIndex === prev.lineIndex) {
-      if (Array.isArray(curr.pointsIndex)) {
-        curr.pointsIndex.push(prev.pointsIndex)
-        prev.pointsIndex = curr.pointsIndex
-      } else {
-        const newPoints = [curr.pointsIndex, prev.pointsIndex]
-        prev.pointsIndex = newPoints
-      }
-      good_indices.splice(i,1)
-    }
-  }
-
-  const new_features = []
-  for (let i = 0; i < good_indices.length; i++) {
-    const lineIndex = good_indices[i].lineIndex
-    new_features.push(features[lineIndex])
-    const feature = new_features[i]
-    const coordinates = feature.geometry.coordinates
-    const pointsIndex = good_indices[i].pointsIndex
-    if (Array.isArray(pointsIndex)) {
-      for (let i = coordinates.length-1; i >= 0; i--) {
-        if (!pointsIndex.includes(i)) {
-          coordinates.splice(i, 1)
-        }
-      }
-    }
-  }
-  return new_features
-
-}
-
 /**
  * More specific in that it removes all latlngs within features that are outside bounding box
  * This causes some parts of lines to not be drawn since the endpoint is outisde bounding box
@@ -154,6 +77,7 @@ function withinBbox (features, bounds) {
 }
 
 export function showRegion (bounds) {
+  if (!bounds) { return }
   // First, convert bounds to waypoints
   // This way we can get the routes and bounding box from valhalla
   const waypoints = [L.latLng(bounds.south, bounds.west), L.latLng(bounds.north, bounds.east)]

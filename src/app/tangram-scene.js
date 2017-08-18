@@ -1,7 +1,6 @@
-/* global __webpack_require__ */
 /* global feature */
 import config from '../config'
-import { speedRamp, getSpeedColor } from '../lib/color-ramps'
+import { getSpeedColor } from '../lib/color-ramps'
 
 const scene = {
   import: [
@@ -31,9 +30,10 @@ const scene = {
                         speed >= 35 ? '#f46d43' :
                         speed >= 30 ? '#d73027' :
                         speed >= 0 ? '#a50026' :
-                        '#ccc'
+                        '#000'
             return color
             //return getSpeedColor(speed)
+            //  ReferenceError: __webpack_require__ is not defined
           }
         }
       }
