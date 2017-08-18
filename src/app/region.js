@@ -141,6 +141,10 @@ export function showRegion (bounds) {
             })
           store.dispatch(stopLoading())
         })
+        .catch((error) => {
+          console.log('[fetchDataTiles error]', error)
+          store.dispatch(stopLoading())
+        })
     })
 }
 
