@@ -18,6 +18,7 @@ const scene = {
           width: '3px',
           color: function () {
             /* global feature */
+            /* eslint-disable */
             const speed = feature.speed
             const color = speed >= 70 ? '#313695' :
                         speed >= 65 ? '#4575b4' :
