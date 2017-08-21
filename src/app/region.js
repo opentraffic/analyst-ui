@@ -131,7 +131,6 @@ export function showRegion (bounds) {
                       const desiredIndex = entryBaseIndex + hour
 
                       // Append the speed to the features.properties for tangram to render later
-                      item.speed = tile.speeds[desiredIndex]
                       features[index].properties.speed = tile.speeds[desiredIndex]
                       break
                     }
