@@ -1,6 +1,10 @@
 .Sidebar {
-  padding: 1rem;
+  padding: 8px 11px 16px;
   background-color: whitesmoke;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+.Sidebar .ui.segment {
+  margin: 8px 0;
 }
