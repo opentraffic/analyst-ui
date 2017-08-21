@@ -35,7 +35,8 @@ const scene = {
           outline: {
             width: '1px',
             color: '#222'
-          }
+          },
+          join: 'round'
         }
       }
     }
