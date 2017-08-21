@@ -175,7 +175,6 @@ class MapContainer extends React.Component {
                     break
                   }
                 }
-                console.log(parsedIds)
               } catch (e) {}
             })
 
@@ -201,6 +200,7 @@ class MapContainer extends React.Component {
               })
             })
 
+            console.log(speeds)
             this.props.setMultiSegments(speeds)
             this.props.stopLoading()
           })

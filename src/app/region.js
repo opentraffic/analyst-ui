@@ -34,7 +34,7 @@ function getSuffixes (bbox) {
 function withinBbox (features, bounds) {
   // We need to check the geometry.coordinates to check if they're within bounds
   // If not within bound, remove entire feature from features
-  const buffer = 0.0005
+  const buffer = 0.0003
   const coordinates = features.map(feature => {
     return feature.geometry.coordinates
   })
@@ -131,12 +131,14 @@ export function showRegion (bounds) {
                       const desiredIndex = entryBaseIndex + hour
 
                       // Append the speed to the features.properties for tangram to render later
+                      item.speed = tile.speeds[desiredIndex]
                       features[index].properties.speed = tile.speeds[desiredIndex]
                       break
                     }
                   }
                 } catch (e) {}
               })
+              console.log(results, parsedIds)
               setDataSource('routes', { type: 'GeoJSON', data: results })
             })
           store.dispatch(stopLoading())
