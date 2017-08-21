@@ -57,7 +57,11 @@ class MapContainer extends React.Component {
     // onClick to fire in the wrong place.
     if (event.originalEvent.target.tagName === 'CANVAS') {
       if (this.props.mode !== 'ROUTE') return
-
+      if (this.props.map.zoom < 10) {
+        const message = 'Please zoom to at least zoom 10 before placing a route marker'
+        this.props.setRouteError(message)
+        return
+      }
       this.props.addWaypoint(event.latlng)
     }
   }
@@ -199,8 +203,6 @@ class MapContainer extends React.Component {
                 speed: found ? found.speed : null
               })
             })
-
-            console.log(speeds)
             this.props.setMultiSegments(speeds)
             this.props.stopLoading()
           })

@@ -5,7 +5,6 @@ import { speedRamp } from '../../../lib/color-ramps'
 export default class Legend extends React.PureComponent {
   makeTableRows () {
     const scale = speedRamp.slice().reverse()
-    console.log(scale)
     return scale.map((i) => {
       return (
         <tr key={i.color}>

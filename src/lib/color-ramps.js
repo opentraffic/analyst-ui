@@ -51,8 +51,6 @@ export const speedRamp = [
   }
 ]
 
-console.log(speedRamp)
-
 /**
  * Returns a hex color value given a speed value. Based on the same speed
  * color ramp from Mapzen Mobility Explorer
