@@ -18,7 +18,7 @@ export default class Legend extends React.PureComponent {
   render () {
     return (
       <Segment>
-        <Header as="h3">Speed, in miles per hour</Header>
+        <Header as="h3">Speed, in kilomters per hour</Header>
         <table>
           <tbody>
             {this.makeTableRows()}
