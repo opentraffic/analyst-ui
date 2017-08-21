@@ -5,6 +5,7 @@ import ErrorMessage from './ErrorMessage'
 import AnalysisName from './AnalysisName'
 import ModeSelect from './ModeSelect'
 import DatePickerContainer from '../DatePickerContainer'
+import BarChart from './BarChart'
 import Legend from './Legend'
 import ExportData from './ExportData'
 import './Sidebar.css'
@@ -55,6 +56,7 @@ class Sidebar extends React.Component {
             {generateHours()}
           </select>
         </Segment>
+        <BarChart />
         <Legend />
         <ExportData />
       </div>
