@@ -7,6 +7,7 @@ import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import { fetchDataTiles } from './data'
 import store from '../store'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
+import { setRouteError } from '../store/actions/route'
 
 const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
 const host = 'routing-prod.opentraffic.io'
@@ -34,6 +35,10 @@ function getSuffixes (bbox) {
 function withinBbox (features, bounds) {
   // We need to check the geometry.coordinates to check if they're within bounds
   // If not within bound, remove entire feature from features
+
+  // Arbitrary number for buffer, edit if needed.
+  // Sometimes the endpoint of a line falls outside the bounding box which leads to
+  // but not by a lot. The buffer allows the line to be drawn.
   const buffer = 0.0003
   const coordinates = features.map(feature => {
     return feature.geometry.coordinates
@@ -75,6 +80,19 @@ export function showRegion (bounds) {
     const scene = getCurrentScene()
     delete scene.sources.routes
     setCurrentScene(scene)
+    return
+  }
+
+  // If area of bounding box exceeds max_area, display error
+  const width = (bounds.east - bounds.west)
+  const height = (bounds.north -bounds.south)
+  const area = width * height
+
+  // Arbitrary number for max_area, edit if needed
+  const max_area = 0.01
+  if (area > max_area) {
+    const message = 'Please zoom in and reduce the size of your bounding box'
+    store.dispatch(setRouteError(message))
     return
   }
 
@@ -137,7 +155,6 @@ export function showRegion (bounds) {
                   }
                 } catch (e) {}
               })
-              console.log(results, parsedIds)
               setDataSource('routes', { type: 'GeoJSON', data: results })
               store.dispatch(stopLoading())
             })
