@@ -6,7 +6,7 @@ import { merge } from '../lib/geojson'
 import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import { fetchDataTiles } from './data'
 import store from '../store'
-import { startLoading, stopLoading } from '../store/actions/loading'
+import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 
 const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
 const host = 'routing-prod.opentraffic.io'
@@ -139,12 +139,12 @@ export function showRegion (bounds) {
               })
               console.log(results, parsedIds)
               setDataSource('routes', { type: 'GeoJSON', data: results })
+              store.dispatch(stopLoading())
             })
-          store.dispatch(stopLoading())
         })
         .catch((error) => {
           console.log('[fetchDataTiles error]', error)
-          store.dispatch(stopLoading())
+          store.dispatch(hideLoading())
         })
     })
 }
