@@ -1,6 +1,7 @@
 import React from 'react'
 import { Segment, Header } from 'semantic-ui-react'
 import { speedRamp } from '../../../lib/color-ramps'
+import './Legend.css'
 
 export default class Legend extends React.PureComponent {
   makeTableRows () {
@@ -9,9 +10,9 @@ export default class Legend extends React.PureComponent {
 
     return scale.map((i) => {
       return (
-        <tr key={i.color}>
-          <th style={{ backgroundColor: i.color, width: '25px', height: '25px' }} />
-          <td style={{ paddingLeft: '0.5em' }}>{i.label}</td>
+        <tr className="legend-row" key={i.color}>
+          <th className="legend-color" style={{ backgroundColor: i.color }} />
+          <td className="legend-label">{i.label}</td>
         </tr>
       )
     })
