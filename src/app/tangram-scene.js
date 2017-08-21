@@ -20,15 +20,15 @@ const scene = {
             /* global feature */
             /* eslint-disable */
             const speed = feature.speed
-            const color = speed >= 70 ? '#313695' :
-                        speed >= 65 ? '#4575b4' :
-                        speed >= 60 ? '#74add1' :
-                        speed >= 55 ? '#abd9e9' :
-                        speed >= 50 ? '#e0f3f8' :
-                        speed >= 45 ? '#fee090' :
+            const color = speed >= 100 ? '#313695' :
+                        speed >= 90 ? '#4575b4' :
+                        speed >= 80 ? '#74add1' :
+                        speed >= 70 ? '#abd9e9' :
+                        speed >= 60 ? '#e0f3f8' :
+                        speed >= 50 ? '#fee090' :
                         speed >= 40 ? '#fdae61' :
-                        speed >= 35 ? '#f46d43' :
-                        speed >= 30 ? '#d73027' :
+                        speed >= 30 ? '#f46d43' :
+                        speed >= 20 ? '#d73027' :
                         speed > 0 ? '#a50026' :
                         '#ccc'
             return color

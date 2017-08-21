@@ -205,6 +205,7 @@ class MapContainer extends React.Component {
           })
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)
+            this.props.hideLoading()
           })
       })
       .catch((error) => {
