@@ -175,6 +175,7 @@ class MapContainer extends React.Component {
                     break
                   }
                 }
+                console.log(parsedIds)
               } catch (e) {}
             })
 

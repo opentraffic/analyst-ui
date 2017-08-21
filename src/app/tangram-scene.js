@@ -18,19 +18,18 @@ const scene = {
           width: '3px',
           color: function () {
             /* global feature */
-            /* eslint-disable */
             const speed = feature.speed
-            const color = speed >= 100 ? '#313695' :
-                        speed >= 90 ? '#4575b4' :
-                        speed >= 80 ? '#74add1' :
-                        speed >= 70 ? '#abd9e9' :
-                        speed >= 60 ? '#e0f3f8' :
-                        speed >= 50 ? '#fee090' :
-                        speed >= 40 ? '#fdae61' :
-                        speed >= 30 ? '#f46d43' :
-                        speed >= 20 ? '#d73027' :
-                        speed > 0 ? '#a50026' :
-                        '#ccc'
+            const color = speed >= 100 ? '#313695'
+                        : speed >= 90 ? '#4575b4'
+                        : speed >= 80 ? '#74add1'
+                        : speed >= 70 ? '#abd9e9'
+                        : speed >= 60 ? '#e0f3f8'
+                        : speed >= 50 ? '#fee090'
+                        : speed >= 40 ? '#fdae61'
+                        : speed >= 30 ? '#f46d43'
+                        : speed >= 20 ? '#d73027'
+                        : speed > 0 ? '#a50026'
+                        : '#ccc'
             return color
           },
           outline: {
