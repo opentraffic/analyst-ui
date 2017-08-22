@@ -74,6 +74,13 @@ function withinBbox (features, bounds) {
   }
 }
 
+function getBboxArea (bounds) {
+  const width = (bounds.east - bounds.west)
+  const height = (bounds.north - bounds.south)
+  const area = width * height
+  return area
+}
+
 export function showRegion (bounds) {
   // If bounds are cleared, remove data source from tangram
   if (!bounds) {
@@ -84,13 +91,10 @@ export function showRegion (bounds) {
   }
 
   // If area of bounding box exceeds max_area, display error
-  const width = (bounds.east - bounds.west)
-  const height = (bounds.north -bounds.south)
-  const area = width * height
-
   // Arbitrary number for max_area, edit if needed
-  const max_area = 0.01
-  if (area > max_area) {
+  const maxArea = 0.01
+  const area = getBboxArea(bounds)
+  if (area > maxArea) {
     const message = 'Please zoom in and reduce the size of your bounding box'
     store.dispatch(setRouteError(message))
     return
