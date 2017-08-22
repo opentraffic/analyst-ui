@@ -16,8 +16,6 @@ class AnalysisName extends React.Component {
     this.state = {
       isEditing: false
     }
-
-    this.updateDocTitle(this.props.viewName)
   }
 
   componentDidUpdate () {
@@ -27,21 +25,11 @@ class AnalysisName extends React.Component {
     }
   }
 
-  updateDocTitle (value) {
-    const defaultTitle = 'OpenTraffic Analyst UI'
-    if (value !== '') {
-      document.title = value + ' | ' + defaultTitle
-    } else {
-      document.title = defaultTitle
-    }
-  }
-
   handleSubmit = (event) => {
     event.preventDefault()
     const input = this.viewName.inputRef.value
     this.setState({ isEditing: false })
     this.props.dispatch(setAnalysisName(input))
-    this.updateDocTitle(input)
   }
 
   handleClick = (event) => {

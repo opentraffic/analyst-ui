@@ -1,5 +1,5 @@
 const config = {
-  name: 'analyst-ui',
+  name: 'OpenTraffic Analyst UI',
   mapzen: {
     apiKey: 'mapzen-YFrX5jt'
   },

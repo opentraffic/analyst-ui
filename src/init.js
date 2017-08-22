@@ -8,6 +8,7 @@ import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/viewBounds'
 import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './store/actions/app'
 import { initUrlUpdate } from './app/update-url'
+import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
 import { getQueryStringObject, updateURL } from './lib/url-state'
 
@@ -59,6 +60,7 @@ export function initApp (queryString = window.location.search) {
 
   // Listen for updates to store, which updates the URL
   initUrlUpdate()
+  initDocTitle()
 }
 
 function initRoute (value) {
