@@ -1,74 +1,76 @@
+import colorbrewer from 'colorbrewer'
+
+const BLANK_COLOR = '#ccc'
+const CB_RDYLBU10 = colorbrewer.RdYlBu[10]
+
 export const speedRamp = [
   {
-    color: '#a50026',
+    color: CB_RDYLBU10[0],
     minValue: 0,
     label: 'Less than 20'
   },
   {
-    color: '#d73027',
+    color: CB_RDYLBU10[1],
     minValue: 20,
     label: '20'
   },
   {
-    color: '#f46d43',
+    color: CB_RDYLBU10[2],
     minValue: 30,
     label: '30'
   },
   {
-    color: '#fdae61',
+    color: CB_RDYLBU10[3],
     minValue: 40,
     label: '40'
   },
   {
-    color: '#fee090',
+    color: CB_RDYLBU10[4],
     minValue: 50,
     label: '50'
   },
   {
-    color: '#e0f3f8',
+    color: CB_RDYLBU10[5],
     minValue: 60,
     label: '60'
   },
   {
-    color: '#abd9e9',
+    color: CB_RDYLBU10[6],
     minValue: 70,
     label: '70'
   },
   {
-    color: '#74add1',
+    color: CB_RDYLBU10[7],
     minValue: 80,
     label: '80'
   },
   {
-    color: '#4575b4',
+    color: CB_RDYLBU10[8],
     minValue: 90,
     label: '90'
   },
   {
-    color: '#313695',
+    color: CB_RDYLBU10[9],
     minValue: 100,
     label: 'Greater than 100'
   }
 ]
 
 /**
- * Returns a hex color value given a speed value. Based on the same speed
- * color ramp from Mapzen Mobility Explorer
- * https://github.com/mapzen/mobility-explorer/blob/master/app/map-matching/controller.js
+ * Returns a hex color value given a speed value. Based on color ramp from
+ * colorbrewer: http://colorbrewer2.org/#type=diverging&scheme=RdYlBu&n=10
  *
  * @param {Number} value
  * @return {String} color - a CSS color
  */
 export function getSpeedColor (value) {
-  if (!value) return '#ccc' // Lack of value takes on this placeholder color
-  if (value >= 100) return speedRamp[9].color
-  else if (value >= 90) return speedRamp[8].color
-  else if (value >= 80) return speedRamp[7].color
-  else if (value >= 70) return speedRamp[6].color
-  else if (value >= 60) return speedRamp[5].color
-  else if (value >= 50) return speedRamp[4].color
-  else if (value >= 40) return speedRamp[3].color
-  else if (value >= 30) return speedRamp[2].color
-  else if (value >= 20) return speedRamp[1].color
-  else return speedRamp[0].color
+  if (!value) return BLANK_COLOR
+
+  for (let i = speedRamp.length - 1; i >= 0; i--) {
+    if (value >= speedRamp[i].minValue) {
+      return speedRamp[i].color
+    }
+  }
+
+  return BLANK_COLOR
 }
