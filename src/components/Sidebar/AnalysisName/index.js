@@ -5,9 +5,10 @@ import { Segment, Header, Button, Input } from 'semantic-ui-react'
 import { setAnalysisName } from '../../../store/actions/app'
 import './AnalysisName.css'
 
-class AnalysisName extends React.Component {
+export class AnalysisName extends React.Component {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    viewName: PropTypes.string
   }
 
   constructor (props) {
@@ -25,18 +26,22 @@ class AnalysisName extends React.Component {
     }
   }
 
-  handleSubmit = (event) => {
+  onSubmitInput = (event) => {
     event.preventDefault()
+    this.onClickSave()
+  }
+
+  onClickEdit = (event) => {
+    this.setState({ isEditing: true })
+  }
+
+  onClickSave = (event) => {
     const input = this.viewName.inputRef.value
     this.setState({ isEditing: false })
     this.props.dispatch(setAnalysisName(input))
   }
 
-  handleClick = (event) => {
-    this.setState({ isEditing: true })
-  }
-
-  handleCancel = (event) => {
+  onClickCancel = (event) => {
     this.setState({ isEditing: false })
   }
 
@@ -44,18 +49,18 @@ class AnalysisName extends React.Component {
     const placeholder = 'Untitled analysis'
     const inputValue = this.props.viewName || placeholder
     const children = (this.state.isEditing) ? (
-      <form className="analysis-edit-form" onSubmit={this.handleSubmit}>
+      <form className="analysis-edit-form" onSubmit={this.onSubmitInput}>
         <Input type="text" action ref={(ref) => { this.viewName = ref }}>
           <input defaultValue={inputValue} placeholder={placeholder} />
-          <Button color="blue" content="Save" />
-          <Button content="Cancel" onClick={this.handleCancel} />
+          <Button color="blue" content="Save" onClick={this.onClickSave} />
+          <Button content="Cancel" onClick={this.onClickCancel} />
         </Input>
       </form>
     ) : (
       <div>
         <span className="analysis-name">{inputValue}</span>
         <Button
-          onClick={this.handleClick}
+          onClick={this.onClickEdit}
           content="Edit"
           icon="edit"
           labelPosition="right"

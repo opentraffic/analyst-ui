@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds } from '../../../app/region-bounds'
-import * as app from '../../../store/actions/app'
+import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 
-class ModeSelect extends React.PureComponent {
+export class ModeSelect extends React.PureComponent {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     activeMode: PropTypes.string
@@ -19,35 +19,29 @@ class ModeSelect extends React.PureComponent {
       open: false,
       case: null
     }
-
-    this.onClickRegion = this.onClickRegion.bind(this)
-    this.onClickRoute = this.onClickRoute.bind(this)
-    this.onClickClearAnalysis = this.onClickClearAnalysis.bind(this)
-    this.handleCancel = this.handleCancel.bind(this)
-    this.handleConfirm = this.handleConfirm.bind(this)
   }
 
-  handleCancel () {
+  handleCancel = () => {
     this.setState({
       open: false,
       case: null
     })
   }
 
-  handleConfirm () {
+  handleConfirm = () => {
     this.setState({open: false})
     this.props.dispatch(resetAnalysis())
     // Check what button was clicked to handle action
     if (this.state.case === 'region') {
-      this.props.dispatch(app.setRegionAnalysisMode())
+      this.props.dispatch(setRegionAnalysisMode())
       startDrawingBounds()
     } else if (this.state.case === 'route') {
-      this.props.dispatch(app.setRouteAnalysisMode())
+      this.props.dispatch(setRouteAnalysisMode())
     }
     this.setState({case: null})
   }
 
-  onClickRegion (event) {
+  onClickRegion = (event) => {
     const routeExists = this.props.route.length > 0
     // If region button is clicked but selected route exists, have user confirm to clear route
     if (this.props.activeMode !== null && routeExists) {
@@ -56,12 +50,12 @@ class ModeSelect extends React.PureComponent {
         case: 'region'
       })
     } else { // Else allow region to be drawn
-      this.props.dispatch(app.setRegionAnalysisMode())
+      this.props.dispatch(setRegionAnalysisMode())
       startDrawingBounds()
     }
   }
 
-  onClickRoute (event) {
+  onClickRoute = (event) => {
     const regionExists = this.props.region !== null
     // If route button is clicked but selected region exists, have user confirm to clear region
     if (this.props.activeMode !== null && regionExists) {
@@ -70,11 +64,11 @@ class ModeSelect extends React.PureComponent {
         case: 'route'
       })
     } else { // Else if route button is clicked and no region exists, change mode
-      this.props.dispatch(app.setRouteAnalysisMode())
+      this.props.dispatch(setRouteAnalysisMode())
     }
   }
 
-  onClickClearAnalysis (event) {
+  onClickClearAnalysis = (event) => {
     const routeExists = this.props.route.length > 0
     const regionExists = this.props.region !== null
     // If route is drawn or region is drawn, have user confirm to clear analysis
