@@ -1,11 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Segment, Header, Button } from 'semantic-ui-react'
-import DatePickerContainer from '../DatePickerContainer'
+import { Segment, Header } from 'semantic-ui-react'
 import ErrorMessage from './ErrorMessage'
+import AnalysisName from './AnalysisName'
 import ModeSelect from './ModeSelect'
+import DatePickerContainer from '../DatePickerContainer'
 import Legend from './Legend'
-import AnalysisName from '../AnalysisName'
+import ExportData from './ExportData'
 import './Sidebar.css'
 import store from '../../store'
 
@@ -16,11 +17,9 @@ class Sidebar extends React.Component {
     this.state = {
       hourValue: 23
     }
-
-    this.onChangeSelect = this.onChangeSelect.bind(this)
   }
 
-  onChangeSelect (event) {
+  onChangeSelect = (event) => {
     const value = event.target.value
     this.setState({ hourValue: value })
     store.dispatch({
@@ -47,10 +46,7 @@ class Sidebar extends React.Component {
     return (
       <div className={'Sidebar ' + this.props.className}>
         {errors}
-        <Segment>
-          <Header as="h3">Analysis name</Header>
-          <AnalysisName />
-        </Segment>
+        <AnalysisName />
         <ModeSelect />
         <Segment>
           <DatePickerContainer className="date-picker" />
@@ -60,10 +56,7 @@ class Sidebar extends React.Component {
           </select>
         </Segment>
         <Legend />
-        <Segment>
-          <Header as="h3">Export</Header>
-          <Button icon="download" content="Download" color="blue" fluid />
-        </Segment>
+        <ExportData />
       </div>
     )
   }
