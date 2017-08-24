@@ -12,6 +12,9 @@ import { setRouteError } from '../store/actions/route'
 const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
 const host = 'routing-prod.opentraffic.io'
 
+const LINE_OVERLAP_BUFFER = 0.0003
+const MAX_AREA_BBOX = 0.01
+
 function getSuffixes (bbox) {
   const tiles = getTilesForBbox(bbox.min_lon, bbox.min_lat, bbox.max_lon, bbox.max_lat)
   // Filter out tiles with level 2, no data for those
@@ -35,11 +38,6 @@ function getSuffixes (bbox) {
 function withinBbox (features, bounds) {
   // We need to check the geometry.coordinates to check if they're within bounds
   // If not within bound, remove entire feature from features
-
-  // Arbitrary number for buffer, edit if needed.
-  // Sometimes the endpoint of a line falls outside the bounding box which leads to
-  // but not by a lot. The buffer allows the line to be drawn.
-  const buffer = 0.0003
   const coordinates = features.map(feature => {
     return feature.geometry.coordinates
   })
@@ -56,7 +54,7 @@ function withinBbox (features, bounds) {
         const lng = point[0]
         // Checking if latlng is within bounding box
         // If not remove from points
-        if (lng < Number(bounds.west) - buffer || lng > Number(bounds.east) + buffer || lat < Number(bounds.south) - buffer || lat > Number(bounds.north) + buffer) {
+        if (lng < Number(bounds.west) - LINE_OVERLAP_BUFFER || lng > Number(bounds.east) + LINE_OVERLAP_BUFFER || lat < Number(bounds.south) - LINE_OVERLAP_BUFFER || lat > Number(bounds.north) + LINE_OVERLAP_BUFFER) {
           points.splice(coordIndex, 1)
         }
       }
@@ -72,6 +70,7 @@ function withinBbox (features, bounds) {
     const feature = features[i]
     if (feature.geometry.coordinates.length === 0) { features.splice(i, 1) }
   }
+  return features
 }
 
 function getBboxArea (bounds) {
@@ -91,10 +90,8 @@ export function showRegion (bounds) {
   }
 
   // If area of bounding box exceeds max_area, display error
-  // Arbitrary number for max_area, edit if needed
-  const maxArea = 0.01
   const area = getBboxArea(bounds)
-  if (area > maxArea) {
+  if (area > MAX_AREA_BBOX) {
     const message = 'Please zoom in and reduce the size of your bounding box'
     store.dispatch(setRouteError(message))
     return
@@ -116,9 +113,10 @@ export function showRegion (bounds) {
       store.dispatch(startLoading())
       fetchOSMLRGeometryTiles(suffixes)
         .then((results) => {
-          const features = results.features
+          const features = results.features.slice()
           // Remove from geojson, routes outside bounding box (bounds)
-          withinBbox(features, bounds)
+          const regionFeatures = withinBbox(features, bounds)
+          results.features = regionFeatures
 
           // Get segment IDs to use later
           const segmentIds = features.map(key => {

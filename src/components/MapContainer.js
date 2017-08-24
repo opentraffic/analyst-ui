@@ -19,6 +19,8 @@ import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
 import { showRegion } from '../app/region'
 
+const PROGRAMMER_DEFINED_CONSTANT = 10
+
 class MapContainer extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -57,7 +59,7 @@ class MapContainer extends React.Component {
     // onClick to fire in the wrong place.
     if (event.originalEvent.target.tagName === 'CANVAS') {
       if (this.props.mode !== 'ROUTE') return
-      if (this.props.map.zoom < 10) {
+      if (this.props.map.zoom < PROGRAMMER_DEFINED_CONSTANT) {
         const message = 'Please zoom to at least zoom 10 before placing a route marker'
         this.props.setRouteError(message)
         return
