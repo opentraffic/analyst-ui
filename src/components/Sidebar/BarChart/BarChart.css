@@ -2,6 +2,10 @@
   margin-top: 1em;
 }
 
+.barchart-controls {
+  margin-top: 1em;
+}
+
 /* Overrides on dc.css */
 div.dc-chart {
   float: none;
