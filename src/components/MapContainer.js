@@ -19,7 +19,7 @@ import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
 import { showRegion } from '../app/region'
 
-const PROGRAMMER_DEFINED_CONSTANT = 10
+const ROUTE_ZOOM_LEVEL = 10
 
 class MapContainer extends React.Component {
   static propTypes = {
