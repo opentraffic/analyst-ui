@@ -17,6 +17,9 @@ import { updateScene } from '../store/actions/tangram'
 import * as loadingActionCreators from '../store/actions/loading'
 import { drawBounds } from '../app/region-bounds'
 import { fetchDataTiles } from '../app/data'
+import { showRegion } from '../app/region'
+
+const PROGRAMMER_DEFINED_CONSTANT = 10
 
 class MapContainer extends React.Component {
   static propTypes = {
@@ -37,14 +40,17 @@ class MapContainer extends React.Component {
   componentDidMount () {
     if (this.props.bounds) {
       drawBounds(this.props.bounds)
+      showRegion(this.props.bounds)
     }
   }
 
   componentDidUpdate (prevProps) {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
-      prevProps.tempHour === this.props.tempHour) return
+        isEqual(prevProps.bounds, this.props.bounds) &&
+        prevProps.tempHour === this.props.tempHour) return
 
     this.showRoute()
+    showRegion(this.props.bounds)
   }
 
   onClick (event) {
@@ -53,7 +59,11 @@ class MapContainer extends React.Component {
     // onClick to fire in the wrong place.
     if (event.originalEvent.target.tagName === 'CANVAS') {
       if (this.props.mode !== 'ROUTE') return
-
+      if (this.props.map.zoom < PROGRAMMER_DEFINED_CONSTANT) {
+        const message = 'Please zoom to at least zoom 10 before placing a route marker'
+        this.props.setRouteError(message)
+        return
+      }
       this.props.addWaypoint(event.latlng)
     }
   }
@@ -138,7 +148,6 @@ class MapContainer extends React.Component {
         // result is an array of objects [{ level, tile, segment }, ...].
         // Also, reject any segments at level 2; we won't have any data for those.
         const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
-
         // Download all data tiles
         fetchDataTiles(parsedIds)
           .then((tiles) => {
@@ -204,7 +213,6 @@ class MapContainer extends React.Component {
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)
             this.props.hideLoading()
-            console.log('I stopped loading here')
           })
       })
       .catch((error) => {

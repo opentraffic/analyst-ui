@@ -14,6 +14,7 @@
   "dependencies": {
     "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/polyline": "0.2.0",
+    "colorbrewer": "1.0.0",
     "leaflet": "1.0.3",
     "leaflet-editable": "1.0.0",
     "leaflet-extra-markers": "1.0.6",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",
+    "enzyme": "2.9.1",
     "eslint": "3.19.0",
     "eslint-config-react-app": "1.0.5",
     "eslint-config-standard": "10.2.1",
@@ -51,6 +53,7 @@
     "eslint-plugin-node": "5.1.0",
     "eslint-plugin-promise": "3.5.0",
     "eslint-plugin-react": "7.1.0",
-    "eslint-plugin-standard": "3.0.1"
+    "eslint-plugin-standard": "3.0.1",
+    "react-test-renderer": "15.6.1"
   }
 }

@@ -127,7 +127,6 @@ export function fetchDataTiles (ids) {
   // filter out duplicates.
   const simpleIds = ids.map(id => { return { level: id.level, tile: id.tile } })
   const uniqueIds = uniqWith(simpleIds, isEqual)
-
   const promises = uniqueIds.map((id) => fetchDataTile(id))
 
   return Promise.all(promises)
@@ -136,7 +135,7 @@ export function fetchDataTiles (ids) {
     // of ArrayBuffers.
     .then(responses => filter(responses, response => response.error !== true))
     .then(tiles => {
-      const newTiles = tiles.map(tile => {
+      const newTiles = tiles.reduce((accumulator, tile) => {
         const numSubtiles = figureOutHowManySubtilesThereAre(tile)
         const toDownload = []
         // Start at 1 because we already downloaded subtile at 0
@@ -144,11 +143,12 @@ export function fetchDataTiles (ids) {
           const id = { level: tile.level, tile: tile.index }
           toDownload.push(fetchDataTile(id, i))
         }
-        return Promise.all(toDownload)
-          .then(responses => filter(responses, response => response.error !== true))
-      })
+        return accumulator.concat(toDownload)
+      }, [])
 
-      return tiles.concat(newTiles)
+      return Promise.all(newTiles)
+        .then(responses => filter(responses, response => response.error !== true))
+        .then(tiles2 => tiles.concat(tiles2))
     })
     // Consolidate all subtiles into a single object with lookup keys
     .then(consolidateTiles)
