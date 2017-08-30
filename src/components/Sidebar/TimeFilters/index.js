@@ -1,24 +1,23 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 import { Segment, Header, Button } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter'
 import { createChart } from './chart'
+import { toggleTimeFilters, setDayFilter, setHourFilter } from '../../../store/actions/date'
 
 import './TimeFilters.css'
-
 import data from './testdata.json'
 
-export default class TimeFilters extends React.Component {
-  constructor (props) {
-    super(props)
+const DAILY_X_SHIFT = -0.5
+const HOURLY_X_SHIFT = 0.5
 
-    this.state = {
-      filtersEnabled: false,
-      filterExtents: {
-        hourly: null,
-        daily: null
-      }
-    }
+export class TimeFilters extends React.Component {
+  static propTypes = {
+    filtersEnabled: PropTypes.bool,
+    dayFilter: PropTypes.arrayOf(PropTypes.number),
+    hourFilter: PropTypes.arrayOf(PropTypes.number)
   }
 
   componentDidMount () {
@@ -37,15 +36,11 @@ export default class TimeFilters extends React.Component {
       data: chartData,
       // Magnitude dimension is `dayOfWeek` property, subtract 1 to force 0-index
       dimension: (d) => (d.dayOfWeek - 1),
-      xDomain: [-0.5, 6.5],
+      xDomain: [0, 7],
+      xShift: DAILY_X_SHIFT,
       gap: 10,
       onExtentChange: (extent) => {
-        this.setState({
-          filterExtents: {
-            ...this.state.filterExtents,
-            daily: extent
-          }
-        })
+        this.props.dispatch(setDayFilter(extent))
       }
     })
 
@@ -57,17 +52,12 @@ export default class TimeFilters extends React.Component {
   makeHourlyChart = (chartData) => {
     this.hourlyChart = createChart(this.hourlyChartEl, {
       data: chartData,
-      // Magnitude dimension is `dayOfWeek` property, subtract 1 to force 0-index
       dimension: (d) => d.hourOfDay,
-      xDomain: [0.5, 24.5],
+      xDomain: [0, 24],
+      xShift: HOURLY_X_SHIFT,
       gap: 5,
       onExtentChange: (extent) => {
-        this.setState({
-          filterExtents: {
-            ...this.state.filterExtents,
-            hourly: extent
-          }
-        })
+        this.props.dispatch(setHourFilter(extent))
       }
     })
 
@@ -77,20 +67,21 @@ export default class TimeFilters extends React.Component {
 
   toggleFilters = (event) => {
     // Toggle and set state
-    const brushState = !this.state.filtersEnabled
-    this.setState({ filtersEnabled: brushState })
+    const brushState = !this.props.filtersEnabled
+    this.props.dispatch(toggleTimeFilters())
 
     // Update charts
     this.dailyChart.brushOn(brushState)
     this.hourlyChart.brushOn(brushState)
 
     // Restore filter state if there are saved extents
+    // Put the shift amount back in
     if (brushState === true) {
-      if (this.state.filterExtents.daily) {
-        this.dailyChart.brush().extent(this.state.filterExtents.daily)
+      if (this.props.dayFilter) {
+        this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT))
       }
-      if (this.state.filterExtents.hourly) {
-        this.hourlyChart.brush().extent(this.state.filterExtents.hourly)
+      if (this.props.hourFilter) {
+        this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
       }
 
       // TODO: This doesn't redraw the charts with new brush extents.
@@ -118,7 +109,7 @@ export default class TimeFilters extends React.Component {
 
         <div className="timefilter-controls">
           {
-            (this.state.filtersEnabled)
+            (this.props.filtersEnabled)
             ? <Button onClick={this.toggleFilters} fluid color="orange">disable chart filters</Button>
             : <Button onClick={this.toggleFilters} fluid>enable chart filters</Button>
           }
@@ -127,3 +118,13 @@ export default class TimeFilters extends React.Component {
     )
   }
 }
+
+function mapStateToProps (state) {
+  return {
+    filtersEnabled: state.date.filtersEnabled,
+    dayFilter: state.date.dayFilter,
+    hourFilter: state.date.hourFilter
+  }
+}
+
+export default connect(mapStateToProps)(TimeFilters)

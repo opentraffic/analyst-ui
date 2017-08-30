@@ -68,6 +68,9 @@ export function createChart (el, opts) {
   // Data should be crossfilter'd
   const data = opts.data
 
+  // Offset the domain by the shift amount (because of centered bars)
+  const domain = opts.xDomain.map(i => i + opts.xShift)
+
   // Get dimension and group (Crossfilter methods)
   // https://github.com/square/crossfilter/wiki/API-Reference
   const dimension = data.dimension(opts.dimension)
@@ -87,7 +90,7 @@ export function createChart (el, opts) {
     .transitionDuration(0)
     // X-axis placement and formatting
     .valueAccessor(p => p.value.avg)
-    .x(d3.scale.linear().domain(opts.xDomain))
+    .x(d3.scale.linear().domain(domain))
     .centerBar(true)
     .gap(opts.gap)
     // Y-axis
@@ -107,8 +110,11 @@ export function createChart (el, opts) {
   chart.brush().on('brushend.custom', () => {
     const extent = chart.brush().extent()
 
+    // Re-adjust the extent by the shift amount (because of centered bars)
+    const adjusted = extent.map(i => i - opts.xShift)
+
     // Callback function to work with the extent change
-    opts.onExtentChange(extent)
+    opts.onExtentChange(adjusted)
   })
 
   return chart
