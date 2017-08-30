@@ -1,0 +1,50 @@
+.info-panel {
+	padding: 10px 21px;
+	border-top: 1px solid #dce0e0;
+	color: #484848;
+}
+
+.DateRangePicker,
+.DateRangePickerInput {
+  display: block;
+}
+
+
+.DateRangePickerInput {
+  border: 0;
+  border-radius: .28571429rem;
+  box-shadow: 0 0 0 1px #767676 inset!important;
+}
+
+.DateInput {
+  background: transparent;
+}
+
+.DateRangePicker__picker {
+  z-index: 3;
+  top: 54px;
+}
+
+.DayPicker--horizontal {
+  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.15), 0 0 2px 0 rgba(34, 36, 38, 0.15);
+}
+
+.DateInput--with-caret::before {
+  top: 44px;
+  border-bottom-color: rgba(34, 36, 38, 0.25);
+}
+
+.DateInput--with-caret::after {
+  z-index: 4;
+  top: 45px;
+}
+
+.DayPicker__week-header {
+  top: 57px;
+}
+
+.DateRangePickerInput__clear-dates {
+  position: absolute;
+  right: 0;
+  top: 6px;
+}

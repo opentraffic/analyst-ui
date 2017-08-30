@@ -1,10 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Segment } from 'semantic-ui-react'
 import ErrorMessage from './ErrorMessage'
 import AnalysisName from './AnalysisName'
 import ModeSelect from './ModeSelect'
-import DatePickerContainer from '../DatePickerContainer'
+import DatePicker from './DatePicker'
 import BarChart from './BarChart'
 import Legend from './Legend'
 import ExportData from './ExportData'
@@ -32,9 +31,7 @@ class Sidebar extends React.Component {
         {errors}
         <AnalysisName />
         <ModeSelect />
-        <Segment>
-          <DatePickerContainer className="date-picker" />
-        </Segment>
+        <DatePicker />
         <BarChart />
         <Legend />
         <ExportData />
