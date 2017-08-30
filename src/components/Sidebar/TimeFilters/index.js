@@ -4,12 +4,11 @@ import dc from 'dc'
 import crossfilter from 'crossfilter'
 import { createChart } from './chart'
 
-import 'dc/dc.css'
-import './BarChart.css'
+import './TimeFilters.css'
 
 import data from './testdata.json'
 
-export default class BarChart extends React.Component {
+export default class TimeFilters extends React.Component {
   constructor (props) {
     super(props)
 
@@ -107,17 +106,17 @@ export default class BarChart extends React.Component {
   render () {
     return (
       <Segment>
-        <div className="barchart-daily">
+        <div className="timefilter-daily">
           <Header>Speed by day of week</Header>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
-        <div className="barchart-hourly">
+        <div className="timefilter-hourly">
           <Header>Speed by hour of day</Header>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
 
-        <div className="barchart-controls">
+        <div className="timefilter-controls">
           <Button onClick={this.toggleFilters} fluid>enable chart filters</Button>
         </div>
       </Segment>

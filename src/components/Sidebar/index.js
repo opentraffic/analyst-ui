@@ -4,7 +4,7 @@ import ErrorMessage from './ErrorMessage'
 import AnalysisName from './AnalysisName'
 import ModeSelect from './ModeSelect'
 import DatePicker from './DatePicker'
-import BarChart from './BarChart'
+import TimeFilters from './TimeFilters'
 import Legend from './Legend'
 import ExportData from './ExportData'
 import './Sidebar.css'
@@ -32,7 +32,7 @@ class Sidebar extends React.Component {
         <AnalysisName />
         <ModeSelect />
         <DatePicker />
-        <BarChart />
+        <TimeFilters />
         <Legend />
         <ExportData />
       </div>

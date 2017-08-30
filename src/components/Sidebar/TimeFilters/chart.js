@@ -1,5 +1,6 @@
 import dc from 'dc'
 import * as d3 from 'd3'
+import 'dc/dc.css'
 
 // Reduce functions
 // https://github.com/square/crossfilter/wiki/API-Reference#group_reduce
