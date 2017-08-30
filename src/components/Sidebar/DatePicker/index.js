@@ -11,8 +11,8 @@ import './DatePicker.css'
 class DatePicker extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    startDate: PropTypes.string,
-    endDate: PropTypes.string
+    startDate: PropTypes.number,
+    endDate: PropTypes.number
   }
 
   constructor (props) {
