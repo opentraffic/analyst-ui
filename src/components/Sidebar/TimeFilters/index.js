@@ -13,7 +13,7 @@ export default class TimeFilters extends React.Component {
     super(props)
 
     this.state = {
-      chartFilters: false,
+      filtersEnabled: false,
       filterExtents: {
         hourly: null,
         daily: null
@@ -77,8 +77,8 @@ export default class TimeFilters extends React.Component {
 
   toggleFilters = (event) => {
     // Toggle and set state
-    const brushState = !this.state.chartFilters
-    this.setState({ chartFilters: brushState })
+    const brushState = !this.state.filtersEnabled
+    this.setState({ filtersEnabled: brushState })
 
     // Update charts
     this.dailyChart.brushOn(brushState)
@@ -117,7 +117,11 @@ export default class TimeFilters extends React.Component {
         </div>
 
         <div className="timefilter-controls">
-          <Button onClick={this.toggleFilters} fluid>enable chart filters</Button>
+          {
+            (this.state.filtersEnabled)
+            ? <Button onClick={this.toggleFilters} fluid color="orange">disable chart filters</Button>
+            : <Button onClick={this.toggleFilters} fluid>enable chart filters</Button>
+          }
         </div>
       </Segment>
     )
