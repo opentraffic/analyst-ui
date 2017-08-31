@@ -200,7 +200,7 @@ function fetchOSMLRtile (suffix) {
 }
 
 function cacheOSMLRTiles (tile, index) {
-  Object.assign(OSMLRCache, {[index] : tile})
+  Object.assign(OSMLRCache, {[index]: tile})
   const clone = JSON.parse(JSON.stringify(tile))
   return clone
 }
