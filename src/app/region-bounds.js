@@ -131,24 +131,24 @@ export function drawBounds ({ west, south, east, north }) {
   storeBounds(rect.getBounds())
 }
 
-function createShades(rect) {
+function createShades (rect) {
   shades = true
-  map._container = L.DomUtil.create("div", "leaflet-areaselect-container", map._controlContainer)
-  map._topShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
-  map._bottomShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
-  map._leftShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
-  map._rightShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
+  map._container = L.DomUtil.create('div', 'leaflet-areaselect-container', map._controlContainer)
+  map._topShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
+  map._bottomShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
+  map._leftShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
+  map._rightShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
   updateShades(rect)
 }
 
-function setDimensions(element, dimension) {
-  element.style.width = dimension.width + "px"
-  element.style.height = dimension.height + "px"
-  element.style.top = dimension.top + "px"
-  element.style.left = dimension.left + "px"
+function setDimensions (element, dimension) {
+  element.style.width = dimension.width + 'px'
+  element.style.height = dimension.height + 'px'
+  element.style.top = dimension.top + 'px'
+  element.style.left = dimension.left + 'px'
 }
 
-function updateShades(rect) {
+function updateShades (rect) {
   const size = map.getSize()
   const northEastPoint = map.latLngToContainerPoint(rect._bounds._northEast)
   const southWestPoint = map.latLngToContainerPoint(rect._bounds._southWest)
@@ -182,7 +182,7 @@ function updateShades(rect) {
   })
 }
 
-export function removeShades() {
+export function removeShades () {
   if (shades) { L.DomUtil.remove(map._container) }
   shades = false
 }
