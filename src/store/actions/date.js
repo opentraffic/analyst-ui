@@ -36,13 +36,17 @@ export function disableTimeFilters () {
 export function setDayFilter (filter) {
   return {
     type: SET_DAY_FILTER,
-    dayFilter: filter
+
+    // Cast values to number
+    dayFilter: filter.map(i => Number(i))
   }
 }
 
 export function setHourFilter (filter) {
   return {
     type: SET_HOUR_FILTER,
-    hourFilter: filter
+
+    // Cast values to number
+    hourFilter: filter.map(i => Number(i))
   }
 }

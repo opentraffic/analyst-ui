@@ -26,6 +26,11 @@ export class TimeFilters extends React.Component {
     this.makeDailyChart(chartData)
     this.makeHourlyChart(chartData)
 
+    // Turn on filter brushes, if initial props include them!
+    if (this.props.filtersEnabled) {
+      this.activateFilterExtents()
+    }
+
     dc.renderAll()
   }
 
@@ -65,30 +70,41 @@ export class TimeFilters extends React.Component {
     this.hourlyChart.xAxis().tickFormat()
   }
 
+  // Restore filter state if there are saved extents
+  // Put the shift amount back in
+  activateFilterExtents = () => {
+    this.dailyChart.brushOn(true)
+    this.hourlyChart.brushOn(true)
+
+    if (this.props.dayFilter) {
+      this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT))
+    }
+    if (this.props.hourFilter) {
+      this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
+    }
+
+    // TODO: This doesn't redraw the charts with new brush extents.
+  }
+
+  // Reset the filter state
+  deactivateFilterExtents = () => {
+    this.dailyChart.brushOn(false)
+    this.hourlyChart.brushOn(false)
+
+    this.hourlyChart.filterAll()
+    this.dailyChart.filterAll()
+  }
+
   toggleFilters = (event) => {
     // Toggle and set state
     const brushState = !this.props.filtersEnabled
     this.props.dispatch(toggleTimeFilters())
 
     // Update charts
-    this.dailyChart.brushOn(brushState)
-    this.hourlyChart.brushOn(brushState)
-
-    // Restore filter state if there are saved extents
-    // Put the shift amount back in
     if (brushState === true) {
-      if (this.props.dayFilter) {
-        this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT))
-      }
-      if (this.props.hourFilter) {
-        this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
-      }
-
-      // TODO: This doesn't redraw the charts with new brush extents.
+      this.activateFilterExtents()
     } else {
-      // Reset the filter state
-      this.hourlyChart.filterAll()
-      this.dailyChart.filterAll()
+      this.deactivateFilterExtents()
     }
 
     dc.renderAll()
