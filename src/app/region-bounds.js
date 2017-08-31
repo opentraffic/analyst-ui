@@ -5,6 +5,7 @@ import { setBounds } from '../store/actions/viewBounds'
 // Store for existing bounds.
 const bounds = []
 let handlersAdded = false
+let shades = false
 
 // Subscribe to changes in state to affect the behavior of Leaflet.Editable.
 store.subscribe(() => {
@@ -73,7 +74,8 @@ function storeBounds (bounds) {
 function onDrawingFinished (event) {
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
-  createShades(event.layer)
+  if (!shades) { createShades(event.layer) }
+
   // Remove previous bounds after the new one has been drawn.
   if (bounds.length > 1) {
     removeExistingBounds(0)
@@ -130,6 +132,7 @@ export function drawBounds ({ west, south, east, north }) {
 }
 
 function createShades(rect) {
+  shades = true
   map._container = L.DomUtil.create("div", "leaflet-areaselect-container", map._controlContainer)
   map._topShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
   map._bottomShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
@@ -149,7 +152,6 @@ function updateShades(rect) {
   const size = map.getSize()
   const northEastPoint = map.latLngToContainerPoint(rect._bounds._northEast)
   const southWestPoint = map.latLngToContainerPoint(rect._bounds._southWest)
-  console.log(size, northEastPoint, southWestPoint)
 
   setDimensions(map._topShade, {
     width: size.x,
@@ -178,4 +180,9 @@ function updateShades(rect) {
     top: northEastPoint.y,
     left: northEastPoint.x
   })
+}
+
+export function removeShades() {
+  if (shades) { L.DomUtil.remove(map._container) }
+  shades = false
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
-import { startDrawingBounds } from '../../../app/region-bounds'
+import { startDrawingBounds, removeShades } from '../../../app/region-bounds'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 
@@ -63,6 +63,7 @@ export class ModeSelect extends React.PureComponent {
         open: true,
         case: 'route'
       })
+      removeShades()
     } else { // Else if route button is clicked and no region exists, change mode
       this.props.dispatch(setRouteAnalysisMode())
     }
@@ -77,6 +78,7 @@ export class ModeSelect extends React.PureComponent {
         open: true,
         case: 'clear analysis'
       })
+      removeShades()
     } else { // Else if route/region is not drawn but was clicked, turn off mode
       this.props.dispatch(resetAnalysis())
     }
