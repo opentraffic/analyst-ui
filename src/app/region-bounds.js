@@ -19,13 +19,13 @@ store.subscribe(() => {
 
   // While data is still being rendered, disable interactivity of bounds
   if (state.loading.isLoading && bounds.length) {
-    bounds.forEach(function(bound) {
+    bounds.forEach(function (bound) {
       bound.editor.disable()
       bound.dragging.disable()
     })
   }
   if (!state.loading.isLoading && bounds.length) {
-    bounds.forEach(function(bound) {
+    bounds.forEach(function (bound) {
       bound.editor.enable()
       bound.dragging.enable()
     })
@@ -150,11 +150,12 @@ export function drawBounds ({ west, south, east, north }) {
 function createShades (rect) {
   if (shades) { return }
   shades = true
-  map._container = L.DomUtil.create('div', 'leaflet-areaselect-container', map._controlContainer)
-  map._topShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
-  map._bottomShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
-  map._leftShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
-  map._rightShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)
+  const regionSelector = map._panes.overlayPane
+  map._shadeContainer = L.DomUtil.create('div', 'leaflet-areaselect-container', regionSelector)
+  map._topShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
+  map._bottomShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
+  map._leftShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
+  map._rightShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
   updateShades(rect)
 }
 
@@ -169,6 +170,7 @@ function updateShades (rect) {
   const size = map.getSize()
   const northEastPoint = map.latLngToContainerPoint(rect._bounds._northEast)
   const southWestPoint = map.latLngToContainerPoint(rect._bounds._southWest)
+  console.log(size, northEastPoint, southWestPoint)
 
   setDimensions(map._topShade, {
     width: size.x,
