@@ -98,6 +98,7 @@ export function showRegion (bounds) {
   if (area > MAX_AREA_BBOX) {
     const message = 'Please zoom in and reduce the size of your bounding box'
     store.dispatch(setRouteError(message))
+    store.dispatch(hideLoading())
     return
   }
 
