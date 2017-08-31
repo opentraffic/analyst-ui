@@ -73,7 +73,7 @@ function storeBounds (bounds) {
 function onDrawingFinished (event) {
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
-
+  createShades(event.layer)
   // Remove previous bounds after the new one has been drawn.
   if (bounds.length > 1) {
     removeExistingBounds(0)
@@ -82,6 +82,7 @@ function onDrawingFinished (event) {
 
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
+  updateShades(event.layer)
 }
 
 function addEventListeners () {
@@ -117,6 +118,7 @@ export function drawBounds ({ west, south, east, north }) {
     [north, west],
     [south, east]
   ]).addTo(map)
+  createShades(rect)
   rect.enableEdit()
 
   if (!handlersAdded) {
@@ -125,4 +127,55 @@ export function drawBounds ({ west, south, east, north }) {
   }
   bounds.push(rect)
   storeBounds(rect.getBounds())
+}
+
+function createShades(rect) {
+  map._container = L.DomUtil.create("div", "leaflet-areaselect-container", map._controlContainer)
+  map._topShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
+  map._bottomShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
+  map._leftShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
+  map._rightShade = L.DomUtil.create("div", "leaflet-areaselect-shade", map._container)
+  updateShades(rect)
+}
+
+function setDimensions(element, dimension) {
+  element.style.width = dimension.width + "px"
+  element.style.height = dimension.height + "px"
+  element.style.top = dimension.top + "px"
+  element.style.left = dimension.left + "px"
+}
+
+function updateShades(rect) {
+  const size = map.getSize()
+  const northEastPoint = map.latLngToContainerPoint(rect._bounds._northEast)
+  const southWestPoint = map.latLngToContainerPoint(rect._bounds._southWest)
+  console.log(size, northEastPoint, southWestPoint)
+
+  setDimensions(map._topShade, {
+    width: size.x,
+    height: northEastPoint.y,
+    top: 0,
+    left: 0
+  })
+
+  setDimensions(map._bottomShade, {
+    width: size.x,
+    height: size.y - southWestPoint.y,
+    top: southWestPoint.y,
+    left: 0
+  })
+
+  setDimensions(map._leftShade, {
+    width: southWestPoint.x,
+    height: southWestPoint.y - northEastPoint.y,
+    top: northEastPoint.y,
+    left: 0
+  })
+
+  setDimensions(map._rightShade, {
+    width: size.x - northEastPoint.x,
+    height: southWestPoint.y - northEastPoint.y,
+    top: northEastPoint.y,
+    left: northEastPoint.x
+  })
 }
