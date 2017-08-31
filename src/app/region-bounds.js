@@ -14,6 +14,23 @@ store.subscribe(() => {
   // If bounds are cleared from state, remove current bounds.
   if (!state.viewBounds.bounds) removeAllExistingBounds()
 
+  // If zoom level, map center, bounds change, update dimensions of shades
+  if (bounds.length && typeof map !== 'undefined' && shades) updateShades(bounds[0])
+
+  // While data is still being rendered, disable interactivity of bounds
+  if (state.loading.isLoading && bounds.length) {
+    bounds.forEach(function(bound) {
+      bound.editor.disable()
+      bound.dragging.disable()
+    })
+  }
+  if (!state.loading.isLoading && bounds.length) {
+    bounds.forEach(function(bound) {
+      bound.editor.enable()
+      bound.dragging.enable()
+    })
+  }
+
   // If select mode has changed, stop any existing drawing interaction.
   if (state.app.analysisMode !== 'REGION' && typeof map !== 'undefined' && map.editTools) {
     map.editTools.stopDrawing()
@@ -84,7 +101,6 @@ function onDrawingFinished (event) {
 
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
-  updateShades(event.layer)
 }
 
 function addEventListeners () {
@@ -120,8 +136,8 @@ export function drawBounds ({ west, south, east, north }) {
     [north, west],
     [south, east]
   ]).addTo(map)
-  createShades(rect)
   rect.enableEdit()
+  createShades(rect)
 
   if (!handlersAdded) {
     addEventListeners()
@@ -132,6 +148,7 @@ export function drawBounds ({ west, south, east, north }) {
 }
 
 function createShades (rect) {
+  if (shades) { return }
   shades = true
   map._container = L.DomUtil.create('div', 'leaflet-areaselect-container', map._controlContainer)
   map._topShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._container)

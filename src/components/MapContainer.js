@@ -208,7 +208,6 @@ class MapContainer extends React.Component {
             })
             this.props.setMultiSegments(speeds)
             this.props.stopLoading()
-            console.log('I stopped loading here')
           })
           .catch((error) => {
             console.log('[fetchDataTiles error]', error)
