@@ -2,8 +2,7 @@ import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS, SET_ANALYSIS_NAME } from '../actions
 
 const initialState = {
   analysisMode: null,
-  viewName: '',
-  tempHour: 23
+  viewName: ''
 }
 
 const app = (state = initialState, action) => {
@@ -22,11 +21,6 @@ const app = (state = initialState, action) => {
       return {
         ...state,
         viewName: action.viewName
-      }
-    case 'set_hour':
-      return {
-        ...state,
-        tempHour: action.value
       }
     default:
       return state
