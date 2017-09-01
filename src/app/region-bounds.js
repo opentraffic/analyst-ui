@@ -14,7 +14,6 @@ store.subscribe(() => {
   // If bounds are cleared from state, remove current bounds.
   if (!state.viewBounds.bounds) removeAllExistingBounds()
 
-  // If zoom level, map center, bounds change, update dimensions of shades
   if (bounds.length && typeof map !== 'undefined' && shades) updateShades(bounds[0])
 
   // While data is still being rendered, disable interactivity of bounds
@@ -166,42 +165,58 @@ function setDimensions (element, dimension) {
   element.style.left = dimension.left + 'px'
 }
 
+function getOffset () {
+  let transformation = map.getPanes().mapPane.style.transform
+  const startIndex = transformation.indexOf('(')
+  const endIndex = transformation.indexOf(')')
+  transformation = transformation.substring(startIndex + 1, endIndex).split(',')
+  const offset = {
+    x: Number(transformation[0].slice(0, -2) * -1),
+    y: Number(transformation[1].slice(0, -2) * -1)
+  }
+  return offset
+}
+
 function updateShades (rect) {
   const size = map.getSize()
+  const offset = getOffset()
+
   const northEastPoint = map.latLngToContainerPoint(rect._bounds._northEast)
   const southWestPoint = map.latLngToContainerPoint(rect._bounds._southWest)
-  console.log(size, northEastPoint, southWestPoint)
 
   setDimensions(map._topShade, {
     width: size.x,
-    height: northEastPoint.y,
-    top: 0,
-    left: 0
+    height: (northEastPoint.y < 0) ? 0 : northEastPoint.y,
+    top: offset.y,
+    left: offset.x
   })
 
   setDimensions(map._bottomShade, {
     width: size.x,
     height: size.y - southWestPoint.y,
-    top: southWestPoint.y,
-    left: 0
+    top: southWestPoint.y + offset.y,
+    left: offset.x
   })
 
   setDimensions(map._leftShade, {
-    width: southWestPoint.x,
+    width: (southWestPoint.x < 0) ? 0 : southWestPoint.x,
     height: southWestPoint.y - northEastPoint.y,
-    top: northEastPoint.y,
-    left: 0
+    top: northEastPoint.y + offset.y,
+    left: offset.x
   })
 
   setDimensions(map._rightShade, {
     width: size.x - northEastPoint.x,
     height: southWestPoint.y - northEastPoint.y,
-    top: northEastPoint.y,
-    left: northEastPoint.x
+    top: northEastPoint.y + offset.y,
+    left: northEastPoint.x + offset.x
   })
 }
 
 export function removeShades () {
-  if (shades) { L.DomUtil.remove(map._container) }
+  if (shades) {
+    L.DomUtil.remove(map._shadeContainer)
+    console.log('removing')
+  }
   shades = false
 }
