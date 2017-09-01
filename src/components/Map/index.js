@@ -27,12 +27,6 @@ export default class Map extends React.Component {
     onClick: function () {}
   }
 
-  constructor (props) {
-    super(props)
-
-    this.onChange = this.onChange.bind(this)
-  }
-
   componentDidMount () {
     // Expose map globally for debug
     window.map = this.map.leafletElement
@@ -40,7 +34,7 @@ export default class Map extends React.Component {
 
   // When map is dragged/zoomed and lat/lng/zoom are changed, update URL to reflect change
   // Config is now also updated whenenver lat/lng/zoom are changed
-  onChange (event) {
+  onChange = (event) => {
     const newCenter = event.target.getCenter()
     const newZoom = event.target.getZoom()
 

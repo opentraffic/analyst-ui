@@ -32,9 +32,6 @@ class MapContainer extends React.Component {
   constructor (props) {
     super(props)
     this.showRoute()
-
-    this.onClick = this.onClick.bind(this)
-    this.onClickDismissErrors = this.onClickDismissErrors.bind(this)
   }
 
   componentDidMount () {
@@ -52,7 +49,7 @@ class MapContainer extends React.Component {
     showRegion(this.props.bounds)
   }
 
-  onClick (event) {
+  onClick = (event) => {
     // Only add waypoint when the original map canvas is clicked. This prevents
     // a bug where clicking a polyline and then adding a marker causes another
     // onClick to fire in the wrong place.
@@ -65,6 +62,10 @@ class MapContainer extends React.Component {
       }
       this.props.addWaypoint(event.latlng)
     }
+  }
+
+  onClickDismissErrors = () => {
+    this.props.clearRouteError()
   }
 
   showRoute () {
@@ -215,10 +216,6 @@ class MapContainer extends React.Component {
       .catch((error) => {
         console.log(error)
       })
-  }
-
-  onClickDismissErrors () {
-    this.props.clearRouteError()
   }
 
   render () {

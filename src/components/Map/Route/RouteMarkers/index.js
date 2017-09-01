@@ -20,13 +20,7 @@ export default class RouteMarkers extends React.PureComponent {
     updateWaypoint: function () {}
   }
 
-  constructor (props) {
-    super(props)
-
-    this.createMarkers = this.createMarkers.bind(this)
-  }
-
-  createMarkers () {
+  createMarkers = () => {
     const START_FILL_COLOR = 'green-light'
     const MIDDLE_FILL_COLOR = 'cyan'
     const END_FILL_COLOR = 'orange-dark'

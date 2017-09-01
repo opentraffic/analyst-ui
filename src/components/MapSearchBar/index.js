@@ -25,16 +25,6 @@ class MapSearchBar extends React.Component {
     }
 
     this.throttleMakeRequest = throttle(this.makeRequest, 250)
-    this.onChangeAutosuggest = this.onChangeAutosuggest.bind(this)
-    this.getSuggestionValue = this.getSuggestionValue.bind(this)
-    this.renderSuggestion = this.renderSuggestion.bind(this)
-    this.makeRequest = this.makeRequest.bind(this)
-    this.clearSearch = this.clearSearch.bind(this)
-    this.renderClearButton = this.renderClearButton.bind(this)
-    this.onSuggestionSelected = this.onSuggestionSelected.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.search = this.search.bind(this)
-    this.handleClick = this.handleClick.bind(this)
   }
 
   componentDidMount () {
@@ -60,12 +50,12 @@ class MapSearchBar extends React.Component {
   }
 
   // Teach Autosuggest what should be input value when suggestion is clicked
-  getSuggestionValue (suggestion) {
+  getSuggestionValue = (suggestion) => {
     return suggestion.properties.label
   }
 
   // Will be called every time suggestion is selected via mouse or keyboard
-  onSuggestionSelected (event, {suggestion, suggestionValue, suggestionIndex, sectionIndex, method}) {
+  onSuggestionSelected = (event, {suggestion, suggestionValue, suggestionIndex, sectionIndex, method}) => {
     event.preventDefault()
     const lat = suggestion.geometry.coordinates[1]
     const lng = suggestion.geometry.coordinates[0]
@@ -83,7 +73,7 @@ class MapSearchBar extends React.Component {
     }
   }
 
-  renderSuggestion (suggestion, {query, isHighlighted}) {
+  renderSuggestion = (suggestion, {query, isHighlighted}) => {
     const label = suggestion.properties.label
 
     // Highlight the input query
@@ -102,25 +92,25 @@ class MapSearchBar extends React.Component {
     )
   }
 
-  onChangeAutosuggest (event, {newValue, method}) {
+  onChangeAutosuggest = (event, {newValue, method}) => {
     this.setState({
       value: newValue
     })
   }
 
   // Makes autocomplete request to Mapzen Search based on what user has typed
-  autocomplete (query) {
+  autocomplete = (query) => {
     const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
     this.throttleMakeRequest(endpoint)
   }
 
   // Makes search request based on what user has entered
-  search (query) {
+  search = (query) => {
     const endpoint = `https://search.mapzen.com/v1/search?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
     this.throttleMakeRequest(endpoint)
   }
 
-  makeRequest (endpoint) {
+  makeRequest = (endpoint) => {
     window.fetch(endpoint)
       .then(response => response.json())
       .then((results) => {
@@ -131,7 +121,7 @@ class MapSearchBar extends React.Component {
   }
 
   // Clear button only appears when there's more than two characters in input
-  renderClearButton (value) {
+  renderClearButton = (value) => {
     if (value.length > 2) {
       return (
         <Icon name="close" className="clear-search" onClick={this.clearSearch} />
@@ -139,7 +129,7 @@ class MapSearchBar extends React.Component {
     }
   }
 
-  clearSearch (event) {
+  clearSearch = (event) => {
     // Set state value back to empty string
     this.setState({
       value: ''
@@ -151,7 +141,7 @@ class MapSearchBar extends React.Component {
 
   // Now Autosuggest component is wrapped in a form so that when 'enter' is pressed, suggestions container is not closed automatically
   // Instead search results are returned in suggestions container
-  handleSubmit (event) {
+  handleSubmit = (event) => {
     event.preventDefault()
     const inputValue = this.autosuggestBar.input.value
     if (inputValue !== '') {
@@ -160,7 +150,7 @@ class MapSearchBar extends React.Component {
   }
 
   // When search button is clicked, autosuggest bar gets displayed
-  handleClick (event) {
+  handleClick = (event) => {
     const searchButton = this.refs.searchButton.ref
     const inputContainer = this.refs.searchBar
     // Display search bar and expand search icon size when clicked on
