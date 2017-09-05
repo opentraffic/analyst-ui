@@ -14,6 +14,7 @@ store.subscribe(() => {
   // If bounds are cleared from state, remove current bounds.
   if (!state.viewBounds.bounds) removeAllExistingBounds()
 
+  // If map gets zoomed in/out or moved and there exists a selected region, shades are updated
   if (bounds.length && typeof map !== 'undefined' && shades) updateShades(bounds[0])
 
   // While data is still being rendered, disable interactivity of bounds
@@ -90,6 +91,7 @@ function storeBounds (bounds) {
 function onDrawingFinished (event) {
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
+  // If the region shades do not exist, create them
   if (!shades) { createShades(event.layer) }
 
   // Remove previous bounds after the new one has been drawn.
@@ -147,7 +149,9 @@ export function drawBounds ({ west, south, east, north }) {
 }
 
 function createShades (rect) {
+  // If there are shades already, don't create more
   if (shades) { return }
+  // Set shades to true since now shades exist
   shades = true
   const regionSelector = map._panes.overlayPane
   map._shadeContainer = L.DomUtil.create('div', 'leaflet-areaselect-container', regionSelector)
@@ -158,6 +162,7 @@ function createShades (rect) {
   updateShades(rect)
 }
 
+// Setting the dimensions (width, height) and position (top, left) of a shade
 function setDimensions (element, dimension) {
   element.style.width = dimension.width + 'px'
   element.style.height = dimension.height + 'px'
@@ -165,7 +170,9 @@ function setDimensions (element, dimension) {
   element.style.left = dimension.left + 'px'
 }
 
+// When map is zoomed in/out and/or moved, get the offset for the origin zoom and lat/lng values
 function getOffset () {
+  // Getting the transformation value through style attributes
   let transformation = map.getPanes().mapPane.style.transform
   const startIndex = transformation.indexOf('(')
   const endIndex = transformation.indexOf(')')
@@ -177,12 +184,13 @@ function getOffset () {
   return offset
 }
 
+// Calculating values for the dimensions and positions of each shade
 function updateShades (rect) {
   const size = map.getSize()
   const offset = getOffset()
 
-  const northEastPoint = map.latLngToContainerPoint(rect._bounds._northEast)
-  const southWestPoint = map.latLngToContainerPoint(rect._bounds._southWest)
+  const northEastPoint = map.latLngToContainerPoint(rect.getBounds()._northEast)
+  const southWestPoint = map.latLngToContainerPoint(rect.getBounds()._southWest)
 
   setDimensions(map._topShade, {
     width: size.x,
@@ -214,9 +222,8 @@ function updateShades (rect) {
 }
 
 export function removeShades () {
-  if (shades) {
-    L.DomUtil.remove(map._shadeContainer)
-    console.log('removing')
-  }
+  // If shades exist remove it
+  if (shades) { L.DomUtil.remove(map._shadeContainer) }
+  // Set shades to false, since shades rae now removed
   shades = false
 }
