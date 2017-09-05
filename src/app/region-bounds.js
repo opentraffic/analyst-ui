@@ -186,11 +186,12 @@ function getOffset () {
 
 // Calculating values for the dimensions and positions of each shade
 function updateShades (rect) {
+  const rectBounds = rect.getBounds()
   const size = map.getSize()
   const offset = getOffset()
 
-  const northEastPoint = map.latLngToContainerPoint(rect.getBounds()._northEast)
-  const southWestPoint = map.latLngToContainerPoint(rect.getBounds()._southWest)
+  const northEastPoint = map.latLngToContainerPoint(rectBounds.getNorthEast())
+  const southWestPoint = map.latLngToContainerPoint(rectBounds.getSouthWest())
 
   setDimensions(map._topShade, {
     width: size.x,
