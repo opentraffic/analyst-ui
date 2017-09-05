@@ -143,7 +143,7 @@ export function showRegion (bounds) {
                     // current segment and attach it to the item.
                     if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
                       // Test hour
-                      const hour = store.getState().app.tempHour
+                      const hour = 23
                       // Get the local id of the segment
                       // (eg. id 21000 is local id 1000 if tile segment size is 10000)
                       const subtileSegmentId = segmentId % tile.subtileSegments

@@ -2,15 +2,17 @@ import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
+import { Segment } from 'semantic-ui-react'
 import moment from 'moment'
-import store from '../../store'
-import { setDate } from '../../store/actions/date'
+import { setDate } from '../../../store/actions/date'
 import 'react-dates/lib/css/_datepicker.css'
-import './DatePickerContainer.css'
+import './DatePicker.css'
 
-class DatePickerContainer extends React.Component {
+class DatePicker extends React.Component {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    startDate: PropTypes.number,
+    endDate: PropTypes.number
   }
 
   constructor (props) {
@@ -34,8 +36,8 @@ class DatePickerContainer extends React.Component {
       return (timestamp === null) ? null : moment(timestamp)
     }
 
-    const start = store.getState().date.startDate
-    const end = store.getState().date.endDate
+    const start = this.props.startDate
+    const end = this.props.endDate
     const today = moment()
 
     // If info panel needed, return in renderCalendarInfo
@@ -46,7 +48,7 @@ class DatePickerContainer extends React.Component {
     )
 
     return (
-      <div className="date-picker">
+      <Segment>
         <DateRangePicker
           startDate={changeUnixToMoment(start)}  // momentPropTypes.momentObj or null,
           endDate={changeUnixToMoment(end)} // momentPropTypes.momentObj or null,
@@ -59,9 +61,16 @@ class DatePickerContainer extends React.Component {
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
           renderCalendarInfo={() => { return infoPanel }}
         />
-      </div>
+      </Segment>
     )
   }
 }
 
-export default connect()(DatePickerContainer)
+function mapStateToProps (state) {
+  return {
+    startDate: state.date.startDate,
+    endDate: state.date.endDate
+  }
+}
+
+export default connect(mapStateToProps)(DatePicker)

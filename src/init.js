@@ -2,7 +2,7 @@ import L from 'leaflet'
 import config from './config'
 import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
-import { setDate } from './store/actions/date'
+import { setDate, enableTimeFilters, setDayFilter, setHourFilter } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/viewBounds'
@@ -11,6 +11,8 @@ import { initUrlUpdate } from './app/update-url'
 import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
 import { getQueryStringObject, updateURL } from './lib/url-state'
+
+const VALUE_DELIMITER = '/'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
@@ -40,6 +42,19 @@ export function initApp (queryString = window.location.search) {
   // Initializing dates
   store.dispatch(setDate(date.startDate, date.endDate))
 
+  // Initialize time/day filters if present
+  if (object.df || object.hf) {
+    store.dispatch(enableTimeFilters())
+  }
+  if (object.df) {
+    const dayFilter = object.df.split(VALUE_DELIMITER)
+    store.dispatch(setDayFilter(dayFilter))
+  }
+  if (object.hf) {
+    const hourFilter = object.hf.split(VALUE_DELIMITER)
+    store.dispatch(setHourFilter(hourFilter))
+  }
+
   // Initializing analysis view name
   if (object.name) {
     const viewName = object.name
@@ -68,7 +83,7 @@ function initRoute (value) {
   const waypoints = value.split(',')
   for (var i = 0; i < waypoints.length; i++) {
     // Get the lat and lng for each waypoint
-    const latlng = waypoints[i].split('/')
+    const latlng = waypoints[i].split(VALUE_DELIMITER)
     // Initialize to leaflet latLng
     const point = L.latLng(
       Number(latlng[0]),
