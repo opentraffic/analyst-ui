@@ -29,6 +29,19 @@ export class TimeFilters extends React.Component {
     // Turn on filter brushes, if initial props include them!
     if (this.props.filtersEnabled) {
       this.activateFilterExtents()
+
+      // All of this is necessary because after setting a brush programatically,
+      // it doesn't re-render them. We have to manually re-call the brush
+      // to render. See: https://groups.google.com/forum/#!topic/d3-js/vNaR-vJ9hMg
+      // There's more repetitive code here than I like, but we'll have to
+      // figure out how to refactor this later.
+      dc.renderAll()
+      if (this.props.dayFilter) {
+        this.dailyChart.select('.brush').call(this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT)))
+      }
+      if (this.props.hourFilter) {
+        this.hourlyChart.select('.brush').call(this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT)))
+      }
     }
 
     dc.renderAll()
@@ -82,8 +95,6 @@ export class TimeFilters extends React.Component {
     if (this.props.hourFilter) {
       this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
     }
-
-    // TODO: This doesn't redraw the charts with new brush extents.
   }
 
   // Reset the filter state
