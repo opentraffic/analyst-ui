@@ -14,9 +14,6 @@ store.subscribe(() => {
   // If bounds are cleared from state, remove current bounds.
   if (!state.viewBounds.bounds) removeAllExistingBounds()
 
-  // If map gets zoomed in/out or moved and there exists a selected region, shades are updated
-  if (bounds.length && typeof map !== 'undefined' && shades) updateShades(bounds[0])
-
   // While data is still being rendered, disable interactivity of bounds
   if (state.loading.isLoading && bounds.length) {
     bounds.forEach(function (bound) {
@@ -102,12 +99,14 @@ function onDrawingFinished (event) {
 
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
+  updateShades(event.layer)
 }
 
 function addEventListeners () {
   map.on('editable:drawing:commit', onDrawingFinished)
   map.on('editable:vertex:dragend', onDrawingEdited)
   map.on('editable:dragend', onDrawingEdited)
+  map.on('moveend', function () { updateShades(bounds[0]) })
 }
 
 /**
