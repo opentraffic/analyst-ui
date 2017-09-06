@@ -5,6 +5,7 @@ import { setBounds } from '../store/actions/viewBounds'
 // Store for existing bounds.
 const bounds = []
 let handlersAdded = false
+let shades = false
 
 // Subscribe to changes in state to affect the behavior of Leaflet.Editable.
 store.subscribe(() => {
@@ -12,6 +13,20 @@ store.subscribe(() => {
 
   // If bounds are cleared from state, remove current bounds.
   if (!state.viewBounds.bounds) removeAllExistingBounds()
+
+  // While data is still being rendered, disable interactivity of bounds
+  if (state.loading.isLoading && bounds.length) {
+    bounds.forEach(function (bound) {
+      bound.editor.disable()
+      bound.dragging.disable()
+    })
+  }
+  if (!state.loading.isLoading && bounds.length) {
+    bounds.forEach(function (bound) {
+      bound.editor.enable()
+      bound.dragging.enable()
+    })
+  }
 
   // If select mode has changed, stop any existing drawing interaction.
   if (state.app.analysisMode !== 'REGION' && typeof map !== 'undefined' && map.editTools) {
@@ -73,6 +88,8 @@ function storeBounds (bounds) {
 function onDrawingFinished (event) {
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
+  // If the region shades do not exist, create them
+  if (!shades) { createShades(event.layer) }
 
   // Remove previous bounds after the new one has been drawn.
   if (bounds.length > 1) {
@@ -82,12 +99,14 @@ function onDrawingFinished (event) {
 
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
+  updateShades(event.layer)
 }
 
 function addEventListeners () {
   map.on('editable:drawing:commit', onDrawingFinished)
   map.on('editable:vertex:dragend', onDrawingEdited)
   map.on('editable:dragend', onDrawingEdited)
+  map.on('moveend', function () { updateShades(bounds[0]) })
 }
 
 /**
@@ -118,6 +137,7 @@ export function drawBounds ({ west, south, east, north }) {
     [south, east]
   ]).addTo(map)
   rect.enableEdit()
+  createShades(rect)
 
   if (!handlersAdded) {
     addEventListeners()
@@ -125,4 +145,88 @@ export function drawBounds ({ west, south, east, north }) {
   }
   bounds.push(rect)
   storeBounds(rect.getBounds())
+}
+
+function createShades (rect) {
+  // If there are shades already, don't create more
+  if (shades) { return }
+  // Set shades to true since now shades exist
+  shades = true
+  const regionSelector = map._panes.overlayPane
+  map._shadeContainer = L.DomUtil.create('div', 'leaflet-areaselect-container', regionSelector)
+  map._topShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
+  map._bottomShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
+  map._leftShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
+  map._rightShade = L.DomUtil.create('div', 'leaflet-areaselect-shade', map._shadeContainer)
+  updateShades(rect)
+}
+
+// Setting the dimensions (width, height) and position (top, left) of a shade
+function setDimensions (element, dimension) {
+  element.style.width = dimension.width + 'px'
+  element.style.height = dimension.height + 'px'
+  element.style.top = dimension.top + 'px'
+  element.style.left = dimension.left + 'px'
+}
+
+// When map is zoomed in/out and/or moved, get the offset for the origin zoom and lat/lng values
+function getOffset () {
+  // Getting the transformation value through style attributes
+  let transformation = map.getPanes().mapPane.style.transform
+  const startIndex = transformation.indexOf('(')
+  const endIndex = transformation.indexOf(')')
+  transformation = transformation.substring(startIndex + 1, endIndex).split(',')
+  const offset = {
+    x: Number(transformation[0].slice(0, -2) * -1),
+    y: Number(transformation[1].slice(0, -2) * -1)
+  }
+  return offset
+}
+
+// Calculating values for the dimensions and positions of each shade
+function updateShades (rect) {
+  // Checking if there are shades to update
+  if (!shades) return
+
+  const rectBounds = rect.getBounds()
+  const size = map.getSize()
+  const offset = getOffset()
+
+  const northEastPoint = map.latLngToContainerPoint(rectBounds.getNorthEast())
+  const southWestPoint = map.latLngToContainerPoint(rectBounds.getSouthWest())
+
+  setDimensions(map._topShade, {
+    width: size.x,
+    height: (northEastPoint.y < 0) ? 0 : northEastPoint.y,
+    top: offset.y,
+    left: offset.x
+  })
+
+  setDimensions(map._bottomShade, {
+    width: size.x,
+    height: size.y - southWestPoint.y,
+    top: southWestPoint.y + offset.y,
+    left: offset.x
+  })
+
+  setDimensions(map._leftShade, {
+    width: (southWestPoint.x < 0) ? 0 : southWestPoint.x,
+    height: southWestPoint.y - northEastPoint.y,
+    top: northEastPoint.y + offset.y,
+    left: offset.x
+  })
+
+  setDimensions(map._rightShade, {
+    width: size.x - northEastPoint.x,
+    height: southWestPoint.y - northEastPoint.y,
+    top: northEastPoint.y + offset.y,
+    left: northEastPoint.x + offset.x
+  })
+}
+
+export function removeShades () {
+  // If shades exist remove it
+  if (shades) { L.DomUtil.remove(map._shadeContainer) }
+  // Set shades to false, since shades rae now removed
+  shades = false
 }

@@ -15,6 +15,8 @@ const host = 'routing-prod.opentraffic.io'
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
 
+const OSMLRCache = {}
+
 function getSuffixes (bbox) {
   const tiles = getTilesForBbox(bbox.min_lon, bbox.min_lat, bbox.max_lon, bbox.max_lat)
   // Filter out tiles with level 2, no data for those
@@ -82,10 +84,12 @@ function getBboxArea (bounds) {
 
 export function showRegion (bounds) {
   // If bounds are cleared, remove data source from tangram
+  store.dispatch(startLoading())
   if (!bounds) {
     const scene = getCurrentScene()
     delete scene.sources.routes
     setCurrentScene(scene)
+    store.dispatch(stopLoading())
     return
   }
 
@@ -94,6 +98,7 @@ export function showRegion (bounds) {
   if (area > MAX_AREA_BBOX) {
     const message = 'Please zoom in and reduce the size of your bounding box'
     store.dispatch(setRouteError(message))
+    store.dispatch(hideLoading())
     return
   }
 
@@ -110,10 +115,10 @@ export function showRegion (bounds) {
     })
     // Second, fetch the OSMLR Geometry tiles using the suffixes
     .then((suffixes) => {
-      store.dispatch(startLoading())
       fetchOSMLRGeometryTiles(suffixes)
         .then((results) => {
-          const features = results.features.slice()
+          const copy = JSON.parse(JSON.stringify(results))
+          const features = copy.features
           // Remove from geojson, routes outside bounding box (bounds)
           const regionFeatures = withinBbox(features, bounds)
           results.features = regionFeatures
@@ -178,9 +183,24 @@ export function showRegion (bounds) {
  *            OSMLR geometry tiles, merged into a single GeoJSON.
  */
 function fetchOSMLRGeometryTiles (suffixes) {
-  const urls = suffixes.map(suffix => `${OSMLR_TILE_PATH}${suffix}.json`)
-  const fetchTiles = urls.map(url => fetch(url).then(res => res.json()))
-  // Results is an array of all GeoJSON tiles. Next, merge into one file
-  // and return the result as a single GeoJSON.
-  return Promise.all(fetchTiles).then(merge)
+  const tiles = suffixes.map(suffix => fetchOSMLRtile(suffix))
+  return Promise.all(tiles).then(merge)
+}
+
+function fetchOSMLRtile (suffix) {
+  // If tile already exists in cache, return a copy of it
+  if (OSMLRCache[suffix]) {
+    const clone = JSON.parse(JSON.stringify(OSMLRCache[suffix]))
+    return clone
+  }
+  // Otherwise make a request for it, cache it and return tile
+  const url = `${OSMLR_TILE_PATH}${suffix}.json`
+  return window.fetch(url)
+    .then(results => results.json())
+    .then(res => cacheOSMLRTiles(res, suffix))
+}
+
+function cacheOSMLRTiles (tile, index) {
+  Object.assign(OSMLRCache, {[index]: tile})
+  return tile
 }
