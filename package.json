@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "postcss --use postcss-custom-properties --replace build/**/*.css",
     "pretest": "npm run lint-js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -57,6 +58,8 @@
     "eslint-plugin-promise": "3.5.0",
     "eslint-plugin-react": "7.1.0",
     "eslint-plugin-standard": "3.0.1",
+    "postcss-cli": "4.1.0",
+    "postcss-custom-properties": "6.1.0",
     "react-test-renderer": "15.6.1"
   }
 }
