@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Icon } from 'semantic-ui-react'
 import ErrorMessage from './ErrorMessage'
 import AnalysisName from './AnalysisName'
 import ModeSelect from './ModeSelect'
@@ -28,6 +29,10 @@ class Sidebar extends React.Component {
 
     return (
       <div className={'Sidebar ' + this.props.className}>
+        <div>
+          <img className="app-logo" src="./logo.png" alt="OpenTraffic Analyst" />
+          <a href="http://opentraffic.io/"><Icon circular color="gray" name="info" className="info-icon" /></a>
+        </div>
         {errors}
         <AnalysisName />
         <ModeSelect />
