@@ -185,6 +185,9 @@ function getOffset () {
 
 // Calculating values for the dimensions and positions of each shade
 function updateShades (rect) {
+  // Checking if there are shades to update
+  if (!shades) return
+
   const rectBounds = rect.getBounds()
   const size = map.getSize()
   const offset = getOffset()
