@@ -117,7 +117,8 @@ export function showRegion (bounds) {
     .then((suffixes) => {
       fetchOSMLRGeometryTiles(suffixes)
         .then((results) => {
-          const features = results.features.slice()
+          const copy = JSON.parse(JSON.stringify(results))
+          const features = copy.features.slice()
           // Remove from geojson, routes outside bounding box (bounds)
           const regionFeatures = withinBbox(features, bounds)
           results.features = regionFeatures
@@ -192,7 +193,7 @@ function fetchOSMLRtile (suffix) {
     const clone = JSON.parse(JSON.stringify(OSMLRCache[suffix]))
     return clone
   }
-  // Otherwise make a request for it, cache it, then return a copy of it
+  // Otherwise make a request for it, cache it and return tile
   const url = `${OSMLR_TILE_PATH}${suffix}.json`
   return window.fetch(url)
     .then(results => results.json())
@@ -201,6 +202,5 @@ function fetchOSMLRtile (suffix) {
 
 function cacheOSMLRTiles (tile, index) {
   Object.assign(OSMLRCache, {[index]: tile})
-  const clone = JSON.parse(JSON.stringify(tile))
-  return clone
+  return tile
 }
