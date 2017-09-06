@@ -118,7 +118,7 @@ export function showRegion (bounds) {
       fetchOSMLRGeometryTiles(suffixes)
         .then((results) => {
           const copy = JSON.parse(JSON.stringify(results))
-          const features = copy.features.slice()
+          const features = copy.features
           // Remove from geojson, routes outside bounding box (bounds)
           const regionFeatures = withinBbox(features, bounds)
           results.features = regionFeatures
