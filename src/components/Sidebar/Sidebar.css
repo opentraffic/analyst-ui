@@ -8,3 +8,22 @@
 .Sidebar .ui.segment {
   margin: 8px 0;
 }
+
+.app-logo {
+  height: 25px;
+  margin-top: 6px;
+  margin-bottom: 3px;
+  margin-left: 1px;
+}
+
+.info-icon {
+  position: absolute;
+  top: 14px;
+  right: 10px;
+  color: gray;
+}
+
+.info-icon:hover {
+  background-color: white;
+  color: inherit;
+}
