@@ -15,7 +15,7 @@ const scene = {
       draw: {
         lines: {
           order: 500,
-          width: [[10, '1px']],
+          width: [[13, '1px'], [16, '2px'], [18, '16px']],
           color: function () {
             /* global feature */
             const speed = feature.speed
