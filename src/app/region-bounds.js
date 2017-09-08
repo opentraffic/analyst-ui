@@ -227,6 +227,6 @@ function updateShades (rect) {
 export function removeShades () {
   // If shades exist remove it
   if (shades) { L.DomUtil.remove(map._shadeContainer) }
-  // Set shades to false, since shades rae now removed
+  // Set shades to false, since shades are now removed
   shades = false
 }

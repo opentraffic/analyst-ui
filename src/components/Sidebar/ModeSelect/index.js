@@ -39,6 +39,7 @@ export class ModeSelect extends React.PureComponent {
       this.props.dispatch(setRouteAnalysisMode())
     }
     this.setState({case: null})
+    removeShades()
   }
 
   onClickRegion = (event) => {
@@ -63,7 +64,6 @@ export class ModeSelect extends React.PureComponent {
         open: true,
         case: 'route'
       })
-      removeShades()
     } else { // Else if route button is clicked and no region exists, change mode
       this.props.dispatch(setRouteAnalysisMode())
     }
@@ -78,7 +78,6 @@ export class ModeSelect extends React.PureComponent {
         open: true,
         case: 'clear analysis'
       })
-      removeShades()
     } else { // Else if route/region is not drawn but was clicked, turn off mode
       this.props.dispatch(resetAnalysis())
     }
