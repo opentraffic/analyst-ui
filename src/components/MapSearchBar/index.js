@@ -11,7 +11,8 @@ class MapSearchBar extends React.Component {
     setLocation: PropTypes.func.isRequired,
     clearLabel: PropTypes.func.isRequired,
     recenterMap: PropTypes.func.isRequired,
-    config: PropTypes.object.isRequired
+    apiKey: PropTypes.string.isRequired,
+    map: PropTypes.object
   }
 
   constructor (props) {
@@ -64,7 +65,7 @@ class MapSearchBar extends React.Component {
     // Stores latlng and name of selected location in Redux
     this.props.setLocation(latlng, suggestionValue)
     // Recenters map to the selected location's latlng
-    const zoom = this.props.config.map.zoom
+    const zoom = this.props.map.zoom
     // If user is below zoom 10, set to 10
     if (zoom < 10) {
       this.props.recenterMap(latlng, 10)
@@ -100,13 +101,13 @@ class MapSearchBar extends React.Component {
 
   // Makes autocomplete request to Mapzen Search based on what user has typed
   autocomplete = (query) => {
-    const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
+    const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.apiKey}`
     this.throttleMakeRequest(endpoint)
   }
 
   // Makes search request based on what user has entered
   search = (query) => {
-    const endpoint = `https://search.mapzen.com/v1/search?text=${query}&api_key=${this.props.config.mapzen.apiKey}`
+    const endpoint = `https://search.mapzen.com/v1/search?text=${query}&api_key=${this.props.apiKey}`
     this.throttleMakeRequest(endpoint)
   }
 

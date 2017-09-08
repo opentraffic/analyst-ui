@@ -27,7 +27,7 @@ const ROUTE_ZOOM_LEVEL = 10
 class MapContainer extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    config: PropTypes.object,
+    apiKey: PropTypes.string.isRequired,
     route: PropTypes.object.isRequired,
     map: PropTypes.object,
     bounds: PropTypes.shape({
@@ -75,16 +75,16 @@ class MapContainer extends React.Component {
   }
 
   render () {
-    const config = this.props.config
     const map = this.props.map
 
     return (
       <div className={this.props.className}>
         <MapSearchBar
-          config={config}
+          apiKey={this.props.apiKey}
           setLocation={this.props.setLocation}
           clearLabel={this.props.clearLabel}
           recenterMap={this.props.recenterMap}
+          map={this.props.map}
         />
         <Loader />
         <Map
@@ -110,7 +110,7 @@ class MapContainer extends React.Component {
 function mapStateToProps (state) {
   return {
     mode: state.app.analysisMode,
-    config: state.config,
+    apiKey: state.config.mapzen.apiKey,
     route: state.route,
     map: state.map,
     bounds: state.viewBounds.bounds,
