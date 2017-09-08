@@ -82,16 +82,20 @@ function getBboxArea (bounds) {
   return area
 }
 
+function clearRegion () {
+  const scene = getCurrentScene()
+  delete scene.sources.routes
+  setCurrentScene(scene)
+}
+
 export function showRegion (bounds) {
   // If bounds are cleared, remove data source from tangram
-  store.dispatch(startLoading())
   if (!bounds) {
-    const scene = getCurrentScene()
-    delete scene.sources.routes
-    setCurrentScene(scene)
-    store.dispatch(stopLoading())
+    clearRegion()
     return
   }
+
+  store.dispatch(startLoading())
 
   // If area of bounding box exceeds max_area, display error
   const area = getBboxArea(bounds)

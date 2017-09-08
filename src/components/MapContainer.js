@@ -9,11 +9,18 @@ import Loader from './Loader'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
 import * as mapActionCreators from '../store/actions/map'
-import * as routeActionCreators from '../store/actions/route'
+import {
+  setRouteError,
+  clearRouteError,
+  addWaypoint,
+  insertWaypoint,
+  removeWaypoint,
+  updateWaypoint
+} from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
 import { showRegion } from '../app/region'
-import { doRoutestuff } from '../app/route'
+import { showRoute } from '../app/route'
 
 const ROUTE_ZOOM_LEVEL = 10
 
@@ -21,19 +28,22 @@ class MapContainer extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     config: PropTypes.object,
-    route: PropTypes.object,
-    map: PropTypes.object
-  }
-
-  constructor (props) {
-    super(props)
-    this.showRoute()
+    route: PropTypes.object.isRequired,
+    map: PropTypes.object,
+    bounds: PropTypes.shape({
+      east: PropTypes.string,
+      west: PropTypes.string,
+      north: PropTypes.string,
+      south: PropTypes.string
+    })
   }
 
   componentDidMount () {
     if (this.props.bounds) {
       drawBounds(this.props.bounds)
       showRegion(this.props.bounds)
+    } else {
+      showRoute(this.props.route.waypoints)
     }
   }
 
@@ -41,8 +51,8 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
         isEqual(prevProps.bounds, this.props.bounds)) return
 
-    this.showRoute()
     showRegion(this.props.bounds)
+    showRoute(this.props.route.waypoints)
   }
 
   onClick = (event) => {
@@ -62,19 +72,6 @@ class MapContainer extends React.Component {
 
   onClickDismissErrors = () => {
     this.props.clearRouteError()
-  }
-
-  showRoute () {
-    const waypoints = this.props.route.waypoints
-
-    if (waypoints.length <= 1) {
-      // TODO: probably not the best place to do this
-      this.props.clearRoute()
-      this.props.clearRouteError()
-      return
-    }
-
-    doRoutestuff(waypoints)
   }
 
   render () {
@@ -122,7 +119,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators, updateScene }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, setRouteError, clearRouteError, addWaypoint, insertWaypoint, removeWaypoint, updateWaypoint, updateScene }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)

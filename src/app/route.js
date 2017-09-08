@@ -4,12 +4,22 @@ import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } f
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from '../app/data'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { setMultiSegments, setRouteError, setRoute } from '../store/actions/route'
+import { setMultiSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
 import store from '../store'
 
 const ROUTING_HOST = 'routing-prod.opentraffic.io'
 
-export function doRoutestuff (waypoints) {
+function resetRouteState () {
+  store.dispatch(clearRoute())
+  store.dispatch(clearRouteError())
+}
+
+export function showRoute (waypoints) {
+  if (waypoints.length <= 1) {
+    resetRouteState()
+    return
+  }
+
   store.dispatch(startLoading())
 
   // Fetch route from Valhalla-based routing service, given waypoints.
