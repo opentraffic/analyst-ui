@@ -7,16 +7,18 @@ import { startLoading, stopLoading, hideLoading } from '../store/actions/loading
 import { setMultiSegments, setRouteError, setRoute } from '../store/actions/route'
 import store from '../store'
 
-export function doRoutestuff (host, waypoints) {
+const ROUTING_HOST = 'routing-prod.opentraffic.io'
+
+export function doRoutestuff (waypoints) {
   store.dispatch(startLoading())
 
   // Fetch route from Valhalla-based routing service, given waypoints.
-  getRoute(host, waypoints)
+  getRoute(ROUTING_HOST, waypoints)
     // Transform Valhalla response to polyline coordinates for trace_attributes request
     .then(valhallaResponseToPolylineCoordinates)
     // Make an additional trace_attributes request. This gives us information
     // we need for the visualization.
-    .then(coordinates => getTraceAttributes(host, coordinates))
+    .then(coordinates => getTraceAttributes(ROUTING_HOST, coordinates))
     // This `catch` statement is placed here to handle errors from Fetch API.
     .catch(error => {
       store.dispatch(hideLoading())

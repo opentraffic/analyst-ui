@@ -65,7 +65,6 @@ class MapContainer extends React.Component {
   }
 
   showRoute () {
-    const host = 'routing-prod.opentraffic.io'
     const waypoints = this.props.route.waypoints
 
     if (waypoints.length <= 1) {
@@ -75,7 +74,7 @@ class MapContainer extends React.Component {
       return
     }
 
-    doRoutestuff(host, waypoints)
+    doRoutestuff(waypoints)
   }
 
   render () {
