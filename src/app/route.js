@@ -7,8 +7,6 @@ import { startLoading, stopLoading, hideLoading } from '../store/actions/loading
 import { setMultiSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
 import store from '../store'
 
-const ROUTING_HOST = 'routing-prod.opentraffic.io'
-
 function resetRouteState () {
   store.dispatch(clearRoute())
   store.dispatch(clearRouteError())
@@ -23,12 +21,13 @@ export function showRoute (waypoints) {
   store.dispatch(startLoading())
 
   // Fetch route from Valhalla-based routing service, given waypoints.
-  getRoute(ROUTING_HOST, waypoints)
+  const host = store.getState().config.valhallaHost
+  getRoute(host, waypoints)
     // Transform Valhalla response to polyline coordinates for trace_attributes request
     .then(valhallaResponseToPolylineCoordinates)
     // Make an additional trace_attributes request. This gives us information
     // we need for the visualization.
-    .then(coordinates => getTraceAttributes(ROUTING_HOST, coordinates))
+    .then(coordinates => getTraceAttributes(host, coordinates))
     // This `catch` statement is placed here to handle errors from Fetch API.
     .catch(error => {
       store.dispatch(hideLoading())

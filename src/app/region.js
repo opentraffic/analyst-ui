@@ -9,9 +9,6 @@ import store from '../store'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setRouteError } from '../store/actions/route'
 
-const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
-const host = 'routing-prod.opentraffic.io'
-
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
 
@@ -109,7 +106,9 @@ export function showRegion (bounds) {
   // First, convert bounds to waypoints
   // This way we can get the bounding box from valhalla and suffixes
   const waypoints = [L.latLng(bounds.south, bounds.west), L.latLng(bounds.north, bounds.east)]
+
   // Go get route using Valhalla
+  const host = store.getState().config.valhallaHost
   getRoute(host, waypoints)
     // After getting route, get the bounding box and the relevant tiles from box
     .then((response) => {
@@ -198,7 +197,8 @@ function fetchOSMLRtile (suffix) {
     return clone
   }
   // Otherwise make a request for it, cache it and return tile
-  const url = `${OSMLR_TILE_PATH}${suffix}.json`
+  const path = store.getState().config.osmlrTileUrl
+  const url = `${path}${suffix}.json`
   return window.fetch(url)
     .then(results => results.json())
     .then(res => cacheOSMLRTiles(res, suffix))
