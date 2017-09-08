@@ -2,7 +2,8 @@ import { reject, uniq } from 'lodash'
 import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { parseSegmentId } from '../lib/tiles'
-import { fetchDataTiles } from '../app/data'
+import { fetchDataTiles } from './data'
+import { addSpeedToThing } from './processing'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setMultiSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
 import store from '../store'
@@ -91,37 +92,7 @@ export function showRoute (waypoints) {
       fetchDataTiles(parsedIds)
         .then((tiles) => {
           parsedIds.forEach(item => {
-            // not all levels and tiles are available yet, so try()
-            // skips it if it doesn't work
-            try {
-              const segmentId = item.segment
-              const subtiles = tiles[item.level][item.tile] // object
-              // find which subtile contains this segment id
-              const subtileIds = Object.keys(subtiles)
-              for (let i = 0, j = subtileIds.length; i < j; i++) {
-                const tile = subtiles[subtileIds[i]]
-                const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
-                // if this is the right tile, get the reference speed for the
-                // current segment and attach it to the item.
-                if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-                  // Test hour
-                  const hour = 23
-                  // Get the local id of the segment
-                  // (eg. id 21000 is local id 1000 if tile segment size is 10000)
-                  const subtileSegmentId = segmentId % tile.subtileSegments
-                  // There is one array for every attribute. Divide unitSize by
-                  // entrySize to know how many entries belong to each segment,
-                  // and find the base index for that segment
-                  const entryBaseIndex = subtileSegmentId * (tile.unitSize / tile.entrySize)
-                  // Add the desired hour (0-index) to get the correct index value
-                  const desiredIndex = entryBaseIndex + hour
-
-                  // Append the data point to the return value for rendering later
-                  item.speed = tile.speeds[desiredIndex]
-                  break
-                }
-              }
-            } catch (e) {}
+            addSpeedToThing(tiles, item, item)
           })
 
           // Now let's draw this
