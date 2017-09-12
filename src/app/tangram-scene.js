@@ -1,4 +1,5 @@
 import config from '../config'
+import stops from '../lib/route-segments'
 
 const scene = {
   import: [
@@ -15,7 +16,7 @@ const scene = {
       draw: {
         lines: {
           order: 500,
-          width: [[13, '1px'], [15, '2px'], [17, '4px'], [18, '10px'], [20, '45px']],
+          width: stops,
           color: function () {
             /* global feature */
             const speed = feature.speed
