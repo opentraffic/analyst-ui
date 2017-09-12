@@ -25,7 +25,7 @@ export default class RouteMultiLine extends React.PureComponent {
         <Polyline
           positions={segment.coordinates}
           color="#222"
-          weight={getSegmentWidth(this.props.zoom) + 2}
+          weight={getSegmentWidth(this.props.zoom, segment.speed) + 2}
           key={index}
         />
       )
@@ -38,7 +38,7 @@ export default class RouteMultiLine extends React.PureComponent {
         <Polyline
           positions={segment.coordinates}
           color={getSpeedColor(segment.speed)}
-          weight={getSegmentWidth(this.props.zoom)}
+          weight={getSegmentWidth(this.props.zoom, segment.speed)}
           onMouseDown={this.props.insertWaypoint}
           key={index}
         />
