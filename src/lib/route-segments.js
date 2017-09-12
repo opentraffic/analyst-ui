@@ -1,4 +1,4 @@
-const stops = [[13, '1px'], [15, '2px'], [17, '4px'], [18, '10px'], [20, '45px']]
+const stops = [[13, '2px'], [15, '2px'], [17, '4px'], [18, '10px'], [20, '45px']]
 
 export default stops
 
