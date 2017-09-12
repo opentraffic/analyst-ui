@@ -2,42 +2,48 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { isEqual, reject, uniq } from 'lodash'
-import polyline from '@mapbox/polyline'
+import { isEqual } from 'lodash'
 import Map from './Map'
 import MapSearchBar from './MapSearchBar'
 import Loader from './Loader'
 import Route from './Map/Route'
 import RouteError from './Map/RouteError'
-import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { parseSegmentId } from '../lib/tiles'
 import * as mapActionCreators from '../store/actions/map'
-import * as routeActionCreators from '../store/actions/route'
+import {
+  setRouteError,
+  clearRouteError,
+  addWaypoint,
+  insertWaypoint,
+  removeWaypoint,
+  updateWaypoint
+} from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
-import * as loadingActionCreators from '../store/actions/loading'
 import { drawBounds } from '../app/region-bounds'
-import { fetchDataTiles } from '../app/data'
 import { showRegion } from '../app/region'
+import { showRoute } from '../app/route'
 
 const ROUTE_ZOOM_LEVEL = 10
 
 class MapContainer extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    config: PropTypes.object,
-    route: PropTypes.object,
-    map: PropTypes.object
-  }
-
-  constructor (props) {
-    super(props)
-    this.showRoute()
+    apiKey: PropTypes.string.isRequired,
+    route: PropTypes.object.isRequired,
+    map: PropTypes.object,
+    bounds: PropTypes.shape({
+      east: PropTypes.string,
+      west: PropTypes.string,
+      north: PropTypes.string,
+      south: PropTypes.string
+    })
   }
 
   componentDidMount () {
     if (this.props.bounds) {
       drawBounds(this.props.bounds)
       showRegion(this.props.bounds)
+    } else {
+      showRoute(this.props.route.waypoints)
     }
   }
 
@@ -45,9 +51,8 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
         isEqual(prevProps.bounds, this.props.bounds)) return
 
-    console.log('updating')
-    this.showRoute()
     showRegion(this.props.bounds)
+    showRoute(this.props.route.waypoints)
   }
 
   onClick = (event) => {
@@ -221,16 +226,16 @@ class MapContainer extends React.Component {
   }
 
   render () {
-    const config = this.props.config
     const map = this.props.map
 
     return (
       <div className={this.props.className}>
         <MapSearchBar
-          config={config}
+          apiKey={this.props.apiKey}
           setLocation={this.props.setLocation}
           clearLabel={this.props.clearLabel}
           recenterMap={this.props.recenterMap}
+          map={this.props.map}
         />
         <Loader />
         <Map
@@ -256,7 +261,7 @@ class MapContainer extends React.Component {
 function mapStateToProps (state) {
   return {
     mode: state.app.analysisMode,
-    config: state.config,
+    apiKey: state.config.mapzen.apiKey,
     route: state.route,
     map: state.map,
     bounds: state.viewBounds.bounds,
@@ -265,7 +270,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...mapActionCreators, ...routeActionCreators, ...loadingActionCreators, updateScene }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, setRouteError, clearRouteError, addWaypoint, insertWaypoint, removeWaypoint, updateWaypoint, updateScene }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)

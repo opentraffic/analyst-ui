@@ -56,13 +56,9 @@
                   "type": "string",
                   "id": 10
                 },
-                "referenceSpeeds": {
-                  "rule": "repeated",
+                "deprecated": {
                   "type": "uint32",
-                  "id": 11,
-                  "options": {
-                    "packed": true
-                  }
+                  "id": 11
                 },
                 "speeds": {
                   "rule": "repeated",
@@ -140,6 +136,38 @@
                   "rule": "repeated",
                   "type": "uint32",
                   "id": 21,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "referenceSpeeds20": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 22,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "referenceSpeeds40": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 23,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "referenceSpeeds60": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 24,
+                  "options": {
+                    "packed": true
+                  }
+                },
+                "referenceSpeeds80": {
+                  "rule": "repeated",
+                  "type": "uint32",
+                  "id": 25,
                   "options": {
                     "packed": true
                   }
