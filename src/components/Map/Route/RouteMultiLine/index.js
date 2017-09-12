@@ -10,7 +10,8 @@ export default class RouteMultiLine extends React.PureComponent {
       coordinates: PropTypes.array,
       color: PropTypes.string
     })),
-    insertWaypoint: PropTypes.func
+    insertWaypoint: PropTypes.func,
+    zoom: PropTypes.number.isRequired
   }
 
   static defaultProps = {
@@ -24,7 +25,7 @@ export default class RouteMultiLine extends React.PureComponent {
         <Polyline
           positions={segment.coordinates}
           color="#222"
-          weight={getSegmentWidth(this.props.zoom) + 3}
+          weight={getSegmentWidth(this.props.zoom) + 2}
           key={index}
         />
       )
