@@ -45,6 +45,7 @@ class MapContainer extends React.Component {
     if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
         isEqual(prevProps.bounds, this.props.bounds)) return
 
+    console.log('updating')
     this.showRoute()
     showRegion(this.props.bounds)
   }
@@ -71,6 +72,7 @@ class MapContainer extends React.Component {
   showRoute () {
     const host = 'routing-prod.opentraffic.io'
     const waypoints = this.props.route.waypoints
+    console.log(waypoints)
 
     if (waypoints.length <= 1) {
       // TODO: probably not the best place to do this
