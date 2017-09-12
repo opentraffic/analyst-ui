@@ -72,3 +72,10 @@ export function setMultiSegments (segments) {
     multiSegments: segments
   }
 }
+
+export function clearMultiSegments () {
+  return {
+    type: SET_MULTI_SEGMENTS,
+    multiSegments: []
+  }
+}
