@@ -5,12 +5,10 @@ import { getRoute } from '../lib/valhalla'
 import { merge } from '../lib/geojson'
 import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import { fetchDataTiles } from './data'
+import { addSpeedToThing } from './processing'
 import store from '../store'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setRouteError } from '../store/actions/route'
-
-const OSMLR_TILE_PATH = 'https://osmlr-tiles.s3.amazonaws.com/v0.1/geojson/'
-const host = 'routing-prod.opentraffic.io'
 
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
@@ -82,16 +80,20 @@ function getBboxArea (bounds) {
   return area
 }
 
+function clearRegion () {
+  const scene = getCurrentScene()
+  delete scene.sources.routes
+  setCurrentScene(scene)
+}
+
 export function showRegion (bounds) {
   // If bounds are cleared, remove data source from tangram
-  store.dispatch(startLoading())
   if (!bounds) {
-    const scene = getCurrentScene()
-    delete scene.sources.routes
-    setCurrentScene(scene)
-    store.dispatch(stopLoading())
+    clearRegion()
     return
   }
+
+  store.dispatch(startLoading())
 
   // If area of bounding box exceeds max_area, display error
   const area = getBboxArea(bounds)
@@ -105,7 +107,9 @@ export function showRegion (bounds) {
   // First, convert bounds to waypoints
   // This way we can get the bounding box from valhalla and suffixes
   const waypoints = [L.latLng(bounds.south, bounds.west), L.latLng(bounds.north, bounds.east)]
+
   // Go get route using Valhalla
+  const host = store.getState().config.valhallaHost
   getRoute(host, waypoints)
     // After getting route, get the bounding box and the relevant tiles from box
     .then((response) => {
@@ -133,34 +137,7 @@ export function showRegion (bounds) {
           fetchDataTiles(parsedIds)
             .then((tiles) => {
               parsedIds.forEach((item, index) => {
-                try {
-                  const segmentId = item.segment
-                  const subtiles = tiles[item.level][item.tile]
-                  const subtileIds = Object.keys(subtiles)
-                  for (let i = 0, j = subtileIds.length; i < j; i++) {
-                    const tile = subtiles[subtileIds[i]]
-                    const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
-                    // if this is the right tile, get the reference speed for the
-                    // current segment and attach it to the item.
-                    if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-                      // Test hour
-                      const hour = 23
-                      // Get the local id of the segment
-                      // (eg. id 21000 is local id 1000 if tile segment size is 10000)
-                      const subtileSegmentId = segmentId % tile.subtileSegments
-                      // There is one array for every attribute. Divide unitSize by
-                      // entrySize to know how many entries belong to each segment,
-                      // and find the base index for that segment
-                      const entryBaseIndex = subtileSegmentId * (tile.unitSize / tile.entrySize)
-                      // Add the desired hour (0-index) to get the correct index value
-                      const desiredIndex = entryBaseIndex + hour
-
-                      // Append the speed to the features.properties for tangram to render later
-                      features[index].properties.speed = tile.speeds[desiredIndex]
-                      break
-                    }
-                  }
-                } catch (e) {}
+                addSpeedToThing(tiles, item, features[index].properties)
               })
               setDataSource('routes', { type: 'GeoJSON', data: results })
               store.dispatch(stopLoading())
@@ -194,7 +171,8 @@ function fetchOSMLRtile (suffix) {
     return clone
   }
   // Otherwise make a request for it, cache it and return tile
-  const url = `${OSMLR_TILE_PATH}${suffix}.json`
+  const path = store.getState().config.osmlrTileUrl
+  const url = `${path}${suffix}.json`
   return window.fetch(url)
     .then(results => results.json())
     .then(res => cacheOSMLRTiles(res, suffix))

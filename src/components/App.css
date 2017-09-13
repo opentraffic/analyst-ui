@@ -1,8 +1,13 @@
+/* CSS custom properties */
+:root {
+  --sidebar-width: 480px;
+}
+
 .map-container {
   position: fixed;
   top: 0;
   left: 0;
-  width: calc(100% - 480px);
+  width: calc(100% - var(--sidebar-width));
   height: 100%;
 }
 
@@ -10,7 +15,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 480px;
+  width: var(--sidebar-width);
   height: 100%;
   border-left: 1px solid #c0c0c0;
 }

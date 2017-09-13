@@ -1,5 +1,5 @@
 import protobuf from 'protobufjs'
-import { filter, uniqWith, isEqual } from 'lodash'
+import { filter, uniq } from 'lodash'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
@@ -74,17 +74,16 @@ function figureOutHowManySubtilesThereAre (tile) {
 }
 
 /**
- * Fetch one data tile given a parsed ID and a subtile number
+ * Fetch one data tile given a id suffix and a subtile number
  *
- * @param {Object} id - object of shape { level, tile, id, segment }
+ * @param {Object} suffix - file path to data tile
  * @param {Number} subtile - number of subtile to download (default is 0)
  * @returns {Promise} - resolved to either a plain JS object of the data tile,
  *            _or_ an error object { error: true } if it failed. We don't
  *            want this to throw because data tile fetch errors should be
  *            skipped
  */
-function fetchDataTile (id, subtile = 0) {
-  const suffix = getTileUrlSuffix(id)
+function fetchDataTile (suffix, subtile = 0) {
   const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
 
   return window.fetch(url)
@@ -123,10 +122,11 @@ export function fetchDataTiles (ids) {
     return Promise.resolve(tileCache)
   }
 
-  // Obtain a list of ids of just level and tile, which allows us to easily
-  // filter out duplicates.
-  const simpleIds = ids.map(id => { return { level: id.level, tile: id.tile } })
-  const uniqueIds = uniqWith(simpleIds, isEqual)
+  // Obtain a list of unique tile suffixes
+  const simpleIds = ids.map(id => getTileUrlSuffix({ level: id.level, tile: id.tile }))
+  const uniqueIds = uniq(simpleIds)
+
+  // Fetch each suffix at subtile level 0.
   const promises = uniqueIds.map((id) => fetchDataTile(id))
 
   return Promise.all(promises)
@@ -138,11 +138,18 @@ export function fetchDataTiles (ids) {
       const newTiles = tiles.reduce((accumulator, tile) => {
         const numSubtiles = figureOutHowManySubtilesThereAre(tile)
         const toDownload = []
+        const id = { level: tile.level, tile: tile.index }
+        const suffix = getTileUrlSuffix(id)
+
         // Start at 1 because we already downloaded subtile at 0
         for (let i = 1; i < numSubtiles; i++) {
-          const id = { level: tile.level, tile: tile.index }
-          toDownload.push(fetchDataTile(id, i))
+          toDownload.push(fetchDataTile(suffix, i))
         }
+
+        // TEST: reference speed tile:
+        fetchReferenceSpeedTile(suffix)
+          .then(data => { console.log('ref speed tile', data) })
+
         return accumulator.concat(toDownload)
       }, [])
 
@@ -153,4 +160,25 @@ export function fetchDataTiles (ids) {
     // Consolidate all subtiles into a single object with lookup keys
     .then(consolidateTiles)
     .then(cacheTiles)
+}
+
+/* TODO: consolidate with fetchDataTile() */
+function fetchReferenceSpeedTile (suffix) {
+  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
+
+  return window.fetch(url)
+    .then((response) => {
+      // If a data tile fails to fetch, don't immediately reject; instead,
+      // resolve with an error object. We'll deal with these later.
+      if (!response.ok) {
+        console.warn(`[analyst-ui] Unable to fetch a reference speed tile from ${response.url}. The status code given was ${response.status}.`)
+        return Promise.resolve({ error: true })
+      }
+
+      return response.arrayBuffer()
+        // Read protobuf message and convert to plain object
+        .then(readDataTiles)
+        // We only want the child data object
+        .then(protobufMessage => protobufMessage.subtiles[0])
+    })
 }
