@@ -1,7 +1,5 @@
-const stops = [[13, '2px'], [15, '2px'], [17, '4px'], [18, '10px'], [20, '45px']]
-const SPEED_ZERO_DIFF = 0.5
-
-export default stops
+export const STOPS = [[13, '2px'], [15, '2px'], [17, '4px'], [18, '10px'], [20, '45px']]
+export const ZERO_SPEED_STOPS = [[13, '0.5px'], [15, '0.5px'], [17, '1px'], [18, '2.5px'], [20, '11.25px']]
 
 // Calculate the slope and y-intercept in order to get linear equation
 // Values given as params are (x, y) and (c, d)
@@ -17,33 +15,28 @@ function getLinearValue (x, y, c, d, zoom) {
 
 // Replicating how tangram "stops" data structure works
 export function getSegmentWidth (zoom, speed) {
-  const startValue = stops[0]
-  const endValue = stops[stops.length - 1]
-  let width
+  // If speed is zero, use zeroSpeed stops for less weight
+  const array = (speed === 0 || speed === null) ? ZERO_SPEED_STOPS : STOPS
+  const startValue = array[0]
+  const endValue = array[array.length - 1]
   // If zoom values are outside the defined range,
   // then they are capped by highest and lowest values in range
   if (zoom < startValue[0]) {
-    width = Number(startValue[1].slice(0, -2))
-    return (speed !== 0 && speed !== null) ? width : width * SPEED_ZERO_DIFF
-  }
-  else if (zoom > endValue[0]) {
-    width = Number(endValue[1].slice(0, -2))
-    return (speed !== 0 && speed !== null) ? width : width * SPEED_ZERO_DIFF
+    return Number(startValue[1].slice(0, -2))
+  } else if (zoom > endValue[0]) {
+    return Number(endValue[1].slice(0, -2))
   }
   // If they are found in range, use second value in pair
-  for (let i = 0; i < stops.length; i++) {
-    if (stops[i][0] === zoom) {
-      width = Number(stops[i][1].slice(0, -2))
-      return (speed !== 0  && speed !== null) ? width : width * SPEED_ZERO_DIFF
-    }
-    // If they are intermediate zoom levels, interpolate values
-    else if (zoom < stops[i][0]) {
-      const x = stops[i][0]
-      const y = Number(stops[i][1].slice(0, -2))
-      const c = stops[i - 1][0]
-      const d = Number(stops[i - 1][1].slice(0, -2))
-      width = getLinearValue(x, y, c, d, zoom)
-      return (speed !== 0 && speed !== null) ? width : width * SPEED_ZERO_DIFF
+  for (let i = 0; i < array.length; i++) {
+    if (array[i][0] === zoom) {
+      return Number(array[i][1].slice(0, -2))
+    } else if (zoom < array[i][0]) {
+      // If they are intermediate zoom levels, interpolate values
+      const x = array[i][0]
+      const y = Number(array[i][1].slice(0, -2))
+      const c = array[i - 1][0]
+      const d = Number(array[i - 1][1].slice(0, -2))
+      return getLinearValue(x, y, c, d, zoom)
     }
   }
 }
