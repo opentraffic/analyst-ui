@@ -52,7 +52,7 @@ class MapContainer extends React.Component {
         isEqual(prevProps.bounds, this.props.bounds)) return
 
     showRegion(this.props.bounds)
-    showRoute(this.props.route.waypoints)
+    if (this.props.bounds === null) showRoute(this.props.route.waypoints)
   }
 
   onClick = (event) => {

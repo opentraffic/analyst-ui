@@ -9,14 +9,12 @@ import { clearMultiSegments, setMultiSegments, setRouteError, setRoute, clearRou
 import store from '../store'
 
 function resetRouteState () {
-  console.log('removing')
   store.dispatch(clearRoute())
   store.dispatch(clearRouteError())
   store.dispatch(clearMultiSegments())
 }
 
 export function showRoute (waypoints) {
-  console.log(waypoints)
   if (waypoints.length <= 1) {
     resetRouteState()
     return
