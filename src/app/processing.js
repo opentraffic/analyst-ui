@@ -13,7 +13,7 @@ export function addSpeedToThing (tiles, item, thing) {
       // current segment and attach it to the item.
       if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
         // Test hour
-        const hour = 23
+        const hour = 12
         // Get the local id of the segment
         // (eg. id 21000 is local id 1000 if tile segment size is 10000)
         const subtileSegmentId = segmentId % tile.subtileSegments
