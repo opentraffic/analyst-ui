@@ -1,8 +1,8 @@
 import { reject, uniq } from 'lodash'
 import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { parseSegmentId } from '../lib/tiles'
-import { fetchDataTiles } from './data'
+import { parseSegmentId, getTileUrlSuffix, getSegmentIndexFromSegmentId } from '../lib/tiles'
+import { fetchDataTiles, fetchReferenceSpeedTile } from './data'
 import { addSpeedToThing } from './processing'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setMultiSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
@@ -89,11 +89,19 @@ export function showRoute (waypoints) {
       // Also, reject any segments at level 2; we won't have any data for those.
       const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
       // Download all data tiles
+      const referenceSpeeds80 = [];
       fetchDataTiles(parsedIds)
         .then((tiles) => {
           parsedIds.forEach(item => {
             addSpeedToThing(tiles, item, item)
-          })
+            const tileid = { level: item.level, tile: item.tile }
+            const suffix = getTileUrlSuffix(tileid)
+            fetchReferenceSpeedTile(suffix)
+              .then(ref => { console.log('ref speed tile', ref)
+              console.log('ref speed tile', ref.referenceSpeeds80[item.segment])
+              referenceSpeeds80.push({"segmentIdx":item.segment, "refSpeed":ref.referenceSpeeds80[item.segment]})
+            })
+           })
 
           // Now let's draw this
           const speeds = []
@@ -103,6 +111,9 @@ export function showRoute (waypoints) {
             const end = edge.end_shape_index
             const coordsSlice = coordinates.slice(begin, end + 1)
             const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
+            const segmentIdx = getSegmentIndexFromSegmentId(id)
+            const elapsedTime = edge.end_node ? edge.end_node.elapsed_time : null
+
             let found
             for (let i = 0, j = parsedIds.length; i < j; i++) {
               if (id === parsedIds[i].id) {
@@ -110,10 +121,21 @@ export function showRoute (waypoints) {
                 break
               }
             }
+            let speed = 0;
+            if (typeof found !== "undefined") {
+              speed = found.speed
+              console.log('historic speed data is found :: ' + speed + ' for segment id:: ' + id)
+            } else if (typeof referenceSpeeds80[segmentIdx] !== "undefined") {
+              speed = referenceSpeeds80[segmentIdx]
+              console.log('historic speed is undefined so lets use refspeed :: ' + speed + ' for segment id:: ' + id)
+            } else {
+              speed = elapsedTime
+              console.log('reference speed is undefined so lets use elapsed time :: ' + speed + ' for segment id:: ' + id)
+            }
 
             speeds.push({
               coordinates: coordsSlice,
-              speed: found ? found.speed : null
+              speed: found ? found.speed : speed
             })
           })
           store.dispatch(setMultiSegments(speeds))
