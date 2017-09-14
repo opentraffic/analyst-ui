@@ -135,7 +135,7 @@ export function showRoute (waypoints) {
 
             speeds.push({
               coordinates: coordsSlice,
-              speed: found ? found.speed : speed
+              speed: speed
             })
           })
           store.dispatch(setMultiSegments(speeds))
