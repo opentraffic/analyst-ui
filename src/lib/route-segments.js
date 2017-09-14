@@ -1,5 +1,5 @@
-export const STOPS = [[13, '2px'], [15, '2px'], [17, '4px'], [18, '10px'], [20, '45px']]
-export const ZERO_SPEED_STOPS = [[13, '0.5px'], [15, '0.5px'], [17, '1px'], [18, '2.5px'], [20, '11.25px']]
+export const STOPS = [[15, '3px'], [17, '4px'], [18, '10px'], [20, '45px']]
+export const ZERO_SPEED_STOPS = [[15, '0.5px'], [17, '1px'], [18, '2.5px'], [20, '11.25px']]
 
 // Calculate the slope and y-intercept in order to get linear equation
 // Values given as params are (x, y) and (c, d)
