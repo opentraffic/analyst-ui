@@ -16,7 +16,7 @@ function getLinearValue (x, y, c, d, zoom) {
 // Replicating how tangram "stops" data structure works
 export function getSegmentWidth (zoom, speed) {
   // If speed is zero, use zeroSpeed stops for less weight
-  const array = (speed === 0 || speed === null) ? ZERO_SPEED_STOPS : STOPS
+  const array = (speed === 0 || speed === null || typeof speed === 'undefined') ? ZERO_SPEED_STOPS : STOPS
   const startValue = array[0]
   const endValue = array[array.length - 1]
   // If zoom values are outside the defined range,
