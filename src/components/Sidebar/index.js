@@ -15,7 +15,7 @@ class Sidebar extends React.Component {
     super(props)
 
     this.state = {
-      hourValue: 12
+      hourValue: 17
     }
   }
 
