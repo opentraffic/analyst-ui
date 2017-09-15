@@ -3,7 +3,7 @@ import { filter, uniq } from 'lodash'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = 'https://s3.amazonaws.com/speed-extracts/2017/0/'
+const STATIC_DATA_TILE_PATH = 'https://speedtiles-prod.s3-accelerate.amazonaws.com/2017/01/'
 const tileCache = {}
 
 /**
