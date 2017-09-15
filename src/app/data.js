@@ -3,7 +3,7 @@ import { filter, uniq } from 'lodash'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = 'https://speedtiles-prod.s3-accelerate.amazonaws.com/2017/01/'
+const STATIC_DATA_TILE_PATH = '/speed-extracts/2017/0/'
 const tileCache = {}
 
 /**
@@ -83,8 +83,8 @@ function figureOutHowManySubtilesThereAre (tile) {
  *            want this to throw because data tile fetch errors should be
  *            skipped
  */
-function fetchDataTile (suffix, subtile = 0) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
+export function fetchHistoricSpeedTile (suffix, subtile = 0) {
+  const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}`
 
   return window.fetch(url)
     .then((response) => {
@@ -127,7 +127,7 @@ export function fetchDataTiles (ids) {
   const uniqueIds = uniq(simpleIds)
 
   // Fetch each suffix at subtile level 0.
-  const promises = uniqueIds.map((id) => fetchDataTile(id))
+  const promises = uniqueIds.map((id) => fetchHistoricSpeedTile(id))
 
   return Promise.all(promises)
     // Reject from the responses all tiles that have errored out. Log the
@@ -143,7 +143,7 @@ export function fetchDataTiles (ids) {
 
         // Start at 1 because we already downloaded subtile at 0
         for (let i = 1; i < numSubtiles; i++) {
-          toDownload.push(fetchDataTile(suffix, i))
+          toDownload.push(fetchHistoricSpeedTile(suffix, i))
         }
 
         // TEST: reference speed tile:
@@ -162,9 +162,9 @@ export function fetchDataTiles (ids) {
     .then(cacheTiles)
 }
 
-/* TODO: consolidate with fetchDataTile() */
-function fetchReferenceSpeedTile (suffix) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
+/* TODO: consolidate with fetchHistoricSpeedTile() */
+export function fetchReferenceSpeedTile (suffix) {
+  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref`
 
   return window.fetch(url)
     .then((response) => {
