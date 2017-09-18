@@ -107,7 +107,7 @@ export function showRoute (waypoints) {
           const coordsSlice = coordinates.slice(begin, end + 1)
           const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
           const segmentIdx = getSegmentIndexFromSegmentId(id) ? id != null : -1
-          const elapsedTime = response.edges[index+1].end_node.elapsed_time - edge.end_node.elapsed_time ? response.edges[index+1] <= response.edges.length : null
+          const elapsedTime = response.edges[index+1] < response.edges.length ? response.edges[index+1].end_node.elapsed_time - edge.end_node.elapsed_time : null
           /*
           let found
           for (let i = 0, j = parsedIds.length; i < j; i++) {
@@ -144,7 +144,7 @@ export function showRoute (waypoints) {
         store.dispatch(setMultiSegments(speeds))
         store.dispatch(stopLoading())
       })
-              })
+    })
       .catch((error) => {
         console.log('[fetchDataTiles error]', error)
         store.dispatch(hideLoading())
