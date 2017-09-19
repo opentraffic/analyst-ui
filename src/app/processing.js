@@ -1,3 +1,5 @@
+import store from '../store'
+
 export function addSpeedToThing (tiles, item, thing) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
@@ -13,7 +15,7 @@ export function addSpeedToThing (tiles, item, thing) {
       // current segment and attach it to the item.
       if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
         // Test hour
-        const hour = 9
+        const hour = store.getState().date.hourFilter[0]
         // Get the local id of the segment
         // (eg. id 21000 is local id 1000 if tile segment size is 10000)
         const subtileSegmentId = segmentId % tile.subtileSegments
