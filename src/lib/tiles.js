@@ -150,7 +150,7 @@ function getLevelFromSegmentId (id) {
 /**
  * Parses segment ID for tile index
  */
-export function getTileIndexFromSegmentId (id) {
+function getTileIndexFromSegmentId (id) {
   return (id >> LEVEL_BITS) & TILE_INDEX_MASK
 }
 
@@ -159,7 +159,7 @@ export function getTileIndexFromSegmentId (id) {
  * The `id` can be greater than the 32-bit number in JavaScript, so we can't
  * use bitwise operators here
  */
-export function getSegmentIndexFromSegmentId (id) {
+function getSegmentIndexFromSegmentId (id) {
   return (id / Math.pow(2, LEVEL_BITS + TILE_INDEX_BITS)) & SEGMENT_INDEX_MASK
 }
 

@@ -3,7 +3,7 @@ import { filter, uniq } from 'lodash'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = '/speed-extracts/2017/0/'
+const STATIC_DATA_TILE_PATH = 'https://speedtiles-prod.s3-accelerate.amazonaws.com/2017/01/'
 const tileCache = {}
 
 /**
@@ -84,7 +84,7 @@ function figureOutHowManySubtilesThereAre (tile) {
  *            skipped
  */
 export function fetchHistoricSpeedTile (suffix, subtile = 0) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}`
+  const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
 
   return window.fetch(url)
     .then((response) => {
@@ -164,7 +164,7 @@ export function fetchDataTiles (ids) {
 
 /* TODO: consolidate with fetchHistoricSpeedTile() */
 export function fetchReferenceSpeedTile (suffix) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref`
+  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
 
   return window.fetch(url)
     .then((response) => {

@@ -1,8 +1,8 @@
 import { reject, uniq } from 'lodash'
 import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
-import { parseSegmentId, getTileUrlSuffix, getSegmentIndexFromSegmentId } from '../lib/tiles'
-import { fetchDataTiles, fetchHistoricSpeedTile, fetchReferenceSpeedTile } from './data'
+import { parseSegmentId } from '../lib/tiles'
+import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { clearMultiSegments, setMultiSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
@@ -90,61 +90,49 @@ export function showRoute (waypoints) {
       // Also, reject any segments at level 2; we won't have any data for those.
       const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
       // Download all data tiles
-      let hist = null;
-      let ref = null;
       fetchDataTiles(parsedIds).then((tiles) => {
         parsedIds.forEach((item) => {
           addSpeedToThing(tiles, item, item)
-          const tileid = { level: item.level, tile: item.tile }
-          const suffix = getTileUrlSuffix(tileid)
+        })
 
         // Now let's draw this
         const speeds = []
-        response.edges.forEach(function(edge, index) {
+        response.edges.forEach(function (edge, index) {
           // Create individual segments for drawing, later.
           const begin = edge.begin_shape_index
           const end = edge.end_shape_index
           const coordsSlice = coordinates.slice(begin, end + 1)
           const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
-          const segmentIdx = getSegmentIndexFromSegmentId(id) ? id != null : -1
-          const elapsedTime = ((index+1) < response.edges.length) ? (response.edges[index+1].end_node.elapsed_time - edge.end_node.elapsed_time) : 0
-          /*
+
           let found
           for (let i = 0, j = parsedIds.length; i < j; i++) {
             if (id === parsedIds[i].id) {
               found = parsedIds[i]
               break
             }
-          }*/
-          if (item != null) {
-            fetchHistoricSpeedTile(suffix).then((hist) => {
-              console.log('historic speed tile', hist.speeds[item.segment])
-            })
-            fetchReferenceSpeedTile(suffix).then((ref) => {
-              console.log('ref speed tile', ref.referenceSpeeds80[item.segment])
-            })
-            let speed = -1;
-            if (hist !== null && hist.speeds[segmentIdx] !== -1) {
-              speed = hist.speeds[segmentIdx]
-              console.log('historic speed data is FOUND :: ' + speed + ' for segment id:: ' + id)
-            } else if (ref != null && ref.referenceSpeeds80[segmentIdx] !== -1) {
-              speed = ref.referenceSpeeds80[segmentIdx]
-              console.log('No historic speed, using refspeed :: ' + speed + ' for segment id:: ' + id)
-            } else {
-              speed = elapsedTime
-              console.log('No ref speed, using elapsed time :: ' + speed + ' for segment id:: ' + id)
-            }
-
-            speeds.push({
-              coordinates: coordsSlice,
-              speed: speed
-            })
           }
+
+          // Determine what speed to use
+          // If we found a historic speed, use that.
+          let speed = -1
+          if (found && found.speed !== -1) {
+            speed = found.speed
+          // Todo: get reference speed
+          } else {
+            // If no historic speed or reference speed, use elapsed time
+            const elapsedTime = ((index + 1) < response.edges.length) ? (response.edges[index + 1].end_node.elapsed_time - edge.end_node.elapsed_time) : 0
+            speed = elapsedTime
+          }
+
+          speeds.push({
+            coordinates: coordsSlice,
+            speed: speed
+          })
         })
+
         store.dispatch(setMultiSegments(speeds))
         store.dispatch(stopLoading())
       })
-    })
       .catch((error) => {
         console.log('[fetchDataTiles error]', error)
         store.dispatch(hideLoading())
