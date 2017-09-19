@@ -5,12 +5,13 @@ import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { setMultiSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
+import { clearMultiSegments, setMultiSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
 import store from '../store'
 
 function resetRouteState () {
   store.dispatch(clearRoute())
   store.dispatch(clearRouteError())
+  store.dispatch(clearMultiSegments())
 }
 
 export function showRoute (waypoints) {
