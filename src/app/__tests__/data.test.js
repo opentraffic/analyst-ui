@@ -1,5 +1,5 @@
-/* global it, expect */
-import { consolidateTiles } from './data'
+/* eslint-env jest */
+import { consolidateTiles } from '../data'
 
 it('consolidates array of tiles into a keyed object', () => {
   const tiles = [
