@@ -26,6 +26,7 @@ export default class RouteMultiLine extends React.PureComponent {
           positions={segment.coordinates}
           color="#222"
           weight={getSegmentWidth(this.props.zoom, segment.speed) + 2}
+          onMouseDown={this.props.insertWaypoint}
           key={index}
         />
       )
