@@ -8,14 +8,15 @@ export function addSpeedToThing (tiles, item, thing) {
     const subtiles = tiles[item.level][item.tile]
     // find which subtile contains this segment id
     const subtileIds = Object.keys(subtiles)
+
+    const hour = store.getState().date.hourFilter[0]
+
     for (let i = 0, j = subtileIds.length; i < j; i++) {
       const tile = subtiles[subtileIds[i]]
       const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
       // if this is the right tile, get the reference speed for the
       // current segment and attach it to the item.
       if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-        // Test hour
-        const hour = store.getState().date.hourFilter[0]
         // Get the local id of the segment
         // (eg. id 21000 is local id 1000 if tile segment size is 10000)
         const subtileSegmentId = segmentId % tile.subtileSegments
