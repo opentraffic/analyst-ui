@@ -1,9 +1,10 @@
 import protobuf from 'protobufjs'
 import { filter, uniq } from 'lodash'
+import config from '../config'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = 'https://speedtiles-prod.s3-accelerate.amazonaws.com/2017/01/'
+const STATIC_DATA_TILE_PATH = `${config.staticTileUrl}2017/01/` // TODO: build path from date picker
 const tileCache = {}
 
 /**
