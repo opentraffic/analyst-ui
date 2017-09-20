@@ -4,7 +4,7 @@ import config from '../config'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = `${config.staticTileUrl}2017/01/` // TODO: build path from date picker
+const STATIC_DATA_TILE_PATH = config.staticTileUrl
 const tileCache = {}
 
 /**
@@ -75,24 +75,57 @@ function figureOutHowManySubtilesThereAre (tile) {
 }
 
 /**
- * Fetch one data tile given a id suffix and a subtile number
+ * Fetch one data tile given an id suffix and an optional subtile number
  *
- * @param {Object} suffix - file path to data tile
+ * @param {string} suffix - file path to data tile
  * @param {Number} subtile - number of subtile to download (default is 0)
+ * @param {string} year - the year of data requested, from date picker
+ * @param {string} week - the week of data requested, from date picker
  * @returns {Promise} - resolved to either a plain JS object of the data tile,
  *            _or_ an error object { error: true } if it failed. We don't
  *            want this to throw because data tile fetch errors should be
  *            skipped
  */
-export function fetchHistoricSpeedTile (suffix, subtile = 0) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
+function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
+  const url = `${STATIC_DATA_TILE_PATH}${year}/${week}/${suffix}.spd.${subtile}.gz`
+  const type = 'historic data tile'
 
+  return fetchDataTile(url, type)
+}
+
+/**
+ * Fetch reference speed tile given an id suffix
+ *
+ * @param {string} suffix - file path to data tile
+ * @returns {Promise} - resolved to either a plain JS object of the data tile,
+ *            _or_ an error object { error: true } if it failed. We don't
+ *            want this to throw because data tile fetch errors should be
+ *            skipped
+ */
+function fetchReferenceSpeedTile (suffix) {
+  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
+  const type = 'reference speed tile'
+
+  return fetchDataTile(url, type)
+}
+
+/**
+ * Generic data tile fetch utility function.
+ *
+ * @param {string} url - file path to data tile
+ * @param {string} type - the type of data tile, for logging
+ * @returns {Promise} - resolved to either a plain JS object of the data tile,
+ *            _or_ an error object { error: true } if it failed. We don't
+ *            want this to throw because data tile fetch errors should be
+ *            skipped
+ */
+function fetchDataTile (url, type) {
   return window.fetch(url)
     .then((response) => {
       // If a data tile fails to fetch, don't immediately reject; instead,
       // resolve with an error object. We'll deal with these later.
       if (!response.ok) {
-        console.warn(`[analyst-ui] Unable to fetch a data tile from ${response.url}. The status code given was ${response.status}.`)
+        console.warn(`[analyst-ui] Unable to fetch a ${type} from ${response.url}. The status code given was ${response.status}.`)
         return Promise.resolve({ error: true })
       }
 
@@ -123,12 +156,17 @@ export function fetchDataTiles (ids) {
     return Promise.resolve(tileCache)
   }
 
+  // Temporary. Get the year and week of data tile to download.
+  // TODO: get from date picker
+  const year = '2017'
+  const week = '01'
+
   // Obtain a list of unique tile suffixes
   const simpleIds = ids.map(id => getTileUrlSuffix({ level: id.level, tile: id.tile }))
   const uniqueIds = uniq(simpleIds)
 
   // Fetch each suffix at subtile level 0.
-  const promises = uniqueIds.map((id) => fetchHistoricSpeedTile(id))
+  const promises = uniqueIds.map((id) => fetchHistoricSpeedTile(id, 0, year, week))
 
   return Promise.all(promises)
     // Reject from the responses all tiles that have errored out. Log the
@@ -144,7 +182,7 @@ export function fetchDataTiles (ids) {
 
         // Start at 1 because we already downloaded subtile at 0
         for (let i = 1; i < numSubtiles; i++) {
-          toDownload.push(fetchHistoricSpeedTile(suffix, i))
+          toDownload.push(fetchHistoricSpeedTile(suffix, i, year, week))
         }
 
         // TEST: reference speed tile:
@@ -161,25 +199,4 @@ export function fetchDataTiles (ids) {
     // Consolidate all subtiles into a single object with lookup keys
     .then(consolidateTiles)
     .then(cacheTiles)
-}
-
-/* TODO: consolidate with fetchHistoricSpeedTile() */
-export function fetchReferenceSpeedTile (suffix) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
-
-  return window.fetch(url)
-    .then((response) => {
-      // If a data tile fails to fetch, don't immediately reject; instead,
-      // resolve with an error object. We'll deal with these later.
-      if (!response.ok) {
-        console.warn(`[analyst-ui] Unable to fetch a reference speed tile from ${response.url}. The status code given was ${response.status}.`)
-        return Promise.resolve({ error: true })
-      }
-
-      return response.arrayBuffer()
-        // Read protobuf message and convert to plain object
-        .then(readDataTiles)
-        // We only want the child data object
-        .then(protobufMessage => protobufMessage.subtiles[0])
-    })
 }
