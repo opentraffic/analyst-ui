@@ -37,13 +37,13 @@ function getTrafficSegmentsTime(edge) {
   return edgeTime;
 }
 
-// TODO this will call Lou's function
+// TODO this function will be replaced by Lou's function
 function getSpeedFromDataTilesForSegmentId(segment_id) {
-  reuturn 30;
+  return 30;
 }
 
 function getIntersectionTime() {
-  // TODO
+  // TODO will need another function from Lou
   //return previous segment, current segment delay time;
   return 0;
 }
