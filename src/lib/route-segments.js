@@ -3,7 +3,7 @@ export const ZERO_SPEED_STOPS = [[15, '0.5px'], [17, '1px'], [18, '2.5px'], [20,
 
 // Calculate the slope and y-intercept in order to get linear equation
 // Values given as params are (x, y) and (c, d)
-function getLinearValue (x, y, c, d, zoom) {
+export function getLinearValue (x, y, c, d, zoom) {
   // Calculating slope
   const m = (y - d) / (x - c)
   // Calculating y-intercept
