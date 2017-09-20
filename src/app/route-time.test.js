@@ -1,10 +1,8 @@
 /* global it, expect */
-import { routeTime } from './eta'
+import { getRouteTime } from './route-time'
 
 
-it('consolidates array of speed tiles into a keyed object', () => {
-  const histSpeed = [55]
-  const refSpeed = [50]
+it('consolidates route attribute response into a keyed object', () => {
   const routeAttributesResp = [
 {
 	"admins": [{
@@ -760,13 +758,13 @@ it('consolidates array of speed tiles into a keyed object', () => {
 		"begin_heading": 275,
 		"road_class": "trunk"
 	}]
-  const result = routeTime(routeAttributesResp)
+  const routeTime = getRouteTime(routeAttributesResp)
 /*
-  expect(result).toHaveProperty('0')
-  expect(result).toHaveProperty('1')
-  expect(result['0']).toHaveProperty('1000')
-  expect(result['0']).toHaveProperty('1001')
-  expect(result['1']).toHaveProperty('1000')
-  expect(result['0']['1000']['0']).toHaveProperty('speeds')
-  expect(result['0']['1000']['1']).toHaveProperty('speeds')*/
+  expect(routeTime).toHaveProperty('0')
+  expect(routeTime).toHaveProperty('1')
+  expect(routeTime['0']).toHaveProperty('1000')
+  expect(routeTime['0']).toHaveProperty('1001')
+  expect(routeTime['1']).toHaveProperty('1000')
+  expect(routeTime['0']['1000']['0']).toHaveProperty('speeds')
+  expect(routeTime['0']['1000']['1']).toHaveProperty('speeds')*/
 })

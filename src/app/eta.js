@@ -1,9 +1,8 @@
-//for each edge
-
 function routeTime(routeAttributesResp)) {
   var next_edge = null;
   var routeTime = 0;
 
+  //for each edge
   routeAttributesResp.edges.ForEach(edge, index) {
     //if previous edge has traffic segments AND current edge is internal, turn lane, or roundabout
     if (edge.traffic_segments && (routeAttributesResp.edges[index+1].internal_intersection || routeAttributesResp.edges[index+1].use(turn_channel) ||  routeAttributesResp.edges[index+1].roundabout)){
@@ -14,7 +13,7 @@ function routeTime(routeAttributesResp)) {
       //if not able to find next edge with subsequent traffic segments
       //Reset current edge to previous edge + 1
       if (next_edge == null)
-        routeAttributesResp.edges[index+1] == edge.traffic_segments + 1;
+        routeAttributesResp.edges[index+1] == edge.traffic_segments[index + 1];
       }
     }
     //if traffic segments exist
