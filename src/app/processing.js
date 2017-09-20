@@ -3,6 +3,7 @@ export function addSpeedToThing (tiles, date, item, thing) {
   // skips it if it doesn't work
   try {
     const segmentId = item.segment
+    const reftile = tiles.reference && tiles.reference[item.level][item.tile]
     const subtiles = tiles.historic[date.year][date.week][item.level][item.tile]
     // find which subtile contains this segment id
     const subtileIds = Object.keys(subtiles)
@@ -25,7 +26,13 @@ export function addSpeedToThing (tiles, date, item, thing) {
         const desiredIndex = entryBaseIndex + hour
 
         // Append the speed to the thing to render later
-        thing.speed = tile.speeds[desiredIndex]
+        if (tile.speeds[desiredIndex]) {
+          thing.speed = tile.speeds[desiredIndex]
+        } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
+          thing.speed = reftile.referenceSpeeds80[desiredIndex]
+        } else {
+          thing.speed = 0
+        }
 
         break
       }

@@ -94,6 +94,7 @@ export function showRoute (waypoints) {
       const date = { year: '2017', week: '01' }
       fetchDataTiles(parsedIds, date).then((tiles) => {
         parsedIds.forEach((item) => {
+          // Will add either meaured or reference speed
           addSpeedToThing(tiles, date, item, item)
         })
 
@@ -119,7 +120,6 @@ export function showRoute (waypoints) {
           let speed = -1
           if (found && found.speed !== -1) {
             speed = found.speed
-          // Todo: get reference speed
           } else {
             // If no historic speed or reference speed, use elapsed time
             const elapsedTime = ((index + 1) < response.edges.length) ? (response.edges[index + 1].end_node.elapsed_time - edge.end_node.elapsed_time) : 0
