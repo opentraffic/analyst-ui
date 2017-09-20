@@ -27,11 +27,11 @@ routeAttributesResp.edges.ForEach(function eta(edge, index)) {
 //for each segment
 edge.traffic_segments.ForEach(function getTrafficSegmentsTime(segment)) {
   //if valid segment historical data
-  if (historicSpeedResp)
-    segmentTime = getSegmentHistoricalTime(historicSpeedResp) + getIntersectionTime(historicSpeedResp);
+  if (histSpeed)
+    segmentTime = getSegmentHistoricalTime(histSpeed) + getIntersectionTime();
   // else if valid segment reference data
-  else if (refSpeedResp)
-    segmentTime = getSegmentReferenceTime(refSpeedResp) + getIntersectionTime(historicSpeedResp);
+  else if (refSpeed)
+    segmentTime = getSegmentReferenceTime(refSpeed) + getIntersectionTime();
   else edgeTime += segmentTime;
   return edgeTime;
 }
@@ -44,16 +44,16 @@ function getPreviousEdgeElapsedTimeAtEndNode(edge) {
   return edge.end_node.elapsed_time;
 }
 
-function getSegmentHistoricalTime(historicSpeedResp) {
-  return historicSpeedResp.length * (segment.end_percent - segment.begin_percent) / (historicSpeedResp.speeds[segmentIdx] * 3600);
+function getSegmentHistoricalTime(histSpeed) {
+  return segment length * (segment.end_percent - segment.begin_percent) / (histSpeed * 3600);
 }
 
-function getSegmentReferenceTime(refSpeedResp) {
-  return segment length * (segment.end_percent - segment.begin_percent) / (refSpeedResp.referenceSpeeds80[segmentIdx] * 3600);
+function getSegmentReferenceTime(refSpeed) {
+  return segment length * (segment.end_percent - segment.begin_percent) / (refSpeed * 3600);
 }
 
-function getIntersectionTime(historicSpeedResp) {
-  return historicSpeedResp,current segment delay time;
+function getIntersectionTime() {
+  return previous segment, current segment delay time;
 }
 
 module.exports = eta;
