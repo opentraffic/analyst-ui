@@ -1,9 +1,9 @@
-export function addSpeedToThing (tiles, item, thing) {
+export function addSpeedToThing (tiles, date, item, thing) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
   try {
     const segmentId = item.segment
-    const subtiles = tiles[item.level][item.tile]
+    const subtiles = tiles.historic[date.year][date.week][item.level][item.tile]
     // find which subtile contains this segment id
     const subtileIds = Object.keys(subtiles)
     for (let i = 0, j = subtileIds.length; i < j; i++) {

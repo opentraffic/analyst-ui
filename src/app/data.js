@@ -45,17 +45,35 @@ function readDataTiles (buffer) {
  *            contains an array of subtiles.
  */
 export function consolidateTiles (tiles) {
-  return tiles.reduce((construct, source) => {
-    const level = source.level
-    const index = source.index
-    const subtile = source.startSegmentIndex / source.subtileSegments
+  return tiles.reduce((root, tile) => {
+    const level = tile.level
+    const index = tile.index
+    const subtile = tile.startSegmentIndex / tile.subtileSegments
+    const type = tile.meta_type
 
-    if (!construct[level]) construct[level] = {}
-    if (!construct[level][index]) construct[level][index] = {}
+    // Tiles with year / week metadata will also roll up by that
+    const year = tile.meta_year || -1
+    const week = tile.meta_week || -1
 
-    construct[level][index][subtile] = source
+    if (!root[type]) root[type] = {}
 
-    return construct
+    const subroot = root[type]
+
+    if (year !== -1 && week !== -1) {
+      if (!subroot[year]) subroot[year] = {}
+      if (!subroot[year][week]) subroot[year][week] = {}
+      if (!subroot[year][week][level]) subroot[year][week][level] = {}
+      if (!subroot[year][week][level][index]) subroot[year][week][level][index] = {}
+
+      subroot[year][week][level][index][subtile] = tile
+    } else {
+      if (!subroot[level]) subroot[level] = {}
+      if (!subroot[level][index]) subroot[level][index] = {}
+
+      subroot[level][index] = tile
+    }
+
+    return root
   }, {})
 }
 
@@ -90,7 +108,14 @@ function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
   const url = `${STATIC_DATA_TILE_PATH}${year}/${week}/${suffix}.spd.${subtile}.gz`
   const type = 'historic data tile'
 
+  // Add some metadata to the returned tile
   return fetchDataTile(url, type)
+    .then((tile) => {
+      tile.meta_year = year
+      tile.meta_week = week
+      tile.meta_type = 'historic'
+      return tile
+    })
 }
 
 /**
@@ -106,7 +131,12 @@ function fetchReferenceSpeedTile (suffix) {
   const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
   const type = 'reference speed tile'
 
+  // Add some metadata to the returned tile
   return fetchDataTile(url, type)
+    .then((tile) => {
+      tile.meta_type = 'reference'
+      return tile
+    })
 }
 
 /**
@@ -147,19 +177,19 @@ function fetchDataTile (url, type) {
  * cache limit based on available memory, if that's something we can determine.
  *
  * @param {Array<Object>} ids - a list of ids in the format { level, tile }
+ * @param {Object} date - date of data to fetch in the format { year, week }
  * @return {Promise} - resolved with an object where tiles with level and
  *            tile index mapped to a nested key structure.
  */
-export function fetchDataTiles (ids) {
+export function fetchDataTiles (ids, date) {
   // Temporary. If tilecache has values, return Promise-resolving as-is.
   if (Object.keys(tileCache).length > 0) {
     return Promise.resolve(tileCache)
   }
 
-  // Temporary. Get the year and week of data tile to download.
-  // TODO: get from date picker
-  const year = '2017'
-  const week = '01'
+  // Get the year and week of data tile to download.
+  const year = date.year
+  const week = date.week
 
   // Obtain a list of unique tile suffixes
   const simpleIds = ids.map(id => getTileUrlSuffix({ level: id.level, tile: id.tile }))
@@ -185,9 +215,8 @@ export function fetchDataTiles (ids) {
           toDownload.push(fetchHistoricSpeedTile(suffix, i, year, week))
         }
 
-        // TEST: reference speed tile:
-        fetchReferenceSpeedTile(suffix)
-          .then(data => { console.log('ref speed tile', data) })
+        // Get reference speed tile
+        toDownload.push(fetchReferenceSpeedTile(suffix))
 
         return accumulator.concat(toDownload)
       }, [])

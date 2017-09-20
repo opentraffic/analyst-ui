@@ -134,10 +134,12 @@ export function showRegion (bounds) {
           // Removing duplicates of segment IDs
           const parsedIds = uniq(segmentIds).map(parseSegmentId)
           // Using segmentIds, fetch data tiles
-          fetchDataTiles(parsedIds)
+          // TODO: get date from date picker
+          const date = { year: '2017', week: '01' }
+          fetchDataTiles(parsedIds, date)
             .then((tiles) => {
               parsedIds.forEach((item, index) => {
-                addSpeedToThing(tiles, item, features[index].properties)
+                addSpeedToThing(tiles, date, item, features[index].properties)
               })
               setDataSource('routes', { type: 'GeoJSON', data: results })
               store.dispatch(stopLoading())
