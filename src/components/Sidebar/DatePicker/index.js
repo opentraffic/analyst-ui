@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
-import { Segment } from 'semantic-ui-react'
+import { Segment, Header } from 'semantic-ui-react'
 import moment from 'moment'
 import { setDate } from '../../../store/actions/date'
 import 'react-dates/lib/css/_datepicker.css'
@@ -23,9 +23,18 @@ class DatePicker extends React.Component {
   }
 
   handleDateChange = (date) => {
+    let start,
+      end
     // if start/end is not equal to null then take unix of timestamp of start/end
-    const start = date.startDate instanceof (moment) ? date.startDate.valueOf() : null
-    const end = date.endDate instanceof (moment) ? date.endDate.valueOf() : null
+
+    // also here is where we enforce the selection of one week (7 days)
+    if (date.startDate instanceof (moment)) {
+      start = date.startDate.startOf('week').valueOf()
+      end = date.startDate.endOf('week').valueOf()
+    } else {
+      start = null
+      end = null
+    }
 
     this.props.dispatch(setDate(start, end))
   }
@@ -49,6 +58,7 @@ class DatePicker extends React.Component {
 
     return (
       <Segment>
+        <Header as="h3">Analysis week</Header>
         <DateRangePicker
           startDate={changeUnixToMoment(start)}  // momentPropTypes.momentObj or null,
           endDate={changeUnixToMoment(end)} // momentPropTypes.momentObj or null,

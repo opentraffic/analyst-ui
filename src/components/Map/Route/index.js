@@ -47,12 +47,12 @@ class Route extends React.PureComponent {
     const routeType = (this.props.route.multiSegments) ? (
       <RouteMultiLine
         segments={this.props.route.multiSegments}
-        inserWaypoint={this.insertWaypoint}
+        insertWaypoint={this.insertWaypoint}
       />
     ) : (
       <RouteLine
         positions={this.props.route.lineCoordinates}
-        inserWaypoint={this.insertWaypoint}
+        insertWaypoint={this.insertWaypoint}
       />
     )
 

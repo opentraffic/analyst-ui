@@ -1,3 +1,4 @@
+import store from '../store'
 import protobuf from 'protobufjs'
 import { filter, uniq } from 'lodash'
 import config from '../config'
