@@ -756,11 +756,12 @@ it('consolidates route attribute response into a keyed object', () => {
 		  "max_downward_grade": 32768,
 		  "begin_heading": 275,
 		  "road_class": "trunk"
-	  }
+	  }]
+}
 
   describe('traffic segments parsing...', () => {
     test('has traffic_segments', () => {
-      expect(traceAttributes.edges.toHaveProperty('traffic_segments');
+      expect(traceAttributes.edges).toHaveProperty('traffic_segments');
     });
 
     test('has a segment_id', () => {
