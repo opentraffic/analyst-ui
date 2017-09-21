@@ -1,10 +1,16 @@
+import store from '../store'
 import protobuf from 'protobufjs'
 import { filter, uniq } from 'lodash'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
+import moment from 'moment'
 
-const STATIC_DATA_TILE_PATH = 'https://speedtiles-prod.s3-accelerate.amazonaws.com/2017/01/'
 const tileCache = {}
+
+
+function getPath () {
+  return store.getState().date.staticDataTilePath
+}
 
 /**
  * Uses `protobuf.js` module to parse and read a `SpeedTile` protocol buffer.
@@ -84,7 +90,7 @@ function figureOutHowManySubtilesThereAre (tile) {
  *            skipped
  */
 function fetchDataTile (suffix, subtile = 0) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.spd.${subtile}.gz`
+  const url = `${getPath()}${suffix}.spd.${subtile}.gz`
 
   return window.fetch(url)
     .then((response) => {
@@ -164,7 +170,7 @@ export function fetchDataTiles (ids) {
 
 /* TODO: consolidate with fetchDataTile() */
 function fetchReferenceSpeedTile (suffix) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
+  const url = `${getPath()}${suffix}.ref.gz`
 
   return window.fetch(url)
     .then((response) => {
