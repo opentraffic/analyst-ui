@@ -6,7 +6,6 @@ import { getTileUrlSuffix } from '../lib/tiles'
 
 const tileCache = {}
 
-
 function getPath () {
   return store.getState().date.staticDataTilePath
 }
