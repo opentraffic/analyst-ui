@@ -90,8 +90,10 @@ export function showRoute (waypoints) {
       // Also, reject any segments at level 2; we won't have any data for those.
       const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
       // Download all data tiles
-      // TODO: get date from date picker
-      const date = { year: '2017', week: '01' }
+      const date = {
+        year: store.getState().date.year,
+        week: store.getState().date.week
+      }
       fetchDataTiles(parsedIds, date).then((tiles) => {
         parsedIds.forEach((item) => {
           // Will add either meaured or reference speed

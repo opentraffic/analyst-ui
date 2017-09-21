@@ -134,8 +134,11 @@ export function showRegion (bounds) {
           // Removing duplicates of segment IDs
           const parsedIds = uniq(segmentIds).map(parseSegmentId)
           // Using segmentIds, fetch data tiles
-          // TODO: get date from date picker
-          const date = { year: '2017', week: '01' }
+          const date = {
+            year: store.getState().date.year,
+            week: store.getState().date.week
+          }
+
           fetchDataTiles(parsedIds, date)
             .then((tiles) => {
               parsedIds.forEach((item, index) => {
