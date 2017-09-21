@@ -4022,4 +4022,5 @@ it('consolidates route attribute response into a keyed object', () => {
 
   expect(getSpeedFromDataTilesForSegmentId(251658259320)).toEqual(50)
   expect(getNextSegmentDelayFromDataTiles(251658259320, 231559154552)).toEqual(0)
+  // TODO segmentId=876341119864 | hour=412044 | nextSegments={258503363448: {'duration': 13.08} | length=65 | minDuration=13.08 | speed=18 | varSpeed=0
 })

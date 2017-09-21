@@ -6,10 +6,22 @@ export function getRouteTime (traceAttributes) {
   for (var i = 0; i < edges.length; i++) {
     var edgeTime = 0
     currEdge = edges[i]
-    // TODO handle skipping edges
+
+    // Skip edge if internal, roundabout, or turn channel
+    if (edgeHasTrafficInfo(prevEdge) &&
+        (currEdge.internal_intersection || currEdge.roundabout || (currEdge.use === 'turn_channel'))) {
+      for (var j = i + 1; j < edges.length; j++) {
+        var tempEdge = edges[j]
+        if (edgeHasTrafficInfo(tempEdge) && validIntersectionTime(prevEdge, tempEdge)) {
+          currEdge = tempEdge
+          i = j
+          break
+        }
+      }
+    }
 
     // if traffic segments exist
-    if (currEdge.traffic_segments) {
+    if (edgeHasTrafficInfo(currEdge)) {
       edgeTime = getTrafficSegmentsTime(currEdge)
       edgeTime += getIntersectionTime(prevEdge, currEdge)
     } else {
@@ -46,13 +58,26 @@ function getTrafficSegmentsTime (edge) {
 }
 
 function getIntersectionTime (prevEdge, currEdge) {
-  if (prevEdge && prevEdge.traffic_segments && (prevEdge.traffic_segments.length > 0) &&
-      currEdge && currEdge.traffic_segments && (currEdge.traffic_segments.length > 0)) {
+  if (edgeHasTrafficInfo(prevEdge) && edgeHasTrafficInfo(currEdge)) {
     return getNextSegmentDelayFromDataTiles(
       prevEdge.traffic_segments[prevEdge.traffic_segments.length - 1].segment_id,
       currEdge.traffic_segments[0].segment_id)
   }
   return 0
+}
+
+function validIntersectionTime (prevEdge, currEdge) {
+  if (edgeHasTrafficInfo(prevEdge) && edgeHasTrafficInfo(currEdge) &&
+      (getNextSegmentDelayFromDataTiles(
+        prevEdge.traffic_segments[prevEdge.traffic_segments.length - 1].segment_id,
+        currEdge.traffic_segments[0].segment_id) !== null)) {
+    return true
+  }
+  return false
+}
+
+function edgeHasTrafficInfo (edge) {
+  return (edge && edge.traffic_segments && (edge.traffic_segments.length > 0))
 }
 
 // TODO this function will be replaced by Lou's function
