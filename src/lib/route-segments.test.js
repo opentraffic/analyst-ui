@@ -1,4 +1,4 @@
-/* global it, expect */
+/* eslint-env jest */
 import { getSegmentWidth,
          getLinearValue,
          STOPS,
