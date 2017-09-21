@@ -3,7 +3,6 @@ import protobuf from 'protobufjs'
 import { filter, uniq } from 'lodash'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
-import moment from 'moment'
 
 const tileCache = {}
 
