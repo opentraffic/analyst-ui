@@ -4018,6 +4018,7 @@ it('consolidates route attribute response into a keyed object', () => {
   expect(getEdgeElapsedTime(null, traceAttributes.edges[0])).toEqual(3)
   expect(getEdgeElapsedTime(traceAttributes.edges[0], traceAttributes.edges[1])).toEqual(5)
   expect(getEdgeElapsedTime(traceAttributes.edges[1], traceAttributes.edges[2])).toEqual(4)
+  expect(getEdgeElapsedTime(null, traceAttributes.edges[traceAttributes.edges.length - 1])).toEqual(547)
 
   expect(getSpeedFromDataTilesForSegmentId(251658259320)).toEqual(50)
   expect(getNextSegmentDelayFromDataTiles(251658259320, 231559154552)).toEqual(0)
