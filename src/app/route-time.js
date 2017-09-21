@@ -46,12 +46,12 @@ function getTrafficSegmentsTime (edge) {
 }
 
 // TODO this function will be replaced by Lou's function
-function getSpeedFromDataTilesForSegmentId (segmentId) {
-  return 30
+export function getSpeedFromDataTilesForSegmentId (segmentId) {
+  return 50
 }
 
 // TODO this function will be replaced by Lou's function
-function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
+export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
   return 0
 }
 
