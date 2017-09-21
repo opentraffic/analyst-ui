@@ -37,7 +37,6 @@ export function addSpeedToThing (tiles, item, thing) {
  * @param {array} hours
  */
 export function getMeanSpeed (segmentId, tile, days, hours) {
-
   // Get the local id of the segment
   // (eg. id 21000 is local id 1000 if tile segment size is 10000)
   const subtileSegmentId = segmentId % tile.subtileSegments
@@ -54,12 +53,11 @@ export function getMeanSpeed (segmentId, tile, days, hours) {
       return speedsForGivenDay.slice(...hours) // filter down to the requested range of hours
     })
     .flatten() // back to just an array of hours
-    .value();
+    .value()
   console.log(`speedsByHour: ${speedsByHour} (hour count=${speedsByHour.length})`)
   const meanSpeed = chain(speedsByHour)
     .mean() // we want to know the overall average; TODO: consider weighting by prevalence
     .value()
   console.log(`meanSpeed: ${meanSpeed}`)
   return meanSpeed
-
 }
