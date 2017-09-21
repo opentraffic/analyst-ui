@@ -22,9 +22,9 @@ export function getRouteTime (traceAttributes) {
   return routeTime
 }
 
-function getEdgeElapsedTime (prevEdge, currEdge) {
+export function getEdgeElapsedTime (prevEdge, currEdge) {
   if (prevEdge) {
-    return prevEdge.end_node.elapsed_time - currEdge.end_node.elapsed_time
+    return currEdge.end_node.elapsed_time - prevEdge.end_node.elapsed_time
   } else {
     return currEdge.end_node.elapsed_time
   }
@@ -45,16 +45,6 @@ function getTrafficSegmentsTime (edge) {
   return edgeTime
 }
 
-// TODO this function will be replaced by Lou's function
-export function getSpeedFromDataTilesForSegmentId (segmentId) {
-  return 50
-}
-
-// TODO this function will be replaced by Lou's function
-export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
-  return 0
-}
-
 function getIntersectionTime (prevEdge, currEdge) {
   if (prevEdge && prevEdge.traffic_segments && (prevEdge.traffic_segments.length > 0) &&
       currEdge && currEdge.traffic_segments && (currEdge.traffic_segments.length > 0)) {
@@ -62,5 +52,15 @@ function getIntersectionTime (prevEdge, currEdge) {
       prevEdge.traffic_segments[prevEdge.traffic_segments.length - 1].segment_id,
       currEdge.traffic_segments[0].segment_id)
   }
+  return 0
+}
+
+// TODO this function will be replaced by Lou's function
+export function getSpeedFromDataTilesForSegmentId (segmentId) {
+  return 50
+}
+
+// TODO this function will be replaced by Lou's function
+export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
   return 0
 }
