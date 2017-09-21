@@ -50,14 +50,16 @@ class MapContainer extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (isEqual(prevProps.days, this.props.days) &&
+    if (isEqual(prevProps.staticDataTilePath, this.props.staticDataTilePath) &&
+        isEqual(prevProps.days, this.props.days) &&
         isEqual(prevProps.hours, this.props.hours) &&
         isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
         isEqual(prevProps.bounds, this.props.bounds)) return
 
-    showRegion(this.props.bounds)
     if (this.props.bounds === null) {
       showRoute(this.props.route.waypoints)
+    } else {
+      showRegion(this.props.bounds)
     }
   }
 
@@ -120,6 +122,7 @@ function mapStateToProps (state) {
     route: state.route,
     days: state.date.dayFilter,
     hours: state.date.hourFilter,
+    staticDataTilePath: state.date.staticDataTilePath,
     map: state.map,
     bounds: state.viewBounds.bounds,
     scene: state.tangram.scene
