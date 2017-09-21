@@ -12,7 +12,7 @@ const initialState = {
   endDate: null,
 
   // For time chart filters
-  filtersEnabled: false,
+  filtersEnabled: true,
   dayFilter: null,
   hourFilter: null
 }
