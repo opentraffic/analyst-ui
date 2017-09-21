@@ -36,7 +36,9 @@ class Sidebar extends React.Component {
         {errors}
         <AnalysisName />
         <ModeSelect />
-        <DatePicker />
+        {this.props.analysisMode &&
+          <DatePicker />
+        }
         {this.props.date && this.props.date.startDate &&
           <TimeFilters />
         }
@@ -54,7 +56,8 @@ class Sidebar extends React.Component {
 function mapStateToProps (state) {
   return {
     errors: state.errors.errors,
-    date: state.date
+    date: state.date,
+    analysisMode: state.app.analysisMode
   }
 }
 
