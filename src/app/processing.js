@@ -1,4 +1,5 @@
 import store from '../store'
+import { chain } from 'lodash'
 
 export function addSpeedToThing (tiles, item, thing) {
   // not all levels and tiles are available yet, so try()
@@ -9,7 +10,9 @@ export function addSpeedToThing (tiles, item, thing) {
     // find which subtile contains this segment id
     const subtileIds = Object.keys(subtiles)
 
-    const hour = store.getState().date.hourFilter[0]
+    const hours = store.getState().date.hourFilter || [0, 24]
+    const days = store.getState().date.dayFilter || [0, 7]
+    console.log(`hours=${hours} days=${days}`)
 
     for (let i = 0, j = subtileIds.length; i < j; i++) {
       const tile = subtiles[subtileIds[i]]
@@ -18,7 +21,7 @@ export function addSpeedToThing (tiles, item, thing) {
       // current segment and attach it to the item.
       if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
         // Append the speed to the thing to render later
-        thing.speed = getSpeed(segmentId, tile, hour)
+        thing.speed = getMeanSpeed(segmentId, tile, days, hours)
 
         break
       }
@@ -28,9 +31,13 @@ export function addSpeedToThing (tiles, item, thing) {
 
 /**
  * @private
- * Exported for test only.
+ * @param {number} segmentId
+ * @param {object} tile
+ * @param {array} days
+ * @param {array} hours
  */
-export function getSpeed (segmentId, tile, hour) {
+export function getMeanSpeed (segmentId, tile, days, hours) {
+
   // Get the local id of the segment
   // (eg. id 21000 is local id 1000 if tile segment size is 10000)
   const subtileSegmentId = segmentId % tile.subtileSegments
@@ -38,8 +45,21 @@ export function getSpeed (segmentId, tile, hour) {
   // entrySize to know how many entries belong to each segment,
   // and find the base index for that segment
   const entryBaseIndex = subtileSegmentId * (tile.unitSize / tile.entrySize)
-  // Add the desired hour (0-index) to get the correct index value
-  const desiredIndex = entryBaseIndex + hour
 
-  return tile.speeds[desiredIndex]
+  const speedsByHour = chain(tile.speeds)
+    .slice(entryBaseIndex, entryBaseIndex + 168) // select the week's worth of hours relevant to this segment
+    .chunk(24) // split into day-long chunks
+    .slice(...days) // filter down to the requested range of days
+    .map((speedsForGivenDay) => {
+      return speedsForGivenDay.slice(...hours) // filter down to the requested range of hours
+    })
+    .flatten() // back to just an array of hours
+    .value();
+  console.log(`speedsByHour: ${speedsByHour} (hour count=${speedsByHour.length})`)
+  const meanSpeed = chain(speedsByHour)
+    .mean() // we want to know the overall average; TODO: consider weighting by prevalence
+    .value()
+  console.log(`meanSpeed: ${meanSpeed}`)
+  return meanSpeed
+
 }

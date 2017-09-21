@@ -29,6 +29,7 @@ class MapContainer extends React.Component {
     className: PropTypes.string,
     apiKey: PropTypes.string.isRequired,
     route: PropTypes.object.isRequired,
+    days: PropTypes.array,
     hours: PropTypes.array,
     map: PropTypes.object,
     bounds: PropTypes.shape({
@@ -49,15 +50,14 @@ class MapContainer extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (isEqual(prevProps.hours, this.props.hours) &&
+    if (isEqual(prevProps.days, this.props.days) &&
+        isEqual(prevProps.hours, this.props.hours) &&
         isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
         isEqual(prevProps.bounds, this.props.bounds)) return
 
     showRegion(this.props.bounds)
     if (this.props.bounds === null) {
-      if (Array.isArray(this.props.hours) && Array.isArray(prevProps.hours) && this.props.hours[0] !== prevProps.hours[0]) {
-        showRoute(this.props.route.waypoints)
-      }
+      showRoute(this.props.route.waypoints)
     }
   }
 
@@ -118,6 +118,7 @@ function mapStateToProps (state) {
     mode: state.app.analysisMode,
     apiKey: state.config.mapzen.apiKey,
     route: state.route,
+    days: state.date.dayFilter,
     hours: state.date.hourFilter,
     map: state.map,
     bounds: state.viewBounds.bounds,
