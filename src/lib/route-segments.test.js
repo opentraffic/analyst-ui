@@ -10,7 +10,7 @@ describe('if speed != 0, returns segment width value using STOPS array based on 
     const firstZoom = STOPS[0][0]
     const firstWidth = STOPS[0][1]
     const result = getSegmentWidth(firstZoom - 2, 10)
-    const expected = Number(firstWidth.slice(0, -2))
+    const expected = parseFloat(firstWidth)
 
     expect(result).toEqual(expected)
   })
@@ -19,7 +19,7 @@ describe('if speed != 0, returns segment width value using STOPS array based on 
     const zoomValue = STOPS[1][0]
     const segmentWidth = STOPS[1][1]
     const result = getSegmentWidth(zoomValue, 10)
-    const expected = Number(segmentWidth.slice(0, -2))
+    const expected = parseFloat(segmentWidth)
 
     expect(result).toEqual(expected)
   })
@@ -28,7 +28,7 @@ describe('if speed != 0, returns segment width value using STOPS array based on 
     const lastZoom = STOPS[STOPS.length - 1][0]
     const lastWidth = STOPS[STOPS.length - 1][1]
     const result = getSegmentWidth(lastZoom + 2, 10)
-    const expected = Number(lastWidth.slice(0, -2))
+    const expected = parseFloat(lastWidth)
 
     expect(result).toEqual(expected)
   })
@@ -47,7 +47,7 @@ describe('if speed == 0, returns segment width value using ZERO_SPEED_STOPS arra
     const segmentWidth = ZERO_SPEED_STOPS[1][1]
     const result1 = getSegmentWidth(zoomValue, null)
     const result2 = getSegmentWidth(zoomValue, undefined)
-    const expected = Number(segmentWidth.slice(0, -2))
+    const expected = parseFloat(segmentWidth)
 
     expect(result1).toEqual(expected)
     expect(result2).toEqual(expected)
@@ -57,7 +57,7 @@ describe('if speed == 0, returns segment width value using ZERO_SPEED_STOPS arra
     const firstZeroZoom = ZERO_SPEED_STOPS[0][0]
     const firstZeroWidth = ZERO_SPEED_STOPS[0][1]
     const result = getSegmentWidth(firstZeroZoom, 0)
-    const expected = Number(firstZeroWidth.slice(0, -2))
+    const expected = parseFloat(firstZeroWidth)
 
     expect(result).toEqual(expected)
   })
@@ -66,7 +66,7 @@ describe('if speed == 0, returns segment width value using ZERO_SPEED_STOPS arra
     const lastZeroZoom = ZERO_SPEED_STOPS[ZERO_SPEED_STOPS.length - 1][0]
     const lastZeroWidth = ZERO_SPEED_STOPS[ZERO_SPEED_STOPS.length - 1][1]
     const result = getSegmentWidth(lastZeroZoom, 0)
-    const expected = Number(lastZeroWidth.slice(0, -2))
+    const expected = parseFloat(lastZeroWidth)
 
     expect(result).toEqual(expected)
   })

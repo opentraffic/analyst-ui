@@ -22,20 +22,20 @@ export function getSegmentWidth (zoom, speed) {
   // If zoom values are outside the defined range,
   // then they are capped by highest and lowest values in range
   if (zoom < startValue[0]) {
-    return Number(startValue[1].slice(0, -2))
+    return parseFloat(startValue[1])
   } else if (zoom > endValue[0]) {
-    return Number(endValue[1].slice(0, -2))
+    return parseFloat(endValue[1])
   }
   // If they are found in range, use second value in pair
   for (let i = 0; i < array.length; i++) {
     if (array[i][0] === zoom) {
-      return Number(array[i][1].slice(0, -2))
+      return parseFloat(array[i][1])
     } else if (zoom < array[i][0]) {
       // If they are intermediate zoom levels, interpolate values
       const x = array[i][0]
-      const y = Number(array[i][1].slice(0, -2))
+      const y = parseFloat(array[i][1])
       const c = array[i - 1][0]
-      const d = Number(array[i - 1][1].slice(0, -2))
+      const d = parseFloat(array[i - 1][1])
       return getLinearValue(x, y, c, d, zoom)
     }
   }
