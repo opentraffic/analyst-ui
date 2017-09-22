@@ -29,6 +29,8 @@ class MapContainer extends React.Component {
     className: PropTypes.string,
     apiKey: PropTypes.string.isRequired,
     route: PropTypes.object.isRequired,
+    days: PropTypes.array,
+    hours: PropTypes.array,
     map: PropTypes.object,
     bounds: PropTypes.shape({
       east: PropTypes.string,
@@ -48,11 +50,18 @@ class MapContainer extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
+    if (isEqual(prevProps.year, this.props.year) &&
+        isEqual(prevProps.week, this.props.week) &&
+        isEqual(prevProps.days, this.props.days) &&
+        isEqual(prevProps.hours, this.props.hours) &&
+        isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
         isEqual(prevProps.bounds, this.props.bounds)) return
 
-    showRegion(this.props.bounds)
-    if (this.props.bounds === null) showRoute(this.props.route.waypoints)
+    if (this.props.bounds === null) {
+      showRoute(this.props.route.waypoints)
+    } else {
+      showRegion(this.props.bounds)
+    }
   }
 
   onClick = (event) => {
@@ -112,6 +121,10 @@ function mapStateToProps (state) {
     mode: state.app.analysisMode,
     apiKey: state.config.mapzen.apiKey,
     route: state.route,
+    days: state.date.dayFilter,
+    hours: state.date.hourFilter,
+    year: state.date.year,
+    week: state.date.week,
     map: state.map,
     bounds: state.viewBounds.bounds,
     scene: state.tangram.scene
