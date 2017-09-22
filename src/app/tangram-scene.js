@@ -1,4 +1,6 @@
+/* global feature */
 import config from '../config'
+import { STOPS, ZERO_SPEED_STOPS } from '../lib/route-segments'
 
 const scene = {
   import: [
@@ -15,9 +17,8 @@ const scene = {
       draw: {
         lines: {
           order: 500,
-          width: '3px',
+          width: STOPS,
           color: function () {
-            /* global feature */
             const speed = feature.speed
             const color = speed >= 100 ? '#313695'
                         : speed >= 90 ? '#4575b4'
@@ -37,6 +38,17 @@ const scene = {
             color: '#222'
           },
           join: 'round'
+        }
+      },
+      zeroSpeed: {
+        filter: function () {
+          return feature.speed === 0 || feature.speed === null || typeof feature.speed === 'undefined'
+        },
+        draw: {
+          lines: {
+            order: 400,
+            width: ZERO_SPEED_STOPS
+          }
         }
       }
     }

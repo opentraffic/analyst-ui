@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { LayerGroup } from 'react-leaflet'
 import RouteMarkers from './RouteMarkers'
 import RouteLine from './RouteLine'
@@ -47,6 +48,7 @@ class Route extends React.PureComponent {
     const routeType = (this.props.route.multiSegments) ? (
       <RouteMultiLine
         segments={this.props.route.multiSegments}
+        zoom={this.props.zoom}
         insertWaypoint={this.insertWaypoint}
       />
     ) : (
@@ -69,4 +71,10 @@ class Route extends React.PureComponent {
   }
 }
 
-export default Route
+function mapStateToProps (state) {
+  return {
+    zoom: state.map.zoom
+  }
+}
+
+export default connect(mapStateToProps)(Route)

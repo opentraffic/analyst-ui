@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Polyline, LayerGroup } from 'react-leaflet'
 import { getSpeedColor } from '../../../../lib/color-ramps'
+import { getSegmentWidth } from '../../../../lib/route-segments'
 
 export default class RouteMultiLine extends React.PureComponent {
   static propTypes = {
@@ -9,7 +10,8 @@ export default class RouteMultiLine extends React.PureComponent {
       coordinates: PropTypes.array,
       color: PropTypes.string
     })),
-    insertWaypoint: PropTypes.func
+    insertWaypoint: PropTypes.func,
+    zoom: PropTypes.number.isRequired
   }
 
   static defaultProps = {
@@ -23,7 +25,7 @@ export default class RouteMultiLine extends React.PureComponent {
         <Polyline
           positions={segment.coordinates}
           color="#222"
-          weight={7}
+          weight={getSegmentWidth(this.props.zoom, segment.speed) + 2}
           onMouseDown={this.props.insertWaypoint}
           key={index}
         />
@@ -37,7 +39,7 @@ export default class RouteMultiLine extends React.PureComponent {
         <Polyline
           positions={segment.coordinates}
           color={getSpeedColor(segment.speed)}
-          weight={4}
+          weight={getSegmentWidth(this.props.zoom, segment.speed)}
           onMouseDown={this.props.insertWaypoint}
           key={index}
         />
@@ -47,7 +49,6 @@ export default class RouteMultiLine extends React.PureComponent {
 
   render () {
     if (!this.props.segments || this.props.segments.length === 0) return null
-
     return (
       <LayerGroup>
         {this.createPolylineBorder()}
