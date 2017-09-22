@@ -80,7 +80,7 @@ function getBboxArea (bounds) {
   return area
 }
 
-function clearRegion () {
+export function clearRegion () {
   const scene = getCurrentScene()
   delete scene.sources.routes
   setCurrentScene(scene)
