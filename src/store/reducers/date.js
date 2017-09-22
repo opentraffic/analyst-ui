@@ -1,3 +1,4 @@
+import moment from 'moment'
 import {
   SET_DATE,
   TOGGLE_TIME_FILTERS,
@@ -11,7 +12,7 @@ const initialState = {
   endDate: null,
 
   // For time chart filters
-  filtersEnabled: false,
+  filtersEnabled: true,
   dayFilter: null,
   hourFilter: null
 }
@@ -19,10 +20,14 @@ const initialState = {
 const date = (state = initialState, action) => {
   switch (action.type) {
     case SET_DATE:
+      const year = moment(action.startDate).year()
+      const week = String(moment(action.startDate).week()).padStart(2, '0')
       return {
         ...state,
         startDate: action.startDate,
-        endDate: action.endDate
+        endDate: action.endDate,
+        year: year,
+        week: week
       }
     case TOGGLE_TIME_FILTERS:
       return {

@@ -42,7 +42,7 @@ const scene = {
       },
       zeroSpeed: {
         filter: function () {
-          return feature.speed === 0 || feature.speed === null
+          return feature.speed === 0 || feature.speed === null || typeof feature.speed === 'undefined'
         },
         draw: {
           lines: {
