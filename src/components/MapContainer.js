@@ -50,7 +50,8 @@ class MapContainer extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (isEqual(prevProps.staticDataTilePath, this.props.staticDataTilePath) &&
+    if (isEqual(prevProps.year, this.props.year) &&
+        isEqual(prevProps.week, this.props.week) &&
         isEqual(prevProps.days, this.props.days) &&
         isEqual(prevProps.hours, this.props.hours) &&
         isEqual(prevProps.route.waypoints, this.props.route.waypoints) &&
@@ -122,7 +123,8 @@ function mapStateToProps (state) {
     route: state.route,
     days: state.date.dayFilter,
     hours: state.date.hourFilter,
-    staticDataTilePath: state.date.staticDataTilePath,
+    year: state.date.year,
+    week: state.date.week,
     map: state.map,
     bounds: state.viewBounds.bounds,
     scene: state.tangram.scene

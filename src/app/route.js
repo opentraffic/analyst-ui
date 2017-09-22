@@ -90,40 +90,57 @@ export function showRoute (waypoints) {
       // Also, reject any segments at level 2; we won't have any data for those.
       const parsedIds = reject(uniq(segmentIds).map(parseSegmentId), obj => obj.level === 2)
       // Download all data tiles
-      fetchDataTiles(parsedIds)
-        .then((tiles) => {
-          parsedIds.forEach(item => {
-            addSpeedToThing(tiles, item, item)
-          })
+      const date = {
+        year: store.getState().date.year,
+        week: store.getState().date.week
+      }
+      fetchDataTiles(parsedIds, date).then((tiles) => {
+        parsedIds.forEach((item) => {
+          // Will add either meaured or reference speed
+          addSpeedToThing(tiles, date, item, item)
+        })
 
-          // Now let's draw this
-          const speeds = []
-          response.edges.forEach(edge => {
-            // Create individual segments for drawing, later.
-            const begin = edge.begin_shape_index
-            const end = edge.end_shape_index
-            const coordsSlice = coordinates.slice(begin, end + 1)
-            const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
-            let found
-            for (let i = 0, j = parsedIds.length; i < j; i++) {
-              if (id === parsedIds[i].id) {
-                found = parsedIds[i]
-                break
-              }
+        // Now let's draw this
+        const speeds = []
+        response.edges.forEach(function (edge, index) {
+          // Create individual segments for drawing, later.
+          const begin = edge.begin_shape_index
+          const end = edge.end_shape_index
+          const coordsSlice = coordinates.slice(begin, end + 1)
+          const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
+
+          let found
+          for (let i = 0, j = parsedIds.length; i < j; i++) {
+            if (id === parsedIds[i].id) {
+              found = parsedIds[i]
+              break
             }
+          }
 
-            speeds.push({
-              coordinates: coordsSlice,
-              speed: found ? found.speed : null
-            })
+          // Determine what speed to use
+          // If we found a historic speed, use that.
+          let speed = -1
+          if (found && found.speed !== -1) {
+            speed = found.speed
+          } else {
+            // If no historic speed or reference speed, use elapsed time
+            const elapsedTime = ((index + 1) < response.edges.length) ? (response.edges[index + 1].end_node.elapsed_time - edge.end_node.elapsed_time) : 0
+            speed = elapsedTime
+          }
+
+          speeds.push({
+            coordinates: coordsSlice,
+            speed: speed
           })
-          store.dispatch(setMultiSegments(speeds))
-          store.dispatch(stopLoading())
         })
-        .catch((error) => {
-          console.log('[fetchDataTiles error]', error)
-          store.dispatch(hideLoading())
-        })
+
+        store.dispatch(setMultiSegments(speeds))
+        store.dispatch(stopLoading())
+      })
+      .catch((error) => {
+        console.log('[fetchDataTiles error]', error)
+        store.dispatch(hideLoading())
+      })
     })
     .catch((error) => {
       console.log(error)
