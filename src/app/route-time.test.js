@@ -4009,7 +4009,7 @@ it('consolidates route attribute response into a keyed object', () => {
   }
 
   const routeTime = getRouteTime(traceAttributes)
-  
+
   // Current value: 611.1840000000002
   expect(routeTime).toBeGreaterThan(526)
 
