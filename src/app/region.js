@@ -41,30 +41,26 @@ function withinBbox (features, bounds) {
   const coordinates = features.map(feature => {
     return feature.geometry.coordinates
   })
+
   // Coordinates have array of lines
-  // Lines have array of points
-  // Points have one array of latlngs [lng, lat]
+  // Lines have array of points [lng, lat]
+
   for (let lineIndex = coordinates.length - 1; lineIndex >= 0; lineIndex--) {
     const line = coordinates[lineIndex]
     for (let pointsIndex = line.length - 1; pointsIndex >= 0; pointsIndex--) {
-      const points = line[pointsIndex]
-      for (let coordIndex = points.length - 1; coordIndex >= 0; coordIndex--) {
-        const point = points[coordIndex]
-        const lat = point[1]
-        const lng = point[0]
-        // Checking if latlng is within bounding box
-        // If not remove from points
-        if (lng < Number(bounds.west) - LINE_OVERLAP_BUFFER || lng > Number(bounds.east) + LINE_OVERLAP_BUFFER || lat < Number(bounds.south) - LINE_OVERLAP_BUFFER || lat > Number(bounds.north) + LINE_OVERLAP_BUFFER) {
-          points.splice(coordIndex, 1)
-        }
+      const point = line[pointsIndex]
+      const lat = point[1]
+      const lng = point[0]
+      // Checking if latlng is within bounding box
+      // If not remove from points
+      if (lng < Number(bounds.west) - LINE_OVERLAP_BUFFER || lng > Number(bounds.east) + LINE_OVERLAP_BUFFER || lat < Number(bounds.south) - LINE_OVERLAP_BUFFER || lat > Number(bounds.north) + LINE_OVERLAP_BUFFER) {
+        line.splice(pointsIndex, 1)
       }
-      // If no points in line, remove from line
-      if (points.length === 0) { line.splice(pointsIndex, 1) }
     }
     // If no lines in coordinates, remove from coordinates
     if (line.length === 0) { coordinates.splice(lineIndex, 1) }
   }
-
+  
   // If no coordinates, remove entire feature from array of features
   for (let i = features.length - 1; i >= 0; i--) {
     const feature = features[i]
