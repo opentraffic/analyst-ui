@@ -19,7 +19,7 @@ import {
 } from '../store/actions/route'
 import { updateScene } from '../store/actions/tangram'
 import { drawBounds } from '../app/region-bounds'
-import { showRegion } from '../app/region'
+import { showRegion, clearRegion } from '../app/region'
 import { showRoute } from '../app/route'
 
 const ROUTE_ZOOM_LEVEL = 10
@@ -58,6 +58,7 @@ class MapContainer extends React.Component {
         isEqual(prevProps.bounds, this.props.bounds)) return
 
     if (this.props.bounds === null) {
+      clearRegion()
       showRoute(this.props.route.waypoints)
     } else {
       showRegion(this.props.bounds)
