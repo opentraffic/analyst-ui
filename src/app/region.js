@@ -60,7 +60,6 @@ function withinBbox (features, bounds) {
     // If no lines in coordinates, remove from coordinates
     if (line.length === 0) { coordinates.splice(lineIndex, 1) }
   }
-  
   // If no coordinates, remove entire feature from array of features
   for (let i = features.length - 1; i >= 0; i--) {
     const feature = features[i]
