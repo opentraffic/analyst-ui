@@ -4,7 +4,6 @@ import config from '../config'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = config.staticTileUrl
 const tileCache = {}
 window.tileCache = tileCache
 
@@ -110,7 +109,7 @@ function figureOutHowManySubtilesThereAre (tile) {
  *            skipped
  */
 function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
-  const url = `${STATIC_DATA_TILE_PATH}${year}/${week}/${suffix}.spd.${subtile}.gz`
+  const url = `${config.historicSpeedTileUrl}${year}/${week}/${suffix}.spd.${subtile}.gz`
   const type = 'historic data tile'
 
   // Add some metadata to the returned tile
@@ -133,8 +132,7 @@ function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
  *            skipped
  */
 function fetchReferenceSpeedTile (suffix) {
-  const url = `https://s3.amazonaws.com/ref-speedtiles-dev/v0.1/${suffix}.ref.gz`
-  // const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
+  const url = `${config.refSpeedTileUrl}${suffix}.ref.gz`
   const type = 'reference speed tile'
 
   // Add some metadata to the returned tile
