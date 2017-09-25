@@ -6,6 +6,7 @@ import { getTileUrlSuffix } from '../lib/tiles'
 
 const STATIC_DATA_TILE_PATH = config.staticTileUrl
 const tileCache = {}
+window.tileCache = tileCache
 
 /**
  * Uses `protobuf.js` module to parse and read a `SpeedTile` protocol buffer.
@@ -85,6 +86,10 @@ function cacheTiles (tiles) {
   return tiles
 }
 
+export function getCachedTiles () {
+  return tileCache
+}
+
 /**
  * Given 0-level tiles, figure out how many subtiles there are
  */
@@ -128,7 +133,8 @@ function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
  *            skipped
  */
 function fetchReferenceSpeedTile (suffix) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
+  const url = `https://s3.amazonaws.com/ref-speedtiles-dev/v0.1/${suffix}.ref.gz`
+  // const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
   const type = 'reference speed tile'
 
   // Add some metadata to the returned tile
