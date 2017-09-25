@@ -1,37 +1,31 @@
-import store from '../store'
 import { chain } from 'lodash'
+import store from '../store'
+import { parseSegmentId } from '../lib/tiles'
+import { getCachedTiles } from './data'
 
+// TODO: rename / refactor.
 export function addSpeedToThing (tiles, date, item, thing) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
   try {
+    const state = store.getState()
+    const days = state.date.dayFilter || [0, 7]
+    const hours = state.date.hourFilter || [0, 24]
+
     const segmentId = item.segment
     // const reftile = tiles.reference && tiles.reference[item.level][item.tile]
     const subtiles = tiles.historic[date.year][date.week][item.level][item.tile]
-    // find which subtile contains this segment id
-    const subtileIds = Object.keys(subtiles)
 
-    const hours = store.getState().date.hourFilter || [0, 24]
-    const days = store.getState().date.dayFilter || [0, 7]
-    console.log(`hours=${hours} days=${days}`)
+    const subtile = getSubtileForSegmentId(segmentId, subtiles)
+    if (subtile) {
+      // Append the speed to the thing to render later
+      thing.speed = getMeanSpeed(segmentId, subtile, days, hours)
 
-    for (let i = 0, j = subtileIds.length; i < j; i++) {
-      const tile = subtiles[subtileIds[i]]
-      const upperBounds = (i === j - 1) ? tile.totalSegments : (tile.startSegmentIndex + tile.subtileSegments)
-      // if this is the right tile, get the reference speed for the
-      // current segment and attach it to the item.
-      if (segmentId > tile.startSegmentIndex && segmentId <= upperBounds) {
-        // Append the speed to the thing to render later
-        thing.speed = getMeanSpeed(segmentId, tile, days, hours)
-
-        // } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
-        //   thing.speed = getMeanSpeed(reftile.referenceSpeeds80[desiredIndex]
-        // } else {
-        //   thing.speed = 0
-        // }
-
-        break
-      }
+      // } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
+      //   thing.speed = getMeanSpeed(reftile.referenceSpeeds80[desiredIndex]
+      // } else {
+      //   thing.speed = 0
+      // }
     }
   } catch (e) {}
 }
@@ -44,9 +38,9 @@ export function addSpeedToThing (tiles, date, item, thing) {
  * @param {array} hours
  */
 export function getMeanSpeed (segmentId, tile, days, hours) {
-  // Get the local id of the segment
-  // (eg. id 21000 is local id 1000 if tile segment size is 10000)
-  const subtileSegmentId = segmentId % tile.subtileSegments
+  // Get the subtile index of the segment
+  const subtileSegmentId = convertLocalSegmentToSubtileIndex(segmentId, tile)
+
   // There is one array for every attribute. Divide unitSize by
   // entrySize to know how many entries belong to each segment,
   // and find the base index for that segment
@@ -67,4 +61,87 @@ export function getMeanSpeed (segmentId, tile, days, hours) {
     .value()
   console.log(`meanSpeed: ${meanSpeed}`)
   return meanSpeed
+}
+
+/**
+ * converts a local segment index, e.g. `15000`, to a subtile segment index,
+ * e.g. `5000`.  Note that the `subtile.subtileSegments` property now reports
+ * only the number of segments in the current subtile, rather than an indicator
+ * of the max number of segments a tile is chunked by.
+ *
+ * @private
+ * @param {Number} segmentId - local segment index
+ * @param {Object} subtile
+ * @param {Number} subtileIndex - subtile-level segment index
+ */
+export function convertLocalSegmentToSubtileIndex (segmentId, subtile) {
+  return segmentId - subtile.startSegmentIndex
+}
+
+/**
+ * Find which subtile contains a given local segment index
+ *
+ * @private
+ * @param {Number} segmentId - local segment index
+ * @param {Object} tiles - subtiles for a certain tile index
+ * @return {Object} subtile - if found, otherwise null
+ */
+export function getSubtileForSegmentId (segmentId, subtiles) {
+  // Subtiles are provided as an indexed object, not as an array.
+  // We use a for-loop to allow early exits from the loop when the
+  // correct subtile is found.
+  const indices = Object.keys(subtiles)
+
+  for (let i = 0, j = indices.length; i < j; i++) {
+    const subtile = subtiles[indices[i]]
+
+    const lowerBounds = subtile.startSegmentIndex
+    const upperBounds = subtile.startSegmentIndex + subtile.subtileSegments
+
+    if (segmentId >= lowerBounds && segmentId < upperBounds) {
+      return subtile
+    }
+  }
+
+  // Returns null if we reach the end of the loop without a found subtile
+  return null
+}
+
+function getCurrentTimeFilter () {
+  const state = store.getState()
+  const year = state.date.year || 0
+  const week = state.date.week || 0
+  const hours = state.date.hourFilter || [0, 24]
+  const days = state.date.dayFilter || [0, 7]
+
+  return { year, week, hours, days }
+}
+
+export function getSpeedFromDataTilesForSegmentId (segmentId) {
+  const id = parseSegmentId(segmentId)
+  const tiles = getCachedTiles()
+  const time = getCurrentTimeFilter()
+
+  // if any of the inputs are falsy, return null
+  if (!id || !tiles || !time.days || !time.hours) return null
+
+  const speed = getMeanSpeed(id, tiles, time.days, time.hours)
+
+  if (speed !== null && speed !== undefined) {
+    return speed
+  } else {
+    return null
+  }
+}
+
+export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
+  const id = parseSegmentId(segmentId)
+  const nextId = parseSegmentId(nextSegmentId)
+  const tiles = getCachedTiles()
+  const time = getCurrentTimeFilter()
+
+  // if any of the inputs are falsy, return null
+  if (!id || !nextId || !tiles || !time.days || !time.hours) return null
+
+  return null
 }
