@@ -124,8 +124,10 @@ export function showRoute (waypoints) {
             speed = found.speed
           } else {
             // If no historic speed or reference speed, use elapsed time
-            const elapsedTime = ((index + 1) < response.edges.length) ? (response.edges[index + 1].end_node.elapsed_time - edge.end_node.elapsed_time) : 0
-            speed = elapsedTime
+            // -- DISABLED -- this doesn't make sense when visualizing data;
+            // we only need it for ETA.
+            // const elapsedTime = ((index + 1) < response.edges.length) ? (response.edges[index + 1].end_node.elapsed_time - edge.end_node.elapsed_time) : 0
+            // speed = elapsedTime
           }
 
           speeds.push({
