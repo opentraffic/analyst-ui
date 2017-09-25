@@ -48,7 +48,7 @@ export function consolidateTiles (tiles) {
   return tiles.reduce((root, tile) => {
     const level = tile.level
     const index = tile.index
-    const subtile = tile.startSegmentIndex / tile.subtileSegments
+    const subtile = tile.meta_subtile
     const type = tile.meta_type
 
     // Tiles with year / week metadata will also roll up by that
@@ -252,7 +252,7 @@ export function fetchDataTiles (ids, date) {
         }
 
         // Get reference speed tile
-        toDownload.push(fetchReferenceSpeedTile(suffix))
+        // toDownload.push(fetchReferenceSpeedTile(suffix))
 
         return accumulator.concat(toDownload)
       }, [])
