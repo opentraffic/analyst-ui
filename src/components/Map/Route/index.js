@@ -47,7 +47,7 @@ class Route extends React.PureComponent {
     return (
       <LayerGroup>
         <RouteLine
-          segments={this.props.route.multiSegments}
+          segments={this.props.route.routeSegments}
           zoom={this.props.zoom}
           insertWaypoint={this.insertWaypoint}
         />
