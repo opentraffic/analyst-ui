@@ -1,5 +1,5 @@
 /* global it, expect */
-import { getRouteTime, getEdgeElapsedTime, getSpeedFromDataTilesForSegmentId, getNextSegmentDelayFromDataTiles } from './route-time'
+import { getRouteTime, getEdgeElapsedTime } from './route-time'
 
 it('consolidates route attribute response into a keyed object', () => {
   const traceAttributes = {
@@ -4066,7 +4066,7 @@ it('consolidates route attribute response into a keyed object', () => {
   expect(getEdgeElapsedTime(traceAttributes.edges[1], traceAttributes.edges[2])).toEqual(4)
   expect(getEdgeElapsedTime(null, traceAttributes.edges[traceAttributes.edges.length - 1])).toEqual(538)
 
-  expect(getSpeedFromDataTilesForSegmentId(251658259320)).toEqual(50)
-  expect(getNextSegmentDelayFromDataTiles(251658259320, 231559154552)).toEqual(0)
+  // expect(getSpeedFromDataTilesForSegmentId(251658259320)).toEqual(50)
+  // expect(getNextSegmentDelayFromDataTiles(251658259320, 231559154552)).toEqual(0)
   // TODO segmentId=876341119864 | hour=412044 | nextSegments={258503363448: {'duration': 13.08} | length=65 | minDuration=13.08 | speed=18 | varSpeed=0
 })

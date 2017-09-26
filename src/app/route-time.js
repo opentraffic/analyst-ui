@@ -46,13 +46,20 @@ export function getEdgeElapsedTime (prevEdge, currEdge) {
 
 function getTrafficSegmentsTime (edge) {
   var edgeTime = 0
+  var speed = 0
   var segment
   var prevSegment = null
   for (var i = 0; i < edge.traffic_segments.length; i++) {
     segment = edge.traffic_segments[i]
-    edgeTime += (edge.length * (segment.end_percent - segment.begin_percent) / getSpeedFromDataTilesForSegmentId(segment.segment_id) * 3600)
+    speed = getSpeedFromDataTilesForSegmentId(segment.segment_id)
+    if (speed !== null) {
+      edgeTime += (edge.length * (segment.end_percent - segment.begin_percent) / speed * 3600)
+    }
     if (prevSegment) {
-      edgeTime += getNextSegmentDelayFromDataTiles(prevSegment.segment_id, segment.segment_id)
+      var delay = getNextSegmentDelayFromDataTiles(prevSegment.segment_id, segment.segment_id)
+      if (delay !== null) {
+        edgeTime += delay
+      }
     }
     prevSegment = segment
   }
@@ -60,12 +67,16 @@ function getTrafficSegmentsTime (edge) {
 }
 
 function getIntersectionTime (prevEdge, currEdge) {
+  var intersectionTime = 0
   if (edgeHasTrafficInfo(prevEdge) && edgeHasTrafficInfo(currEdge)) {
-    return getNextSegmentDelayFromDataTiles(
+    intersectionTime = getNextSegmentDelayFromDataTiles(
       prevEdge.traffic_segments[prevEdge.traffic_segments.length - 1].segment_id,
       currEdge.traffic_segments[0].segment_id)
+    if (intersectionTime === null) {
+      intersectionTime = 0
+    }
   }
-  return 0
+  return intersectionTime
 }
 
 function validIntersectionTime (prevEdge, currEdge) {
