@@ -39,7 +39,6 @@ export function addSpeedToThing (tiles, date, item, thing) {
  * @return speed in kph
  */
 export function getMeanSpeed (segmentIdx, subtile, days, hours) {
-  const subInfo = getSubtileInfo(segmentIdx, subtile)
 
 /*****I don't understand what this does exactly so I'm doing for just 1 hour selected...
   we can just get the correct index per hour by adding the hour to it
@@ -62,8 +61,7 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
   // console.log(`meanSpeed: ${meanSpeed}`)
   return meanSpeed
 ********************/
-  segmentIdxForHour = subInfo.entryBaseIndex + hours
-  return subtile[segmentIdxForHour].speeds
+
 }
 
 /**
@@ -75,17 +73,20 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
  * @private
  * @param {Number} segmentIdx - local segment index
  * @param {Object} subtile
- * @param {Number} subtileIndex - subtile-level segment index
  * @return {object} subInfo
  */
-export function getSubtileInfo (segmentIdx, subtile) {
+export function getSubtileInfo (segment, tiles, time) {
+
+  const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
+  const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
+
   // Get the subtile index of the segment
-  const subtileSegmentIdx = segmentIdx - subtile.startSegmentIndex
+  const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
   // There is one array for every attribute. Divide unitSize by
   // entrySize to know how many entries belong to each segment (168 hours for 1 week),
   // and find the base index for that segment
   const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
-  return { subtileSegmentIdx, entryBaseIndex }
+  return { subtile, subtileSegmentIdx, entryBaseIndex }
 }
 
 /**
@@ -162,10 +163,9 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
   // if any of the inputs are falsy, return null
   if (!segment || !tiles || !time.days || !time.hours) return null
 
-  const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
-  const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
-  const segmentIdxForHour = getSegmentIdxForHour(segment.segmentIdx, subtile, time.days, time.hours)
-  const speed = getMeanSpeed(segmentId, subtile, tile.days, time.hours)
+  const subInfo = getSubtileInfo(segment, tiles, time)
+  const segmentIdxForHour = subInfo.entryBaseIndex + hours
+  const speed = subInfo.subtile.speeds[segmentIdxForHour]
 
   if (speed !== null && speed !== undefined) {
     return speed
@@ -176,20 +176,26 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
 
 export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
   const segment = parseSegmentId(segmentId)
-  const nextId = parseSegmentId(nextSegmentId)
   const tiles = getCachedTiles()
   const time = getCurrentTimeFilter()
 
   // if any of the inputs are falsy, return null
-  if (!segment || !nextId || !tiles || !time.days || !time.hours) return null
+  if (!segment || !tiles || !time.days || !time.hours) return null
 
-  const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
-  const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
-  const subtileSegmentIdx = convertLocalSegmentToSubtileIndex(segment.segmentIdx, subtile)
-  const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
+  const subInfo = getSubtileInfo(segment, tiles, time)
+  const segmentIdxForHour = subInfo.entryBaseIndex + hours
+  // get the next segments that are paired with this segment Id
+  const nextIdx = subInfo.subtile.nextSegmentIndices[segmentIdxForHour]
+  const nextCount = subInfo.subtile.nextSegmentCounts[segmentIdxForHour]
+  const delay = 0
+  for (i = nextIdx; i < (nextIdx + nextCount); i++) {
+    console.log('nextSegment', nextIdx, nextCount)
+    if (subInfo.subtile.nextSegmentIds[i] == nextSegmentId)
+      delays = subInfo.subtile.nextSegmentDelays[i]
 
+  }
+  /*
   const indices = getIndicesFromDayAndHourFilters(time.days, time.hours)
-
   const nextSegmentLookups = []
   for (let i = 0; i < indices.length; i++) {
     const id = entryBaseIndex + indices[i]
@@ -213,7 +219,7 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
       }
     }
   }
-
+  */
   console.log(delays)
   if (delays.length > 0) {
     return delays
