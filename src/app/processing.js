@@ -165,7 +165,7 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
   }
 }
 
-export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId = 1) {
+export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
   const id = parseSegmentId(segmentId)
   const nextId = parseSegmentId(nextSegmentId)
   const tiles = getCachedTiles()
@@ -194,6 +194,22 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId = 1) 
   const nextSegmentSubtiles = tiles.nextsegment[time.year][time.week][id.level][id.tile]
   const nextSegmentTile = getSubtileForSegmentId(segmentId, nextSegmentSubtiles)
 
-  console.log(nextSegmentTile)
-  return null
+  const delays = []
+  for (let i = 0; i < nextSegmentLookups.length; i++) {
+    const nsi = nextSegmentLookups[i][0]
+    const nsc = nextSegmentLookups[i][1]
+
+    for (let j = nsi; j < (nsi + nsc); j++) {
+      if (nextSegmentTile.nextSegmentIds[j] === nextSegmentId) {
+        delays.push(nextSegmentTile.nextSegmentDelays[j])
+      }
+    }
+  }
+
+  console.log(delays)
+  if (delays.length > 0) {
+    return delays
+  } else {
+    return null
+  }
 }
