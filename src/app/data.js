@@ -252,7 +252,7 @@ export function fetchDataTiles (ids, date) {
         }
 
         // Get reference speed tile
-        // toDownload.push(fetchReferenceSpeedTile(suffix))
+        toDownload.push(fetchReferenceSpeedTile(suffix))
 
         return accumulator.concat(toDownload)
       }, [])
