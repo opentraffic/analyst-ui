@@ -1,10 +1,10 @@
-/* global it, expect */
+/* eslint-env jest */
 import {
   getTilesForBbox,
   getTilesForBufferedBbox,
   getTileUrlSuffix,
   parseSegmentId
-} from './tiles'
+} from '../tiles'
 
 it('returns a set of Valhalla tiles given a bounding box', () => {
   // Switzerland

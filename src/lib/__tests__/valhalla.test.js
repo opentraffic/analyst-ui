@@ -1,8 +1,8 @@
-/* global it, expect */
+/* eslint-env jest */
 import {
   leafletLatlngsToValhallaLocations,
   valhallaResponseToPolylineCoordinates
-} from './valhalla'
+} from '../valhalla'
 
 // This tests a 2-item (minimum number) of locations to make sure types are correct
 it('returns an array of location items given L.LatLng objects', () => {

@@ -1,5 +1,5 @@
-/* global it, expect */
-import { merge } from './geojson'
+/* eslint-env jest */
+import { merge } from '../geojson'
 
 it('merges an array of geojson objects', () => {
   const features = [

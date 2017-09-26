@@ -3,7 +3,7 @@ import { getSegmentWidth,
          getLinearValue,
          STOPS,
          ZERO_SPEED_STOPS
-} from './route-segments.js'
+} from '../route-segments.js'
 
 describe('if speed != 0, returns segment width value using STOPS array based on zoom level', () => {
   it('returns the first value of STOPS array if zoom level <= first zoom value and speed != 0', () => {
