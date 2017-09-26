@@ -25,7 +25,7 @@ export function initUrlUpdate () {
 
     updateURL({
       [ROUTE_WAYPOINTS]: getRouteWaypoints(state.route),
-      ...getRegionBounds(state.viewBounds.bounds),
+      ...getRegionBounds(state.view.bounds),
       ...getDateRange(state.date),
       ...getTimeFilters(state.date),
       ...getMapView(state.map),

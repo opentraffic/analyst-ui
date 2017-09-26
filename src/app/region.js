@@ -7,6 +7,7 @@ import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
 import store from '../store'
+import { setGeoJSON } from '../store/actions/view'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setRouteError } from '../store/actions/route'
 
@@ -140,6 +141,7 @@ export function showRegion (bounds) {
                 addSpeedToThing(tiles, date, item, features[index].properties)
               })
               setDataSource('routes', { type: 'GeoJSON', data: results })
+              store.dispatch(setGeoJSON(results))
               store.dispatch(stopLoading())
             })
         })

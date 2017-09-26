@@ -25,6 +25,6 @@ export function clearAnalysisMode () {
 export function setAnalysisName (viewName) {
   return {
     type: SET_ANALYSIS_NAME,
-    viewName
+    viewName: viewName.trim()
   }
 }

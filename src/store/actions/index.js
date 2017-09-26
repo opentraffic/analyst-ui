@@ -35,6 +35,7 @@ export const SET_ROUTE_ERROR = 'SET_ROUTE_ERROR'
 /* tangram */
 export const UPDATE_SCENE = 'UPDATE_SCENE'
 
-/* view bounds */
+/* view */
 export const SET_VIEW_BOUNDS = 'SET_VIEW_BOUNDS'
 export const CLEAR_VIEW_BOUNDS = 'CLEAR_VIEW_BOUNDS'
+export const SET_GEOJSON = 'SET_GEOJSON'
