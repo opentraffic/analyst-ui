@@ -6,10 +6,12 @@ import FileSaver from 'file-saver'
  *
  * @param {Object} obj
  */
-export function exportData (obj, name) {
+export function exportData (obj, name = 'untitled') {
+  // Do nothing if obj is falsy
+  if (!obj) return false
+
   const str = JSON.stringify(obj, null, 2)
   const blob = new Blob([str], { type: 'application/json;charset=utf-8' })
-  const filename = name || 'untitled'
 
-  FileSaver.saveAs(blob, `${filename}.geojson`)
+  FileSaver.saveAs(blob, `${name}.geojson`)
 }
