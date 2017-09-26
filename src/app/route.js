@@ -5,6 +5,7 @@ import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
+import { setGeoJSON } from '../store/actions/view'
 import { clearRouteSegments, setRouteSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
 import store from '../store'
 
@@ -102,6 +103,11 @@ export function showRoute (waypoints) {
 
         // Now let's draw this
         const speeds = []
+        const geojson = {
+          type: 'FeatureCollection',
+          features: []
+        }
+
         response.edges.forEach(function (edge, index) {
           // Create individual segments for drawing, later.
           const begin = edge.begin_shape_index
@@ -134,8 +140,26 @@ export function showRoute (waypoints) {
             coordinates: coordsSlice,
             speed: speed
           })
+
+          // Make geoJSON feature
+          // coordinates in GeoJSON must flip lat/lng values
+          const coordsGeo = coordsSlice.map((i) => [i[1], i[0]])
+          geojson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: coordsGeo
+            },
+            properties: {
+              id: found && found.segment,
+              osmlr_id: found && found.id,
+              speed: speed
+              // Note, this is missing properties that are already there in the region view
+            }
+          })
         })
 
+        store.dispatch(setGeoJSON(geojson))
         store.dispatch(setRouteSegments(speeds))
         store.dispatch(stopLoading())
       })
