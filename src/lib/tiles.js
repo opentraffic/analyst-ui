@@ -174,7 +174,7 @@ export function parseSegmentId (id) {
   return {
     id,
     level: getLevelFromSegmentId(id),
-    tile: getTileIndexFromSegmentId(id),
-    segment: getSegmentIndexFromSegmentId(id)
+    tileIdx: getTileIndexFromSegmentId(id),
+    segmentIdx: getSegmentIndexFromSegmentId(id)
   }
 }

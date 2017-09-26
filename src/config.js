@@ -8,7 +8,9 @@ const config = {
     zoom: 3
   },
   osmlrTileUrl: 'https://osmlr-tiles.s3.amazonaws.com/v1.0/geojson/',
-  staticTileUrl: 'https://speedtiles-dev.s3-accelerate.amazonaws.com/',
+  historicSpeedTileUrl: 'https://speedtiles-dev.s3-accelerate.amazonaws.com/',
+  nextSegmentTileUrl: 'https://speedtiles-dev.s3-accelerate.amazonaws.com/',
+  refSpeedTileUrl: 'https://referencetiles-dev.s3-accelerate.amazonaws.com/',
   valhallaHost: 'routing-dev.opentraffic.io'
 }
 
