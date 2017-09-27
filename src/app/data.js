@@ -228,7 +228,7 @@ export function fetchDataTiles (ids, date) {
   const week = date.week
 
   // Obtain a list of unique tile suffixes
-  const simpleIds = ids.map(id => getTileUrlSuffix({ level: id.level, tile: id.tile }))
+  const simpleIds = ids.map(id => getTileUrlSuffix({ level: id.level, tile: id.tileIdx }))
   const uniqueIds = uniq(simpleIds)
 
   // Fetch each suffix at subtile level 0.

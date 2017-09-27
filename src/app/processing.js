@@ -12,14 +12,14 @@ export function addSpeedToThing (tiles, date, item, thing) {
     const days = state.date.dayFilter || [0, 7]
     const hours = state.date.hourFilter || [0, 24]
 
-    const segmentId = item.segment
+    const segment = item.segment
     // const reftile = tiles.reference && tiles.reference[item.level][item.tile]
     const subtiles = tiles.historic[date.year][date.week][item.level][item.tile]
 
-    const subtile = getSubtileForSegmentIdx(segmentId, subtiles)
+    const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
       // Append the speed to the thing to render later
-      thing.speed = getSpeedFromDataTilesForSegmentId(item.segmentId)
+      thing.speed = getSpeedFromDataTilesForSegmentId(segment.segmentId)
 
       // } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
       //   thing.speed = getMeanSpeed(reftile.referenceSpeeds80[desiredIndex]
