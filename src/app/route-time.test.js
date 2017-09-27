@@ -1,5 +1,7 @@
-/* global it, expect */
+/* eslint-env jest */
 import { getRouteTime, getEdgeElapsedTime } from './route-time'
+
+jest.mock('./processing')
 
 it('consolidates route attribute response into a keyed object', () => {
   const traceAttributes = {
