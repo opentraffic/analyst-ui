@@ -1,14 +1,15 @@
 /* eslint-env jest */
 import {
-  getMeanSpeed,
-  convertLocalSegmentToSubtileIndex,
-  getSubtileForSegmentId,
+  // getMeanSpeed,
+  getSpeedFromDataTilesForSegmentId,
+  // convertLocalSegmentToSubtileIndex,
+  getSubtileForSegmentIdx,
   getIndicesFromDayAndHourFilters
   // getSpeedFromDataTilesForSegmentId,
   // getNextSegmentDelayFromDataTiles
 } from '../processing'
-
-describe('getMeanSpeed', () => {
+/*
+describe('getSpeedFromDataTilesForSegmentId', () => {
   const segmentId = 49152
   const tile = {
     subtileSegments: 10000,
@@ -56,8 +57,8 @@ describe('convertLocalSegmentToSubtileIndex', () => {
     expect(result).toEqual(5000)
   })
 })
-
-describe('getSubtileForSegmentId', () => {
+*/
+describe('getSubtileForSegmentIdx', () => {
   const subtiles = {
     0: {
       startSegmentIndex: 0,
@@ -78,31 +79,31 @@ describe('getSubtileForSegmentId', () => {
 
   it('returns a subtile at 0 for segment index 0', () => {
     const id = 0
-    const result = getSubtileForSegmentId(id, subtiles)
+    const result = getSubtileForSegmentIdx(id, subtiles)
     expect(result).toEqual(subtiles[0])
   })
 
   it('returns a subtile at 0 for segment index 9999', () => {
     const id = 9999
-    const result = getSubtileForSegmentId(id, subtiles)
+    const result = getSubtileForSegmentIdx(id, subtiles)
     expect(result).toEqual(subtiles[0])
   })
 
   it('returns a subtile at 1 for segment index 10000', () => {
     const id = 10000
-    const result = getSubtileForSegmentId(id, subtiles)
+    const result = getSubtileForSegmentIdx(id, subtiles)
     expect(result).toEqual(subtiles[1])
   })
 
   it('returns a subtile at 2 for segment index 25000', () => {
     const id = 25000
-    const result = getSubtileForSegmentId(id, subtiles)
+    const result = getSubtileForSegmentIdx(id, subtiles)
     expect(result).toEqual(subtiles[2])
   })
 
   it('returns null for segment index 29999', () => {
     const id = 29999
-    const result = getSubtileForSegmentId(id, subtiles)
+    const result = getSubtileForSegmentIdx(id, subtiles)
     expect(result).toEqual(null)
   })
 })
