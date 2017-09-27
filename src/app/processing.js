@@ -1,4 +1,4 @@
-import { chain } from 'lodash'
+// import { chain } from 'lodash'
 import store from '../store'
 import { parseSegmentId } from '../lib/tiles'
 import { getCachedTiles } from './data'
@@ -16,10 +16,10 @@ export function addSpeedToThing (tiles, date, item, thing) {
     // const reftile = tiles.reference && tiles.reference[item.level][item.tile]
     const subtiles = tiles.historic[date.year][date.week][item.level][item.tile]
 
-    const subtile = getSubtileForSegmentId(segmentId, subtiles)
+    const subtile = getSubtileForSegmentIdx(segmentId, subtiles)
     if (subtile) {
       // Append the speed to the thing to render later
-      thing.speed = getMeanSpeed(segmentId, subtile, days, hours)
+      thing.speed = getSpeedFromDataTilesForSegmentId(item.segmentId)
 
       // } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
       //   thing.speed = getMeanSpeed(reftile.referenceSpeeds80[desiredIndex]
@@ -72,21 +72,15 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
  *
  * @private
  * @param {Number} segmentIdx - local segment index
- * @param {Object} subtile
- * @return {object} subInfo
+ * @param {Object} subtiles
+ * @return {object} subtile
  */
 export function getSubtileInfo (segment, tiles, time) {
 
   const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
   const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
 
-  // Get the subtile index of the segment
-  const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
-  // There is one array for every attribute. Divide unitSize by
-  // entrySize to know how many entries belong to each segment (168 hours for 1 week),
-  // and find the base index for that segment
-  const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
-  return { subtile, subtileSegmentIdx, entryBaseIndex }
+  return subtile
 }
 
 /**
@@ -163,9 +157,15 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
   // if any of the inputs are falsy, return null
   if (!segment || !tiles || !time.days || !time.hours) return null
 
-  const subInfo = getSubtileInfo(segment, tiles, time)
-  const segmentIdxForHour = subInfo.entryBaseIndex + hours
-  const speed = subInfo.subtile.speeds[segmentIdxForHour]
+  const subtile = getSubtileInfo(segment, tiles, time)
+  // Get the subtile index of the segment
+  const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
+  // There is one array for every attribute. Divide unitSize by
+  // entrySize to know how many entries belong to each segment (168 hours for 1 week),
+  // and find the base index for that segment
+  const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
+  const segmentIdxForHour = entryBaseIndex + time.hours[0]
+  const speed = subtile.speeds[segmentIdxForHour]
 
   if (speed !== null && speed !== undefined) {
     return speed
@@ -182,16 +182,26 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
   // if any of the inputs are falsy, return null
   if (!segment || !tiles || !time.days || !time.hours) return null
 
-  const subInfo = getSubtileInfo(segment, tiles, time)
-  const segmentIdxForHour = subInfo.entryBaseIndex + hours
+  const subtile = getSubtileInfo(segment, tiles, time)
+  // Get the subtile index of the segment
+  const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
+  // There is one array for every attribute. Divide unitSize by
+  // entrySize to know how many entries belong to each segment (168 hours for 1 week),
+  // and find the base index for that segment
+  const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
+  const segmentIdxForHour = entryBaseIndex + time.hours[0]
   // get the next segments that are paired with this segment Id
-  const nextIdx = subInfo.subtile.nextSegmentIndices[segmentIdxForHour]
-  const nextCount = subInfo.subtile.nextSegmentCounts[segmentIdxForHour]
-  const delay = 0
-  for (i = nextIdx; i < (nextIdx + nextCount); i++) {
+  const nextIdx = subtile.nextSegmentIndices[segmentIdxForHour]
+  const nextCount = subtile.nextSegmentCounts[segmentIdxForHour]
+
+  // const nextSegmentSubtiles = tiles.nextsegment[time.year][time.week][segment.level][segment.tileIdx]
+  // const nextSegmentTileIdx = getSubtileForSegmentIdx(segment.segmentIdx, nextSegmentSubtiles)
+
+  var delay = 0
+  for (var i = nextIdx; i < (nextIdx + nextCount); i++) {
     console.log('nextSegment', nextIdx, nextCount)
-    if (subInfo.subtile.nextSegmentIds[i] == nextSegmentId)
-      delays = subInfo.subtile.nextSegmentDelays[i]
+    if (subtile.nextSegmentIds[i] === nextSegmentId)
+      delay = subtile.nextSegmentDelays[i]
 
   }
   /*
@@ -220,9 +230,9 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
     }
   }
   */
-  console.log(delays)
-  if (delays.length > 0) {
-    return delays
+  console.log(delay)
+  if (delay.length >= 0) {
+    return delay
   } else {
     return null
   }
