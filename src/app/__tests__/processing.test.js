@@ -3,9 +3,9 @@ import {
   getMeanSpeed,
   convertLocalSegmentToSubtileIndex,
   getSubtileForSegmentId,
-  getIndicesFromDayAndHourFilters,
-  getSpeedFromDataTilesForSegmentId,
-  getNextSegmentDelayFromDataTiles
+  getIndicesFromDayAndHourFilters
+  // getSpeedFromDataTilesForSegmentId,
+  // getNextSegmentDelayFromDataTiles
 } from '../processing'
 
 describe('getMeanSpeed', () => {
