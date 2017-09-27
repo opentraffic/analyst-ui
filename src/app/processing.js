@@ -74,13 +74,18 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
  * @return {object} subtile
  */
 export function getSubtileInfo (segment, tiles, time) {
-
   const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
   const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
 
   return subtile
 }
 
+export function getNextSegmentSubtileInfo (segment, tiles, time) {
+  const subtiles = tiles.nextsegment[time.year][time.week][segment.level][segment.tileIdx]
+  const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
+
+  return subtile
+}
 /**
  * Find which subtile contains a given local segment index
  *
@@ -173,8 +178,6 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
 }
 
 export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
-  return 0
-
   const segment = parseSegmentId(segmentId)
   const tiles = getCachedTiles()
   const time = getCurrentTimeFilter()
@@ -196,13 +199,13 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
 
   // const nextSegmentSubtiles = tiles.nextsegment[time.year][time.week][segment.level][segment.tileIdx]
   // const nextSegmentTileIdx = getSubtileForSegmentIdx(segment.segmentIdx, nextSegmentSubtiles)
-
+  const nextSegmentSubtile = getNextSegmentSubtileInfo(segment, tiles, time)
   var delay = 0
   for (var i = nextIdx; i < (nextIdx + nextCount); i++) {
-    console.log('nextSegment', nextIdx, nextCount)
-    if (subtile.nextSegmentIds[i] === nextSegmentId)
-      delay = subtile.nextSegmentDelays[i]
-
+    // console.log('nextSegment', nextIdx, nextCount, subtile)
+    if (nextSegmentSubtile.nextSegmentIds[i] === nextSegmentId) {
+      delay = nextSegmentSubtile.nextSegmentDelays[i]
+    }
   }
   /*
   const indices = getIndicesFromDayAndHourFilters(time.days, time.hours)
@@ -230,7 +233,7 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
     }
   }
   */
-  console.log(delay)
+  // console.log(delay)
   if (delay.length >= 0) {
     return delay
   } else {
