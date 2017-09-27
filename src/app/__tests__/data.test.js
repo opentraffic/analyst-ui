@@ -11,7 +11,8 @@ it('consolidates array of tiles into a keyed object', () => {
       subtileSegments: 100,
       meta_type: 'historic',
       meta_year: '2017',
-      meta_week: '01'
+      meta_week: '01',
+      meta_subtile: 0
     },
     {
       level: 0,
@@ -21,7 +22,8 @@ it('consolidates array of tiles into a keyed object', () => {
       subtileSegments: 100,
       meta_type: 'historic',
       meta_year: '2017',
-      meta_week: '01'
+      meta_week: '01',
+      meta_subtile: 1
     },
     {
       level: 0,
@@ -31,7 +33,8 @@ it('consolidates array of tiles into a keyed object', () => {
       subtileSegments: 100,
       meta_type: 'historic',
       meta_year: '2017',
-      meta_week: '01'
+      meta_week: '01',
+      meta_subtile: 0
     },
     {
       level: 1,
@@ -41,7 +44,8 @@ it('consolidates array of tiles into a keyed object', () => {
       subtileSegments: 100,
       meta_type: 'historic',
       meta_year: '2017',
-      meta_week: '01'
+      meta_week: '01',
+      meta_subtile: 0
     }
   ]
   const result = consolidateTiles(tiles)
