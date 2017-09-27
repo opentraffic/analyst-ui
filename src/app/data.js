@@ -7,6 +7,7 @@ import { getTileUrlSuffix } from '../lib/tiles'
 const STATIC_DATA_TILE_PATH = config.staticTileUrl
 const tileCache = {} // Tiles cached by lookup tree
 const urlCache = {} // Tiles cached by url
+window.tileCache = tileCache
 
 /**
  * Uses `protobuf.js` module to parse and read a `SpeedTile` protocol buffer.
@@ -49,7 +50,7 @@ export function consolidateTiles (tiles) {
   return tiles.reduce((root, tile) => {
     const level = tile.level
     const index = tile.index
-    const subtile = tile.startSegmentIndex / tile.subtileSegments
+    const subtile = tile.meta_subtile
     const type = tile.meta_type
 
     // Tiles with year / week metadata will also roll up by that
