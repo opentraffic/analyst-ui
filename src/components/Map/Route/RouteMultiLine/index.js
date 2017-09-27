@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Polyline, LayerGroup } from 'react-leaflet'
 import { getSpeedColor } from '../../../../lib/color-ramps'
 import { getSegmentWidth } from '../../../../lib/route-segments'
+import { displayRouteInfo, removeInfo } from '../../../../app/route-info'
 
 export default class RouteMultiLine extends React.PureComponent {
   static propTypes = {
@@ -42,6 +43,8 @@ export default class RouteMultiLine extends React.PureComponent {
           weight={getSegmentWidth(this.props.zoom, segment.speed)}
           onMouseDown={this.props.insertWaypoint}
           key={index}
+          onMouseOver={(event) => displayRouteInfo(event, segment)}
+          onMouseOut={removeInfo}
         />
       )
     })

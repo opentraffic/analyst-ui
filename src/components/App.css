@@ -22,8 +22,8 @@
 
 .feature-info {
   position: absolute;
-  min-width: 100px;
-  min-height: 100px;
+  max-width: 125px;
+  min-height: 50px;
   z-index: 1000;
   background: rgba(0,0,0,0.5);
   color: white;

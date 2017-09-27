@@ -9,7 +9,7 @@ import { addSpeedToThing } from './processing'
 import store from '../store'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setRouteError } from '../store/actions/route'
-import { displayRouteData } from './route-data'
+import { displayRegionInfo } from './route-info'
 
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
@@ -143,8 +143,8 @@ export function showRegion (bounds) {
               })
               setDataSource('routes', { type: 'GeoJSON', data: results })
               window.tangramLayer.setSelectionEvents({
-                hover: function(selection) { displayRouteData(selection) },
-                radius: '5px'
+                hover: function(selection) { displayRegionInfo(selection) },
+                radius: 5
               })
               store.dispatch(stopLoading())
             })
