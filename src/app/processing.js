@@ -173,6 +173,8 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
 }
 
 export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
+  return 0
+
   const segment = parseSegmentId(segmentId)
   const tiles = getCachedTiles()
   const time = getCurrentTimeFilter()

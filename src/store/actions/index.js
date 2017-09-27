@@ -32,6 +32,7 @@ export const SET_ROUTE = 'SET_ROUTE'
 export const SET_ROUTE_SEGMENTS = 'SET_ROUTE_SEGMENTS'
 export const SET_ROUTE_ERROR = 'SET_ROUTE_ERROR'
 export const SET_BASELINE_TIME = 'SET_BASELINE_TIME'
+export const SET_TRAFFIC_ROUTE_TIME = 'SET_TRAFFIC_ROUTE_TIME'
 
 /* tangram */
 export const UPDATE_SCENE = 'UPDATE_SCENE'

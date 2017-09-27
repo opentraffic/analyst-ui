@@ -4,6 +4,7 @@ import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } f
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
+import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setGeoJSON } from '../store/actions/view'
 import {
@@ -13,7 +14,8 @@ import {
   setRoute,
   clearRoute,
   clearRouteError,
-  setBaselineTime
+  setBaselineTime,
+  setTrafficRouteTime
 } from '../store/actions/route'
 import store from '../store'
 
@@ -62,8 +64,6 @@ export function showRoute (waypoints) {
     .then(response => {
       const segments = []
       const segmentIds = []
-
-      console.log(response)
 
       // Decode the polyline and render it to the map
       const coordinates = polyline.decode(response.shape, 6)
@@ -116,6 +116,9 @@ export function showRoute (waypoints) {
           // Will add either meaured or reference speed
           addSpeedToThing(tiles, date, item, item)
         })
+
+        const routeTime = getRouteTime(response)
+        store.dispatch(setTrafficRouteTime(routeTime))
 
         // Now let's draw this
         const speeds = []

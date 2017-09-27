@@ -6,7 +6,8 @@ import {
   SET_ROUTE,
   SET_ROUTE_ERROR,
   SET_ROUTE_SEGMENTS,
-  SET_BASELINE_TIME
+  SET_BASELINE_TIME,
+  SET_TRAFFIC_ROUTE_TIME
 } from '../actions'
 
 export function addWaypoint (waypoint) {
@@ -84,6 +85,13 @@ export function clearRouteSegments () {
 export function setBaselineTime (time) {
   return {
     type: SET_BASELINE_TIME,
+    time
+  }
+}
+
+export function setTrafficRouteTime (time) {
+  return {
+    type: SET_TRAFFIC_ROUTE_TIME,
     time
   }
 }

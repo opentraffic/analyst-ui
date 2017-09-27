@@ -46,7 +46,6 @@ export function leafletLatlngsToValhallaLocations (locations) {
  */
 export function valhallaResponseToPolylineCoordinates (response) {
   const coordinates = []
-  console.log(response)
 
   for (let i = 0; i < response.trip.legs.length; i++) {
     const coord = polyline.decode(response.trip.legs[i].shape, COORDINATE_PRECISION)
