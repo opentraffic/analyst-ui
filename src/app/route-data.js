@@ -21,11 +21,11 @@ export function displayRouteData(selection) {
   // set the position of the box to be near the route the mouse is hovering over
   setPosition(selection.pixel.x, selection.pixel.y)
   // write the data you want in the feature info box
-  const { speed, osmlr_id, tile_id, id } = selection.feature.properties
+  const { speed, osmlr_id, id } = selection.feature.properties
+  // console.log(selection.feature)
   featureInfo.innerHTML =
     `<p> SPEED: ${ speed ? speed.toFixed(2) : 0 } kph <br/>
          OSMLR_ID: ${osmlr_id} <br/>
-         TILE_ID: ${tile_id} <br/>
          ID: ${id} <br/>
      </p>`
 }
