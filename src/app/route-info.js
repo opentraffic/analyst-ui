@@ -7,18 +7,14 @@ export function displayRegionInfo (selection) {
     // if a feature info box exists but mouse is not over a route anymore
     // remove the feature info box and set featureFlag to false
     if (featureFlag) removeInfo()
-    // then break out of the function
     return
   }
   // if there is no feature info box yet but mouse is over a route
   // create the feature info box
   if (!featureFlag) createFeatureInfo()
-  // once feature info box is created or if it already existed
-  // set the position of the box to be near the route the mouse is hovering over
   setPosition(selection.pixel.x, selection.pixel.y)
-  // write the data you want in the feature info box
+
   const { speed, osmlr_id, id } = selection.feature.properties
-  // console.log(selection.feature)
   featureInfo.innerHTML =
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
          OSMLR_ID: ${osmlr_id} <br/>
