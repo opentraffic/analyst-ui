@@ -4,7 +4,7 @@ import { parseSegmentId } from '../lib/tiles'
 import { getCachedTiles } from './data'
 
 // TODO: rename / refactor.
-export function addSpeedToThing (tiles, date, item, thing) {
+export function addSpeedToThing (tiles, date, segment, thing) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
   try {
@@ -12,14 +12,12 @@ export function addSpeedToThing (tiles, date, item, thing) {
     const days = state.date.dayFilter || [0, 7]
     const hours = state.date.hourFilter || [0, 24]
 
-    const segment = item.segment
-    // const reftile = tiles.reference && tiles.reference[item.level][item.tile]
-    const subtiles = tiles.historic[date.year][date.week][item.level][item.tile]
+    const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
 
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
       // Append the speed to the thing to render later
-      thing.speed = getSpeedFromDataTilesForSegmentId(segment.segmentId)
+      thing.speed = getSpeedFromDataTilesForSegmentId(segment.id)
 
       // } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
       //   thing.speed = getMeanSpeed(reftile.referenceSpeeds80[desiredIndex]
