@@ -1,6 +1,7 @@
 /* global feature */
 import config from '../config'
 import { STOPS, ZERO_SPEED_STOPS } from '../lib/route-segments'
+import { getColorAtIndexInVec3 } from '../lib/color-ramps'
 
 const scene = {
   import: [
@@ -23,20 +24,19 @@ const scene = {
           order: 500,
           width: STOPS,
           color: function () {
-            return [ feature.speed, feature.drive_on_right, feature.oneway ]
-            // const speed = feature.speed
-            // const color = speed >= 100 ? '#313695'
-            //             : speed >= 90 ? '#4575b4'
-            //             : speed >= 80 ? '#74add1'
-            //             : speed >= 70 ? '#abd9e9'
-            //             : speed >= 60 ? '#e0f3f8'
-            //             : speed >= 50 ? '#fee090'
-            //             : speed >= 40 ? '#fdae61'
-            //             : speed >= 30 ? '#f46d43'
-            //             : speed >= 20 ? '#d73027'
-            //             : speed > 0 ? '#a50026'
-            //             : '#ccc'
-            // return color
+            const speed = feature.speed
+            const colorIndex = speed >= 100 ? 10 / 10
+                        : speed >= 90 ? 9 / 10
+                        : speed >= 80 ? 8 / 10
+                        : speed >= 70 ? 7 / 10
+                        : speed >= 60 ? 6 / 10
+                        : speed >= 50 ? 5 / 10
+                        : speed >= 40 ? 4 / 10
+                        : speed >= 30 ? 3 / 10
+                        : speed >= 20 ? 2 / 10
+                        : speed > 0 ? 1 / 10
+                        : 0
+            return [ colorIndex, feature.drive_on_right, feature.oneway ]
           },
           outline: {
             width: '1px',
@@ -81,6 +81,19 @@ const scene = {
           color: `
             // Speed to color from palette LUT
             // color = texture2D(u_palette, vec2(clamp(v_color.r,0.,1.),.5));
+            int i = int(floor(v_color.r * 10.));
+            if (i == 0) color.rgb = vec3(${getColorAtIndexInVec3(0)});
+            if (i == 1) color.rgb = vec3(${getColorAtIndexInVec3(1)});
+            if (i == 2) color.rgb = vec3(${getColorAtIndexInVec3(2)});
+            if (i == 3) color.rgb = vec3(${getColorAtIndexInVec3(3)});
+            if (i == 4) color.rgb = vec3(${getColorAtIndexInVec3(4)});
+            if (i == 5) color.rgb = vec3(${getColorAtIndexInVec3(5)});
+            if (i == 6) color.rgb = vec3(${getColorAtIndexInVec3(6)});
+            if (i == 7) color.rgb = vec3(${getColorAtIndexInVec3(7)});
+            if (i == 8) color.rgb = vec3(${getColorAtIndexInVec3(8)});
+            if (i == 9) color.rgb = vec3(${getColorAtIndexInVec3(9)});
+            if (i == 10) color.rgb = vec3(${getColorAtIndexInVec3(10)});
+
             // Scale down the road x2
             vec2 st = fract(v_texcoord.xy*2.)+vec2(.5,0.);
             // Flip direction if the the drive is not on the right.
