@@ -99,7 +99,6 @@ export function showRoute (waypoints) {
           // Will add either meaured or reference speed
           addSpeedToThing(tiles, date, item, item)
         })
-
         // Now let's draw this
         const speeds = []
         response.edges.forEach(function (edge, index) {
@@ -108,7 +107,6 @@ export function showRoute (waypoints) {
           const end = edge.end_shape_index
           const coordsSlice = coordinates.slice(begin, end + 1)
           const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
-
           let found
           for (let i = 0, j = parsedIds.length; i < j; i++) {
             if (id === parsedIds[i].id) {
@@ -116,7 +114,6 @@ export function showRoute (waypoints) {
               break
             }
           }
-
           // Determine what speed to use
           // If we found a historic speed, use that.
           let speed = -1
@@ -132,7 +129,8 @@ export function showRoute (waypoints) {
 
           speeds.push({
             coordinates: coordsSlice,
-            speed: speed
+            speed: speed,
+            properties: found
           })
         })
 
