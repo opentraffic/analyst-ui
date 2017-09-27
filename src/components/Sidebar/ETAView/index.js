@@ -10,13 +10,17 @@ class ETAView extends React.Component {
   }
 
   render () {
-    return (
-      <Segment>
-        <Header as="h3">ETA</Header>
-        <p>{this.props.baselineTime}</p>
-        <p>{this.props.trafficRouteTime}</p>
-      </Segment>
-    )
+    if (this.props.baselineTime && this.props.trafficRouteTime) {
+      return (
+        <Segment>
+          <Header as="h3">Route time</Header>
+          <p><strong>Baseline time</strong> {this.props.baselineTime}s</p>
+          <p><strong>Traffic route time</strong> {this.props.trafficRouteTime.toFixed(2)}s</p>
+        </Segment>
+      )
+    }
+
+    return null
   }
 }
 
