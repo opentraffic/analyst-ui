@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { LayerGroup } from 'react-leaflet'
 import RouteMarkers from './RouteMarkers'
 import RouteLine from './RouteLine'
-import RouteMultiLine from './RouteMultiLine'
 import { getNewWaypointPosition } from '../../../lib/routing'
 
 class Route extends React.PureComponent {
@@ -45,22 +44,13 @@ class Route extends React.PureComponent {
   }
 
   render () {
-    const routeType = (this.props.route.multiSegments) ? (
-      <RouteMultiLine
-        segments={this.props.route.multiSegments}
-        zoom={this.props.zoom}
-        insertWaypoint={this.insertWaypoint}
-      />
-    ) : (
-      <RouteLine
-        positions={this.props.route.lineCoordinates}
-        insertWaypoint={this.insertWaypoint}
-      />
-    )
-
     return (
       <LayerGroup>
-        {routeType}
+        <RouteLine
+          segments={this.props.route.routeSegments}
+          zoom={this.props.zoom}
+          insertWaypoint={this.insertWaypoint}
+        />
         <RouteMarkers
           waypoints={this.props.route.waypoints}
           removeWaypoint={this.removeWaypoint}

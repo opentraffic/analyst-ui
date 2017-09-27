@@ -66,16 +66,16 @@ export function clearRouteError () {
   }
 }
 
-export function setMultiSegments (segments) {
+export function setRouteSegments (segments) {
   return {
     type: SET_MULTI_SEGMENTS,
-    multiSegments: segments
+    routeSegments: segments
   }
 }
 
-export function clearMultiSegments () {
+export function clearRouteSegments () {
   return {
     type: SET_MULTI_SEGMENTS,
-    multiSegments: []
+    routeSegments: []
   }
 }

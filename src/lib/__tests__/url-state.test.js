@@ -1,10 +1,10 @@
-/* global it, expect */
+/* eslint-env jest */
 import 'url-search-params-polyfill'
 import {
   getQueryStringObject,
   parseQueryString,
   addNewParam
-} from './url-state'
+} from '../url-state'
 
 describe('returns an object of query parameters/values', () => {
   it('returns an empty object when page has no search params', () => {

@@ -13,7 +13,7 @@ import {
 const initialState = {
   waypoints: [],
   lineCoordinates: [],
-  multiSegments: [],
+  routeSegments: [],
   error: null
 }
 
@@ -66,7 +66,7 @@ const route = (state = initialState, action) => {
     case SET_MULTI_SEGMENTS:
       return {
         ...state,
-        multiSegments: action.multiSegments,
+        routeSegments: action.routeSegments,
         error: null
       }
     case CLEAR_ANALYSIS:
