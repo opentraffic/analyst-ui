@@ -4,7 +4,6 @@ import config from '../config'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = config.staticTileUrl
 const tileCache = {} // Tiles cached by lookup tree
 const urlCache = {} // Tiles cached by url
 window.tileCache = tileCache
