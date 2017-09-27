@@ -127,7 +127,7 @@ function mapStateToProps (state) {
     year: state.date.year,
     week: state.date.week,
     map: state.map,
-    bounds: state.viewBounds.bounds,
+    bounds: state.view.bounds,
     scene: state.tangram.scene
   }
 }
