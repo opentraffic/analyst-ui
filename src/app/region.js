@@ -143,7 +143,7 @@ export function showRegion (bounds) {
               })
               setDataSource('routes', { type: 'GeoJSON', data: results })
               window.tangramLayer.setSelectionEvents({
-                hover: function(selection) { displayRegionInfo(selection) },
+                hover: function (selection) { displayRegionInfo(selection) },
                 radius: 5
               })
               store.dispatch(stopLoading())
