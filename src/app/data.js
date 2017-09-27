@@ -4,7 +4,8 @@ import config from '../config'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const tileCache = {}
+const tileCache = {} // Tiles cached by lookup tree
+const urlCache = {} // Tiles cached by url
 window.tileCache = tileCache
 
 /**
@@ -78,7 +79,7 @@ export function consolidateTiles (tiles) {
 }
 
 /**
- * Test: tile cache
+ * Add tiles to the cache
  */
 function cacheTiles (tiles) {
   Object.assign(tileCache, tiles)
@@ -174,6 +175,9 @@ function fetchReferenceSpeedTile (suffix) {
 /**
  * Generic data tile fetch utility function.
  *
+ * If tiles are cached, retrieve those instead of performing
+ * the actual network request.
+ *
  * @param {string} url - file path to data tile
  * @param {string} type - the type of data tile, for logging
  * @returns {Promise} - resolved to either a plain JS object of the data tile,
@@ -182,6 +186,11 @@ function fetchReferenceSpeedTile (suffix) {
  *            skipped
  */
 function fetchDataTile (url, type) {
+  // If tile is cached by url, return it
+  if (urlCache[url]) {
+    return Promise.resolve(urlCache[url])
+  }
+
   return window.fetch(url)
     .then((response) => {
       // If a data tile fails to fetch, don't immediately reject; instead,
@@ -196,17 +205,17 @@ function fetchDataTile (url, type) {
         .then(readDataTiles)
         // We only want the child data object
         .then(protobufMessage => protobufMessage.subtiles[0])
+        .then(tile => {
+          // Cache tile by url
+          urlCache[url] = tile
+          return tile
+        })
     })
 }
 
 /**
  * Fetches all requested OpenTraffic data tiles and concatenates them into
- * a single object. If tiles are cached, retrieve those instead of performing
- * the actual network request.
- *
- * @todo: Cache urls and tile responses so that anything that is already
- * in cache do not need to be re-fetched. We may need to set a dynamic
- * cache limit based on available memory, if that's something we can determine.
+ * a single object.
  *
  * @param {Array<Object>} ids - a list of ids in the format { level, tile }
  * @param {Object} date - date of data to fetch in the format { year, week }
@@ -214,11 +223,6 @@ function fetchDataTile (url, type) {
  *            tile index mapped to a nested key structure.
  */
 export function fetchDataTiles (ids, date) {
-  // Temporary. If tilecache has values, return Promise-resolving as-is.
-  if (Object.keys(tileCache).length > 0) {
-    return Promise.resolve(tileCache)
-  }
-
   // Get the year and week of data tile to download.
   const year = date.year
   const week = date.week

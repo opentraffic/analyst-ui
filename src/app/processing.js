@@ -1,4 +1,4 @@
-// import { chain } from 'lodash'
+import { chain } from 'lodash'
 import store from '../store'
 import { parseSegmentId } from '../lib/tiles'
 import { getCachedTiles } from './data'
