@@ -6,7 +6,15 @@ import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setGeoJSON } from '../store/actions/view'
-import { clearRouteSegments, setRouteSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
+import {
+  clearRouteSegments,
+  setRouteSegments,
+  setRouteError,
+  setRoute,
+  clearRoute,
+  clearRouteError,
+  setBaselineTime
+} from '../store/actions/route'
 import store from '../store'
 
 function resetRouteState () {
@@ -26,6 +34,12 @@ export function showRoute (waypoints) {
   // Fetch route from Valhalla-based routing service, given waypoints.
   const host = store.getState().config.valhallaHost
   getRoute(host, waypoints)
+    // Get the reference speed from Valhalla route response
+    .then(response => {
+      const time = response.trip.summary.time
+      store.dispatch(setBaselineTime(time))
+      return response
+    })
     // Transform Valhalla response to polyline coordinates for trace_attributes request
     .then(valhallaResponseToPolylineCoordinates)
     // Make an additional trace_attributes request. This gives us information
@@ -48,6 +62,8 @@ export function showRoute (waypoints) {
     .then(response => {
       const segments = []
       const segmentIds = []
+
+      console.log(response)
 
       // Decode the polyline and render it to the map
       const coordinates = polyline.decode(response.shape, 6)

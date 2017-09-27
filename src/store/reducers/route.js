@@ -7,6 +7,7 @@ import {
   SET_ROUTE,
   SET_ROUTE_ERROR,
   SET_ROUTE_SEGMENTS,
+  SET_BASELINE_TIME,
   CLEAR_ANALYSIS
 } from '../actions'
 
@@ -14,7 +15,8 @@ const initialState = {
   waypoints: [],
   lineCoordinates: [],
   routeSegments: [],
-  error: null
+  error: null,
+  baselineTime: null
 }
 
 const route = (state = initialState, action) => {
@@ -68,6 +70,11 @@ const route = (state = initialState, action) => {
         ...state,
         routeSegments: action.routeSegments,
         error: null
+      }
+    case SET_BASELINE_TIME:
+      return {
+        ...state,
+        baselineTime: action.time
       }
     case CLEAR_ANALYSIS:
       return initialState
