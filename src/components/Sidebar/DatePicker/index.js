@@ -29,8 +29,8 @@ class DatePicker extends React.Component {
 
     // also here is where we enforce the selection of one week (7 days)
     if (date.startDate instanceof (moment)) {
-      start = date.startDate.startOf('week').valueOf()
-      end = date.startDate.endOf('week').valueOf()
+      start = date.startDate.startOf('isoWeek').valueOf()
+      end = date.startDate.endOf('isoWeek').valueOf()
     } else {
       start = null
       end = null
@@ -49,13 +49,6 @@ class DatePicker extends React.Component {
     const end = this.props.endDate
     const today = moment()
 
-    // If info panel needed, return in renderCalendarInfo
-    const infoPanel = (
-      <div className="info-panel">
-        This is an info panel
-      </div>
-    )
-
     return (
       <Segment>
         <Header as="h3">Analysis week</Header>
@@ -63,13 +56,14 @@ class DatePicker extends React.Component {
           startDate={changeUnixToMoment(start)}  // momentPropTypes.momentObj or null,
           endDate={changeUnixToMoment(end)} // momentPropTypes.momentObj or null,
           numberOfMonths={1}
+          firstDayOfWeek={1}
           isOutsideRange={day => !isInclusivelyBeforeDay(day, today)}
           onDatesChange={this.handleDateChange}
           showClearDates
           reopenPickerOnClearDates
           focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
-          renderCalendarInfo={() => { return infoPanel }}
+          hideKeyboardShortcutsPanel
         />
       </Segment>
     )
