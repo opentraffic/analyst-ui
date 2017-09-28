@@ -19,3 +19,13 @@
   height: 100%;
   border-left: 1px solid #c0c0c0;
 }
+
+.feature-info {
+  position: absolute;
+  max-width: 125px;
+  min-height: 50px;
+  z-index: 1000;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  padding: 5px;
+}

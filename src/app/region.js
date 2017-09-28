@@ -8,6 +8,7 @@ import store from '../store'
 import { setGeoJSON } from '../store/actions/view'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setRouteError } from '../store/actions/route'
+import { displayRegionInfo } from './route-info'
 
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
@@ -78,6 +79,7 @@ export function clearRegion () {
   const scene = getCurrentScene()
   delete scene.sources.routes
   setCurrentScene(scene)
+  window.tangramLayer.setSelectionEvents({hover: null})
 }
 
 export function showRegion (bounds) {
@@ -139,6 +141,11 @@ export function showRegion (bounds) {
             bounds: store.getState().view.bounds,
             date: store.getState().date
           }
+
+          window.tangramLayer.setSelectionEvents({
+            hover: function (selection) { displayRegionInfo(selection) }
+          })
+
           store.dispatch(setGeoJSON(results))
           store.dispatch(stopLoading())
         })

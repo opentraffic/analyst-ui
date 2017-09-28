@@ -16,6 +16,7 @@ const scene = {
       data: { source: 'routes' },
       draw: {
         lines: {
+          interactive: true,
           order: 500,
           width: STOPS,
           color: function () {
