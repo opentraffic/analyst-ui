@@ -105,7 +105,12 @@ export function showRoute (waypoints) {
         const speeds = []
         const geojson = {
           type: 'FeatureCollection',
-          features: []
+          features: [],
+          properties: {
+            analysisMode: 'route',
+            analyisName: store.getState().app.viewName,
+            date: store.getState().date
+          }
         }
 
         response.edges.forEach(function (edge, index) {

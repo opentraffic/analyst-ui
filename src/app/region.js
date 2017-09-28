@@ -141,6 +141,12 @@ export function showRegion (bounds) {
                 addSpeedToThing(tiles, date, item, features[index].properties)
               })
               setDataSource('routes', { type: 'GeoJSON', data: results })
+              results.properties = {
+                analysisMode: 'region',
+                analyisName: store.getState().app.viewName,
+                bounds: store.getState().view.bounds,
+                date: store.getState().date
+              }
               store.dispatch(setGeoJSON(results))
               store.dispatch(stopLoading())
             })
