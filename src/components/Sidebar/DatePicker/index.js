@@ -29,8 +29,8 @@ class DatePicker extends React.Component {
 
     // also here is where we enforce the selection of one week (7 days)
     if (date.startDate instanceof (moment)) {
-      start = date.startDate.startOf('week').valueOf()
-      end = date.startDate.endOf('week').valueOf()
+      start = date.startDate.startOf('isoWeek').valueOf()
+      end = date.startDate.endOf('isoWeek').valueOf()
     } else {
       start = null
       end = null
@@ -63,6 +63,7 @@ class DatePicker extends React.Component {
           startDate={changeUnixToMoment(start)}  // momentPropTypes.momentObj or null,
           endDate={changeUnixToMoment(end)} // momentPropTypes.momentObj or null,
           numberOfMonths={1}
+          firstDayOfWeek={1}
           isOutsideRange={day => !isInclusivelyBeforeDay(day, today)}
           onDatesChange={this.handleDateChange}
           showClearDates
