@@ -68,6 +68,9 @@ export function getValuesFromSubtile (segmentIdx, subtile, days, hours, prop) {
   // and find the base index for that segment
   const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
 
+  // Exit if subtile[prop] is undefined
+  if (typeof subtile[prop] === 'undefined') return []
+
   const values = flow([
     // select the week's worth of hours relevant to this segment
     x => x.slice(entryBaseIndex, entryBaseIndex + 168),
@@ -181,28 +184,30 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
   const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
   const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
 
-  // Get the subtile index of the segment
-  const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
-  // There is one array for every attribute. Divide unitSize by
-  // entrySize to know how many entries belong to each segment (168 hours for 1 week),
-  // and find the base index for that segment
-  const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
-  const segmentIdxForHour = entryBaseIndex + time.hours[0]
-  // get the next segments that are paired with this segment Id
-  const nextIdx = subtile.nextSegmentIndices[segmentIdxForHour]
-  const nextCount = subtile.nextSegmentCounts[segmentIdxForHour]
+  const nextIdxs = getValuesFromSubtile(segment.segmentIdx, subtile, time.days, time.hours, 'nextSegmentIndices')
+  const nextCounts = getValuesFromSubtile(segment.segmentIdx, subtile, time.days, time.hours, 'nextSegmentCounts')
 
   const nextSubtiles = tiles.nextsegment[time.year][time.week][segment.level][segment.tileIdx]
   const nextSubtile = getSubtileForSegmentIdx(segment.segmentIdx, nextSubtiles)
-  var delay = 0
-  for (var i = nextIdx; i < (nextIdx + nextCount); i++) {
-    if (nextSubtile.nextSegmentIds[i] === nextSegmentId) {
-      delay = nextSubtile.nextSegmentDelays[i]
+
+  const delays = []
+  for (let i = 0; i < nextIdxs.length; i++) {
+    const nextIdx = nextIdxs[i]
+    const nextCount = nextCounts[i]
+
+    for (let j = nextIdx; j < (nextIdx + nextCount); j++) {
+      if (nextSubtile.nextSegmentIds[j] === nextSegmentId) {
+        const delay = nextSubtile.nextSegmentDelays[j]
+        delays.push(delay)
+      }
     }
   }
 
-  if (delay.length >= 0) {
-    return delay
+  if (delays.length >= 0) {
+    const meanDelay = mean(delays)
+
+    // if result is not a number or is Infinity, return null
+    return (Number.isFinite(meanDelay)) ? meanDelay : null
   } else {
     return null
   }
