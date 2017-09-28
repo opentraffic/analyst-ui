@@ -4,9 +4,9 @@ import config from '../config'
 import speedTileDescriptor from '../proto/speedtile.proto.json'
 import { getTileUrlSuffix } from '../lib/tiles'
 
-const STATIC_DATA_TILE_PATH = config.staticTileUrl
 const tileCache = {} // Tiles cached by lookup tree
 const urlCache = {} // Tiles cached by url
+window.tileCache = tileCache
 
 /**
  * Uses `protobuf.js` module to parse and read a `SpeedTile` protocol buffer.
@@ -49,7 +49,7 @@ export function consolidateTiles (tiles) {
   return tiles.reduce((root, tile) => {
     const level = tile.level
     const index = tile.index
-    const subtile = tile.startSegmentIndex / tile.subtileSegments
+    const subtile = tile.meta_subtile
     const type = tile.meta_type
 
     // Tiles with year / week metadata will also roll up by that
@@ -86,6 +86,10 @@ function cacheTiles (tiles) {
   return tiles
 }
 
+export function getCachedTiles () {
+  return tileCache
+}
+
 /**
  * Given 0-level tiles, figure out how many subtiles there are
  */
@@ -106,7 +110,7 @@ function figureOutHowManySubtilesThereAre (tile) {
  *            skipped
  */
 function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
-  const url = `${STATIC_DATA_TILE_PATH}${year}/${week}/${suffix}.spd.${subtile}.gz`
+  const url = `${config.historicSpeedTileUrl}${year}/${week}/${suffix}.spd.${subtile}.gz`
   const type = 'historic data tile'
 
   // Add some metadata to the returned tile
@@ -114,7 +118,35 @@ function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
     .then((tile) => {
       tile.meta_year = year
       tile.meta_week = week
+      tile.meta_subtile = subtile
       tile.meta_type = 'historic'
+      return tile
+    })
+}
+
+/**
+ * Fetch next segment tile given an id suffix
+ *
+ * @param {string} suffix - file path to data tile
+ * @param {Number} subtile - number of subtile to download (default is 0)
+ * @param {string} year - the year of data requested, from date picker
+ * @param {string} week - the week of data requested, from date picker
+ * @returns {Promise} - resolved to either a plain JS object of the data tile,
+ *            _or_ an error object { error: true } if it failed. We don't
+ *            want this to throw because data tile fetch errors should be
+ *            skipped
+ */
+function fetchNextSegmentTile (suffix, subtile = 0, year, week) {
+  const url = `${config.nextSegmentTileUrl}${year}/${week}/${suffix}.nex.${subtile}.gz`
+  const type = 'next segment tile'
+
+  // Add some metadata to the returned tile
+  return fetchDataTile(url, type)
+    .then((tile) => {
+      tile.meta_year = year
+      tile.meta_week = week
+      tile.meta_subtile = subtile
+      tile.meta_type = 'nextsegment'
       return tile
     })
 }
@@ -129,7 +161,7 @@ function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
  *            skipped
  */
 function fetchReferenceSpeedTile (suffix) {
-  const url = `${STATIC_DATA_TILE_PATH}${suffix}.ref.gz`
+  const url = `${config.refSpeedTileUrl}${suffix}.ref.gz`
   const type = 'reference speed tile'
 
   // Add some metadata to the returned tile
@@ -214,9 +246,13 @@ export function fetchDataTiles (ids, date) {
         const id = { level: tile.level, tile: tile.index }
         const suffix = getTileUrlSuffix(id)
 
+        // Fetch the 0 subtile for nextSegment speed tile
+        toDownload.push(fetchNextSegmentTile(suffix, 0, year, week))
+
         // Start at 1 because we already downloaded subtile at 0
         for (let i = 1; i < numSubtiles; i++) {
           toDownload.push(fetchHistoricSpeedTile(suffix, i, year, week))
+          toDownload.push(fetchNextSegmentTile(suffix, i, year, week))
         }
 
         // Get reference speed tile
