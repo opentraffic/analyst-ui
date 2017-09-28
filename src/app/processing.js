@@ -41,7 +41,12 @@ export function addSpeedToThing (tiles, date, segment, thing) {
  * @return speed in kph
  */
 export function getMeanSpeed (segmentIdx, subtile, days, hours) {
-  return getMeanValue(segmentIdx, subtile, days, hours, 'speeds')
+  // we want to know the overall average; TODO: consider weighting by prevalence
+  const speeds = getValuesFromSubtile(segmentIdx, subtile, days, hours, 'speeds')
+  const meanSpeed = mean(speeds)
+
+  // if result is not a number or is Infinity, return null
+  return (Number.isFinite(meanSpeed)) ? meanSpeed : null
 }
 
 /**
@@ -52,9 +57,9 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
  * @param {array} days
  * @param {array} hours
  * @param {string} prop
- * @return speed in kph
+ * @return {Array} values
  */
-export function getMeanValue (segmentIdx, subtile, days, hours, prop) {
+export function getValuesFromSubtile (segmentIdx, subtile, days, hours, prop) {
   // Get the subtile index of the segment
   const subtileSegmentIdx = segmentIdx - subtile.startSegmentIndex
 
@@ -63,7 +68,7 @@ export function getMeanValue (segmentIdx, subtile, days, hours, prop) {
   // and find the base index for that segment
   const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
 
-  const value = flow([
+  const values = flow([
     // select the week's worth of hours relevant to this segment
     x => x.slice(entryBaseIndex, entryBaseIndex + 168),
     // split into day-long chunks
@@ -73,13 +78,10 @@ export function getMeanValue (segmentIdx, subtile, days, hours, prop) {
     // filter down to the requested range of hours
     x => x.map(speedsForGivenDay => speedsForGivenDay.slice(...hours)),
     // back to just an array of hours
-    flatten,
-    // we want to know the overall average; TODO: consider weighting by prevalence
-    mean
+    flatten
   ])(subtile[prop])
 
-  // if result is not a number or is Infinity, return null
-  return (Number.isFinite(value)) ? value : null
+  return values
 }
 
 /**
