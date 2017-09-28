@@ -41,6 +41,20 @@ export function addSpeedToThing (tiles, date, segment, thing) {
  * @return speed in kph
  */
 export function getMeanSpeed (segmentIdx, subtile, days, hours) {
+  return getMeanValue(segmentIdx, subtile, days, hours, 'speeds')
+}
+
+/**
+ * @private
+ * @param {number} segmentIdx - segment index for the tile
+ * @param {object} subtile - the subtile containing segment index
+ *          (note: get all tiles here, then find subtile within the function?)
+ * @param {array} days
+ * @param {array} hours
+ * @param {string} prop
+ * @return speed in kph
+ */
+export function getMeanValue (segmentIdx, subtile, days, hours, prop) {
   // Get the subtile index of the segment
   const subtileSegmentIdx = segmentIdx - subtile.startSegmentIndex
 
@@ -49,7 +63,7 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
   // and find the base index for that segment
   const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
 
-  const speedsByHour = flow([
+  const value = flow([
     // select the week's worth of hours relevant to this segment
     x => x.slice(entryBaseIndex, entryBaseIndex + 168),
     // split into day-long chunks
@@ -62,10 +76,10 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
     flatten,
     // we want to know the overall average; TODO: consider weighting by prevalence
     mean
-  ])(subtile.speeds)
+  ])(subtile[prop])
 
-  // if result is not a number, return null
-  return (Number.isNaN(speedsByHour) === true) ? null : speedsByHour
+  // if result is not a number or is Infinity, return null
+  return (Number.isFinite(value)) ? value : null
 }
 
 /**
@@ -164,6 +178,7 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
 
   const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
   const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
+
   // Get the subtile index of the segment
   const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
   // There is one array for every attribute. Divide unitSize by
