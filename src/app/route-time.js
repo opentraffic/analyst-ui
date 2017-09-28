@@ -1,4 +1,5 @@
 import { getSpeedFromDataTilesForSegmentId, getNextSegmentDelayFromDataTiles } from './processing'
+import { getLevelFromSegmentId } from '../lib/tiles'
 
 export function getRouteTime (traceAttributes) {
   var edges = traceAttributes.edges
@@ -90,5 +91,6 @@ function validIntersectionTime (prevEdge, currEdge) {
 }
 
 function edgeHasTrafficInfo (edge) {
-  return (edge && edge.traffic_segments && (edge.traffic_segments.length > 0))
+  return (edge && edge.traffic_segments && (edge.traffic_segments.length > 0) &&
+    (getLevelFromSegmentId(edge.traffic_segments[0].segment_id) < 2))
 }
