@@ -7,7 +7,7 @@ export function getRouteTime (traceAttributes) {
   var prevEdge = null
   var currEdge = null
   for (var i = 0; i < edges.length; i++) {
-    var edgeTime = 0
+    var edgeTime = null
     currEdge = edges[i]
 
     // Skip edge if internal, roundabout, or turn channel
@@ -23,9 +23,13 @@ export function getRouteTime (traceAttributes) {
       }
     }
 
-    // if traffic segments exist
+    // if traffic segments exist get the traffic segment time
     if (edgeHasTrafficInfo(currEdge)) {
       edgeTime = getTrafficSegmentsTime(currEdge)
+    }
+
+    // if valid traffic edge time then use it
+    if (edgeTime !== null) {
       edgeTime += getIntersectionTime(prevEdge, currEdge)
     } else {
       edgeTime = getEdgeElapsedTime(prevEdge, currEdge)
@@ -53,14 +57,20 @@ function getTrafficSegmentsTime (edge) {
   for (var i = 0; i < edge.traffic_segments.length; i++) {
     segment = edge.traffic_segments[i]
     speed = getSpeedFromDataTilesForSegmentId(segment.segment_id)
+
     if (speed !== null) {
       edgeTime += (edge.length * (segment.end_percent - segment.begin_percent) / speed * 3600)
-    }
-    if (prevSegment) {
-      var delay = getNextSegmentDelayFromDataTiles(prevSegment.segment_id, segment.segment_id)
-      if (delay !== null) {
-        edgeTime += delay
+
+      if (prevSegment) {
+        var delay = getNextSegmentDelayFromDataTiles(prevSegment.segment_id, segment.segment_id)
+
+        if (delay !== null) {
+          edgeTime += delay
+        }
       }
+    } else {
+      // Invalid speed return null
+      return null;
     }
     prevSegment = segment
   }

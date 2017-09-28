@@ -145,6 +145,7 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
   */
   const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
   const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
+
   // Get the subtile index of the segment
   const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
   // There is one array for every attribute. Divide unitSize by
@@ -154,7 +155,7 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
   const segmentIdxForHour = entryBaseIndex + time.hours[0]
   const speed = subtile.speeds[segmentIdxForHour]
 
-  if (speed !== null && speed !== undefined) {
+  if (speed !== null && speed !== undefined && speed > 0) {
     return speed
   } else {
     return null
