@@ -108,6 +108,6 @@ it('parses a segment id from trace_attributes', () => {
 
   expect(result.id).toEqual(id)
   expect(result.level).toEqual(0)
-  expect(result.tile).toEqual(2140)
-  expect(result.segment).toEqual(29297)
+  expect(result.tileIdx).toEqual(2140)
+  expect(result.segmentIdx).toEqual(29297)
 })

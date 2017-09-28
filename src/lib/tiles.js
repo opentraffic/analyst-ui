@@ -143,7 +143,7 @@ const SEGMENT_INDEX_MASK = (2 ** SEGMENT_INDEX_BITS) - 1
 /**
  * Parses segment ID for level
  */
-function getLevelFromSegmentId (id) {
+export function getLevelFromSegmentId (id) {
   return id & LEVEL_MASK
 }
 
@@ -174,7 +174,7 @@ export function parseSegmentId (id) {
   return {
     id,
     level: getLevelFromSegmentId(id),
-    tile: getTileIndexFromSegmentId(id),
-    segment: getSegmentIndexFromSegmentId(id)
+    tileIdx: getTileIndexFromSegmentId(id),
+    segmentIdx: getSegmentIndexFromSegmentId(id)
   }
 }

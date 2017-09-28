@@ -6,6 +6,7 @@ import AnalysisName from './AnalysisName'
 import ModeSelect from './ModeSelect'
 import DatePicker from './DatePicker'
 import TimeFilters from './TimeFilters'
+import ETAView from './ETAView'
 import Legend from './Legend'
 import ExportData from './ExportData'
 import './Sidebar.css'
@@ -42,6 +43,7 @@ class Sidebar extends React.Component {
         {this.props.date && this.props.date.startDate &&
           <TimeFilters />
         }
+        <ETAView />
         {this.props.date && this.props.date.startDate &&
           <Legend />
         }
