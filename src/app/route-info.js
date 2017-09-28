@@ -13,13 +13,14 @@ export function displayRegionInfo (selection) {
   // create the feature info box
   if (!featureFlag) createFeatureInfo()
   setPosition(selection.pixel.x, selection.pixel.y)
-
-  const { speed, osmlr_id, id } = selection.feature.properties
+  /* eslint-disable camelcase */
+  const { speed, osmlr_id, id } = selection.feature.properties 
   featureInfo.innerHTML =
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
-         OSMLR_ID: ${osmlr_id} <br/>
+         OSMLR_ID: ${osmlr_id} <br/> 
          ID: ${id} <br/>
      </p>`
+  /* eslint-disable camelcase */
 }
 
 function createFeatureInfo () {
