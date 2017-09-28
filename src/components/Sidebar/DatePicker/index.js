@@ -49,13 +49,6 @@ class DatePicker extends React.Component {
     const end = this.props.endDate
     const today = moment()
 
-    // If info panel needed, return in renderCalendarInfo
-    const infoPanel = (
-      <div className="info-panel">
-        This is an info panel
-      </div>
-    )
-
     return (
       <Segment>
         <Header as="h3">Analysis week</Header>
@@ -70,7 +63,7 @@ class DatePicker extends React.Component {
           reopenPickerOnClearDates
           focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
-          renderCalendarInfo={() => { return infoPanel }}
+          hideKeyboardShortcutsPanel={true}
         />
       </Segment>
     )
