@@ -1,16 +1,14 @@
 /* eslint-env jest */
 import {
-  // getMeanSpeed,
-  getSpeedFromDataTilesForSegmentId,
-  // convertLocalSegmentToSubtileIndex,
+  getMeanSpeed,
   getSubtileForSegmentIdx,
-  getIndicesFromDayAndHourFilters
-  // getSpeedFromDataTilesForSegmentId,
-  // getNextSegmentDelayFromDataTiles
+  getIndicesFromDayAndHourFilters,
+  getSpeedFromDataTilesForSegmentId,
+  getNextSegmentDelayFromDataTiles
 } from '../processing'
-/*
-describe('getSpeedFromDataTilesForSegmentId', () => {
-  const segmentId = 49152
+
+describe('getMeanSpeed', () => {
+  const segmentIdx = 49152
   const tile = {
     subtileSegments: 10000,
     startSegmentIndex: 40000,
@@ -20,44 +18,26 @@ describe('getSpeedFromDataTilesForSegmentId', () => {
     speeds: new Array(1680000).fill(20)
   }
 
+  // Give it something to average
+  tile.speeds[1537544] = 50
+
   it('can select one hour from 1 day', () => {
-    tile.speeds[1537544] = 50
-    expect(getMeanSpeed(segmentId, tile, [0, 1], [8, 9])).toEqual(50)
+    expect(getMeanSpeed(segmentIdx, tile, [0, 1], [8, 9])).toEqual(50)
   })
 
   it('can average 2 hours from 1 day', () => {
-    tile.speeds[1537544] = 50
-    expect(getMeanSpeed(segmentId, tile, [0, 1], [8, 10])).toEqual(35)
+    expect(getMeanSpeed(segmentIdx, tile, [0, 1], [8, 10])).toEqual(35)
   })
 
   it('can average 1 hour from 3 days', () => {
-    tile.speeds[1537544] = 50
-    expect(getMeanSpeed(segmentId, tile, [5, 7], [20, 22])).toEqual(20)
+    expect(getMeanSpeed(segmentIdx, tile, [5, 7], [20, 22])).toEqual(20)
+  })
+
+  it('returns null if no data is found', () => {
+    expect(getMeanSpeed(50000, tile, [5, 7], [20, 22])).toEqual(null)
   })
 })
 
-describe('convertLocalSegmentToSubtileIndex', () => {
-  it('converts a low number', () => {
-    const subtile = {
-      startSegmentIndex: 0,
-      subtileSegments: 10000,
-      totalSegments: 29072
-    }
-    const result = convertLocalSegmentToSubtileIndex(5000, subtile)
-    expect(result).toEqual(5000)
-  })
-
-  it('converts a high number', () => {
-    const subtile = {
-      startSegmentIndex: 20000,
-      subtileSegments: 10000,
-      totalSegments: 29072
-    }
-    const result = convertLocalSegmentToSubtileIndex(25000, subtile)
-    expect(result).toEqual(5000)
-  })
-})
-*/
 describe('getSubtileForSegmentIdx', () => {
   const subtiles = {
     0: {
@@ -134,14 +114,14 @@ describe('getIndicesFromDayAndHourFilters', () => {
   })
 })
 
-// describe('getSpeedFromDataTilesForSegmentId', () => {
-//   it('returns null if no value is found', () => {
-//     expect(getSpeedFromDataTilesForSegmentId(49152)).toEqual(null)
-//   })
-// })
-//
-// describe('getNextSegmentDelayFromDataTiles', () => {
-//   it('returns null if no value is found', () => {
-//     expect(getNextSegmentDelayFromDataTiles(49152)).toEqual(null)
-//   })
-// })
+describe('getSpeedFromDataTilesForSegmentId', () => {
+  it('returns null if no value is found', () => {
+    expect(getSpeedFromDataTilesForSegmentId(49152)).toEqual(null)
+  })
+})
+
+describe('getNextSegmentDelayFromDataTiles', () => {
+  it('returns null if no value is found', () => {
+    expect(getNextSegmentDelayFromDataTiles(49152)).toEqual(null)
+  })
+})

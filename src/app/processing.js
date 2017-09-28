@@ -1,4 +1,4 @@
-import { chain } from 'lodash'
+import { flow, chunk, flatten, mean } from 'lodash'
 import store from '../store'
 import { parseSegmentId } from '../lib/tiles'
 import { getCachedTiles } from './data'
@@ -49,21 +49,23 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
   // and find the base index for that segment
   const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
 
-  const speedsByHour = chain(subtile.speeds)
-    .slice(entryBaseIndex, entryBaseIndex + 168) // select the week's worth of hours relevant to this segment
-    .chunk(24) // split into day-long chunks
-    .slice(...days) // filter down to the requested range of days
-    .map((speedsForGivenDay) => {
-      return speedsForGivenDay.slice(...hours) // filter down to the requested range of hours
-    })
-    .flatten() // back to just an array of hours
-    .value()
+  const speedsByHour = flow([
+    // select the week's worth of hours relevant to this segment
+    x => x.slice(entryBaseIndex, entryBaseIndex + 168),
+    // split into day-long chunks
+    x => chunk(x, 24),
+    // filter down to the requested range of days
+    x => x.slice(...days),
+    // filter down to the requested range of hours
+    x => x.map(speedsForGivenDay => speedsForGivenDay.slice(...hours)),
+    // back to just an array of hours
+    flatten,
+    // we want to know the overall average; TODO: consider weighting by prevalence
+    mean
+  ])(subtile.speeds)
 
-  const meanSpeed = chain(speedsByHour)
-    .mean() // we want to know the overall average; TODO: consider weighting by prevalence
-    .value()
-
-  return meanSpeed
+  // if result is not a number, return null
+  return (Number.isNaN(speedsByHour) === true) ? null : speedsByHour
 }
 
 /**
