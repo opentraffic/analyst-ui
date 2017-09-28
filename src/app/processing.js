@@ -126,33 +126,6 @@ function getCurrentTimeFilter () {
   return { year, week, hours, days }
 }
 
-export function getIndicesFromDayAndHourFilters (days, hours) {
-  const indices = []
-
-  // given days [i, m] fills in values [i, j, k, l] - non-inclusive
-  const daysConverted = []
-  for (let i = days[0]; i < days[1]; i++) {
-    daysConverted.push(i)
-  }
-
-  // same for hours
-  const hoursConverted = []
-  for (let i = hours[0]; i < hours[1]; i++) {
-    hoursConverted.push(i)
-  }
-
-  for (let i = 0; i < daysConverted.length; i++) {
-    for (let j = 0; j < hoursConverted.length; j++) {
-      const day = daysConverted[i]
-      const hour = hoursConverted[j]
-      const dayBase = day * 24
-      indices.push(dayBase + hour)
-    }
-  }
-
-  return indices
-}
-
 export function getSpeedFromDataTilesForSegmentId (segmentId) {
   const segment = parseSegmentId(segmentId)
   const tiles = getCachedTiles()
