@@ -17,7 +17,7 @@ export function addSpeedToThing (tiles, date, segment, thing) {
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
       // Append the speed to the thing to render later
-      thing.speed = getSpeedFromDataTilesForSegmentId(segment.id)
+      thing.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
 
       // } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
       //   thing.speed = getMeanSpeed(reftile.referenceSpeeds80[desiredIndex]
@@ -29,20 +29,27 @@ export function addSpeedToThing (tiles, date, segment, thing) {
 }
 
 /**
+ * Given a segment index, its historic data subtile, and the range of days
+ * and hours selected, calculate the mean traffic speed on that segment.
+ *
  * @private
- * @param {number} segmentIdx
- * @param {object} tile
+ * @param {number} segmentIdx - segment index for the tile
+ * @param {object} subtile - the subtile containing segment index
+ *          (note: get all tiles here, then find subtile within the function?)
  * @param {array} days
  * @param {array} hours
  * @return speed in kph
  */
 export function getMeanSpeed (segmentIdx, subtile, days, hours) {
+  // Get the subtile index of the segment
+  const subtileSegmentIdx = segmentIdx - subtile.startSegmentIndex
 
-/*****I don't understand what this does exactly so I'm doing for just 1 hour selected...
-  we can just get the correct index per hour by adding the hour to it
-  ex.  entryBaseIndex + <hour that was selected in GUI>
+  // There is one array for every attribute. Divide unitSize by
+  // entrySize to know how many entries belong to each segment,
+  // and find the base index for that segment
+  const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
 
-  const speedsByHour = chain(tile.speeds)
+  const speedsByHour = chain(subtile.speeds)
     .slice(entryBaseIndex, entryBaseIndex + 168) // select the week's worth of hours relevant to this segment
     .chunk(24) // split into day-long chunks
     .slice(...days) // filter down to the requested range of days
@@ -51,15 +58,12 @@ export function getMeanSpeed (segmentIdx, subtile, days, hours) {
     })
     .flatten() // back to just an array of hours
     .value()
-  // console.log(`speedsByHour: ${speedsByHour} (hour count=${speedsByHour.length})`)
 
   const meanSpeed = chain(speedsByHour)
     .mean() // we want to know the overall average; TODO: consider weighting by prevalence
     .value()
-  // console.log(`meanSpeed: ${meanSpeed}`)
-  return meanSpeed
-********************/
 
+  return meanSpeed
 }
 
 /**
@@ -136,24 +140,10 @@ export function getSpeedFromDataTilesForSegmentId (segmentId) {
   // if any of the inputs are falsy, return null
   if (!segment || !tiles || !time.days || !time.hours) return null
 
-  /**
-   * converts a local segment index, e.g. `15000`, to a subtile segment index,
-   * e.g. `5000`.  Note that the `subtile.subtileSegments` property now reports
-   * only the number of segments in the current subtile, rather than an indicator
-   * of the max number of segments a tile is chunked by.
-   *
-  */
   const subtiles = tiles.historic[time.year][time.week][segment.level][segment.tileIdx]
   const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
 
-  // Get the subtile index of the segment
-  const subtileSegmentIdx = segment.segmentIdx - subtile.startSegmentIndex
-  // There is one array for every attribute. Divide unitSize by
-  // entrySize to know how many entries belong to each segment (168 hours for 1 week),
-  // and find the base index for that segment
-  const entryBaseIndex = subtileSegmentIdx * (subtile.unitSize / subtile.entrySize)
-  const segmentIdxForHour = entryBaseIndex + time.hours[0]
-  const speed = subtile.speeds[segmentIdxForHour]
+  const speed = getMeanSpeed(segment.segmentIdx, subtile, time.days, time.hours)
 
   if (speed !== null && speed !== undefined && speed > 0) {
     return speed
