@@ -20,7 +20,7 @@ export function displayRegionInfo (selection) {
          OSMLR_ID: ${osmlr_id} <br/> 
          ID: ${id} <br/>
      </p>`
-  /* eslint-disable camelcase */
+  /* eslint-enable camelcase */
 }
 
 function createFeatureInfo () {
