@@ -88,13 +88,13 @@ describe('getSubtileForSegmentIdx', () => {
 })
 
 describe('getSpeedFromDataTilesForSegmentId', () => {
-  it('returns null if no value is found', () => {
+  it.skip('returns null if no value is found', () => {
     expect(getSpeedFromDataTilesForSegmentId(49152)).toEqual(null)
   })
 })
 
 describe('getNextSegmentDelayFromDataTiles', () => {
-  it('returns null if no value is found', () => {
+  it.skip('returns null if no value is found', () => {
     expect(getNextSegmentDelayFromDataTiles(49152)).toEqual(null)
   })
 })
