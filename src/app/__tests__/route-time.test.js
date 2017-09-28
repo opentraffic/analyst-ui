@@ -1,7 +1,7 @@
 /* eslint-env jest */
-import { getRouteTime, getEdgeElapsedTime } from './route-time'
+import { getRouteTime, getEdgeElapsedTime } from '../route-time'
 
-jest.mock('./processing')
+jest.mock('../processing')
 
 it('consolidates route attribute response into a keyed object', () => {
   const traceAttributes = {
