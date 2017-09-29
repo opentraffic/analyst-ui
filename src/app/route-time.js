@@ -70,7 +70,7 @@ function getTrafficSegmentsTime (edge) {
       }
     } else {
       // Invalid speed return null
-      return null;
+      return null
     }
     prevSegment = segment
   }
