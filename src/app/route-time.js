@@ -15,11 +15,16 @@ export function getRouteTime (traceAttributes) {
         (currEdge.internal_intersection || currEdge.roundabout || (currEdge.use === 'turn_channel'))) {
       for (var j = i + 1; j < edges.length; j++) {
         var tempEdge = edges[j]
+        // Skip any subsequent internal, roundabout, or turn channel edges
+        if (tempEdge.internal_intersection || tempEdge.roundabout || (tempEdge.use === 'turn_channel')) {
+          continue
+        }
         if (edgeHasTrafficInfo(tempEdge) && validIntersectionTime(prevEdge, tempEdge)) {
           currEdge = tempEdge
           i = j
           break
         }
+        break
       }
     }
 
