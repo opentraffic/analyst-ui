@@ -94,9 +94,9 @@ export function getColorAtIndexInVec3 (index) {
   // { r, g, b } --> '0., 0., 0.'
   function rgbToVec3String (rgb) {
     const values = []
-    values.push((rgb.r / 255).toFixed(1))
-    values.push((rgb.g / 255).toFixed(1))
-    values.push((rgb.b / 255).toFixed(1))
+    values.push((rgb.r / 255).toFixed(3))
+    values.push((rgb.g / 255).toFixed(3))
+    values.push((rgb.b / 255).toFixed(3))
     return values.join(', ')
   }
 

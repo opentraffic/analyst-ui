@@ -99,7 +99,7 @@ const scene = {
             // Flip direction if the the drive is not on the right.
             st.y = mix(st.y,1.-fract(st.y),v_color.g);
             // Adjust the speed to the speed
-            st.y -= u_time*5.*v_color.r;
+            // st.y -= u_time*5.*v_color.r;
             // Make chrevone arrow just in the second line
             // color.a *= min(floor(v_texcoord.x*2.),
             //                 aastep(zoom(),fract(st.y+abs(st.x*.5-.5))));`
