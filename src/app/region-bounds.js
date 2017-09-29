@@ -1,6 +1,6 @@
 /* global map, L */
 import store from '../store'
-import { setBounds } from '../store/actions/viewBounds'
+import { setBounds } from '../store/actions/view'
 
 // Store for existing bounds.
 const bounds = []
@@ -12,7 +12,7 @@ store.subscribe(() => {
   const state = store.getState()
 
   // If bounds are cleared from state, remove current bounds.
-  if (!state.viewBounds.bounds) removeAllExistingBounds()
+  if (!state.view.bounds) removeAllExistingBounds()
 
   // While data is still being rendered, disable interactivity of bounds
   if (state.loading.isLoading && bounds.length) {

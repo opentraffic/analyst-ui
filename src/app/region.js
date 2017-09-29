@@ -1,12 +1,11 @@
-import L from 'leaflet'
 import { uniq } from 'lodash'
 import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
-import { getRoute } from '../lib/valhalla'
 import { merge } from '../lib/geojson'
 import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
 import store from '../store'
+import { setGeoJSON } from '../store/actions/view'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setRouteError } from '../store/actions/route'
 import { displayRegionInfo } from './route-info'
@@ -45,7 +44,6 @@ function withinBbox (features, bounds) {
 
   // Coordinates have array of lines
   // Lines have array of points [lng, lat]
-
   for (let lineIndex = coordinates.length - 1; lineIndex >= 0; lineIndex--) {
     const line = coordinates[lineIndex]
     for (let pointsIndex = line.length - 1; pointsIndex >= 0; pointsIndex--) {
@@ -101,39 +99,46 @@ export function showRegion (bounds) {
     return
   }
 
-  // First, convert bounds to waypoints
-  // This way we can get the bounding box from valhalla and suffixes
-  const waypoints = [L.latLng(bounds.south, bounds.west), L.latLng(bounds.north, bounds.east)]
+  const bbox = {
+    min_lon: Number(bounds.west),
+    min_lat: Number(bounds.south),
+    max_lon: Number(bounds.east),
+    max_lat: Number(bounds.north)
+  }
+  const suffixes = getSuffixes(bbox)
 
-  // Go get route using Valhalla
-  const host = store.getState().config.valhallaHost
-  getRoute(host, waypoints)
-    // After getting route, get the bounding box and the relevant tiles from box
-    .then((response) => {
-      const bbox = response.trip.summary
-      const suffixes = getSuffixes(bbox)
-      return suffixes
-    })
-    // Second, fetch the OSMLR Geometry tiles using the suffixes
-    .then((suffixes) => {
-      fetchOSMLRGeometryTiles(suffixes)
-        .then((results) => {
-          const copy = JSON.parse(JSON.stringify(results))
-          const features = copy.features
-          // Remove from geojson, routes outside bounding box (bounds)
-          const regionFeatures = withinBbox(features, bounds)
-          results.features = regionFeatures
+  // Fetch the OSMLR Geometry tiles using the suffixes
+  fetchOSMLRGeometryTiles(suffixes)
+    .then((results) => {
+      const copy = JSON.parse(JSON.stringify(results))
+      const features = copy.features
+      // Remove from geojson, routes outside bounding box (bounds)
+      const regionFeatures = withinBbox(features, bounds)
+      results.features = regionFeatures
 
-          // Get segment IDs to use later
-          const segmentIds = features.map(key => {
-            return key.properties.osmlr_id
+      // Get segment IDs to use later
+      const segmentIds = features.map(key => {
+        return key.properties.osmlr_id
+      })
+      // Removing duplicates of segment IDs
+      const parsedIds = uniq(segmentIds).map(parseSegmentId)
+      // Using segmentIds, fetch data tiles
+      const date = {
+        year: store.getState().date.year,
+        week: store.getState().date.week
+      }
+
+      fetchDataTiles(parsedIds, date)
+        .then((tiles) => {
+          parsedIds.forEach((item, index) => {
+            addSpeedToThing(tiles, date, item, features[index].properties)
           })
-          // Removing duplicates of segment IDs
-          const parsedIds = uniq(segmentIds).map(parseSegmentId)
-          // Using segmentIds, fetch data tiles
-          const date = {
-            year: store.getState().date.year,
-            week: store.getState().date.week
+          setDataSource('routes', { type: 'GeoJSON', data: results })
+          results.properties = {
+            analysisMode: 'region',
+            analyisName: store.getState().app.viewName,
+            bounds: store.getState().view.bounds,
+            date: store.getState().date
           }
 
           fetchDataTiles(parsedIds, date)
@@ -146,13 +151,14 @@ export function showRegion (bounds) {
                 hover: function (selection) { displayRegionInfo(selection) },
                 radius: 5
               })
+              store.dispatch(setGeoJSON(results))
               store.dispatch(stopLoading())
             })
         })
-        .catch((error) => {
-          console.log('[fetchDataTiles error]', error)
-          store.dispatch(hideLoading())
-        })
+    })
+    .catch((error) => {
+      console.log('[fetchDataTiles error]', error)
+      store.dispatch(hideLoading())
     })
 }
 

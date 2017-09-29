@@ -4,8 +4,19 @@ import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } f
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
 import { addSpeedToThing } from './processing'
+import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { clearRouteSegments, setRouteSegments, setRouteError, setRoute, clearRoute, clearRouteError } from '../store/actions/route'
+import { setGeoJSON } from '../store/actions/view'
+import {
+  clearRouteSegments,
+  setRouteSegments,
+  setRouteError,
+  setRoute,
+  clearRoute,
+  clearRouteError,
+  setBaselineTime,
+  setTrafficRouteTime
+} from '../store/actions/route'
 import store from '../store'
 
 function resetRouteState () {
@@ -25,6 +36,12 @@ export function showRoute (waypoints) {
   // Fetch route from Valhalla-based routing service, given waypoints.
   const host = store.getState().config.valhallaHost
   getRoute(host, waypoints)
+    // Get the reference speed from Valhalla route response
+    .then(response => {
+      const time = response.trip.summary.time
+      store.dispatch(setBaselineTime(time))
+      return response
+    })
     // Transform Valhalla response to polyline coordinates for trace_attributes request
     .then(valhallaResponseToPolylineCoordinates)
     // Make an additional trace_attributes request. This gives us information
@@ -99,8 +116,22 @@ export function showRoute (waypoints) {
           // Will add either meaured or reference speed
           addSpeedToThing(tiles, date, item, item)
         })
+
+        const routeTime = getRouteTime(response)
+        store.dispatch(setTrafficRouteTime(routeTime))
+
         // Now let's draw this
         const speeds = []
+        const geojson = {
+          type: 'FeatureCollection',
+          features: [],
+          properties: {
+            analysisMode: 'route',
+            analyisName: store.getState().app.viewName,
+            date: store.getState().date
+          }
+        }
+
         response.edges.forEach(function (edge, index) {
           // Create individual segments for drawing, later.
           const begin = edge.begin_shape_index
@@ -132,8 +163,26 @@ export function showRoute (waypoints) {
             speed: speed,
             properties: found
           })
+
+          // Make geoJSON feature
+          // coordinates in GeoJSON must flip lat/lng values
+          const coordsGeo = coordsSlice.map((i) => [i[1], i[0]])
+          geojson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: coordsGeo
+            },
+            properties: {
+              id: found && found.segment,
+              osmlr_id: found && found.id,
+              speed: speed
+              // Note, this is missing properties that are already there in the region view
+            }
+          })
         })
 
+        store.dispatch(setGeoJSON(geojson))
         store.dispatch(setRouteSegments(speeds))
         store.dispatch(stopLoading())
       })

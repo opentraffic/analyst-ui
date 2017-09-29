@@ -128,7 +128,7 @@ function mapStateToProps (state) {
   return {
     activeMode: state.app.analysisMode,
     route: state.route.waypoints,
-    region: state.viewBounds.bounds
+    region: state.view.bounds
   }
 }
 
