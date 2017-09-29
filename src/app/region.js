@@ -141,19 +141,12 @@ export function showRegion (bounds) {
             date: store.getState().date
           }
 
-          fetchDataTiles(parsedIds, date)
-            .then((tiles) => {
-              parsedIds.forEach((item, index) => {
-                addSpeedToThing(tiles, date, item, features[index].properties)
-              })
-              setDataSource('routes', { type: 'GeoJSON', data: results })
-              window.tangramLayer.setSelectionEvents({
-                hover: function (selection) { displayRegionInfo(selection) },
-                radius: 5
-              })
-              store.dispatch(setGeoJSON(results))
-              store.dispatch(stopLoading())
-            })
+          window.tangramLayer.setSelectionEvents({
+            hover: function (selection) { displayRegionInfo(selection) }
+          })
+
+          store.dispatch(setGeoJSON(results))
+          store.dispatch(stopLoading())
         })
     })
     .catch((error) => {
