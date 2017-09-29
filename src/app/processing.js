@@ -176,7 +176,7 @@ export function getNextSegmentDelayFromDataTiles (segmentId, nextSegmentId) {
     }
   }
 
-  if (delays.length >= 0) {
+  if (delays.length > 0) {
     const meanDelay = mean(delays)
 
     // if result is not a number or is Infinity, return null
