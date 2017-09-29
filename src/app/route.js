@@ -117,6 +117,8 @@ export function showRoute (waypoints) {
           addSpeedToThing(tiles, date, item, item)
         })
 
+        // TODO: when year and week aren't specified, we should also
+        // skip the step of trying to fetch data tiles
         if (date.year && date.week) {
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
