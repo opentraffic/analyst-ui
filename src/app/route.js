@@ -117,8 +117,12 @@ export function showRoute (waypoints) {
           addSpeedToThing(tiles, date, item, item)
         })
 
-        const routeTime = getRouteTime(response)
-        store.dispatch(setTrafficRouteTime(routeTime))
+        // TODO: when year and week aren't specified, we should also
+        // skip the step of trying to fetch data tiles
+        if (date.year && date.week) {
+          const routeTime = getRouteTime(response)
+          store.dispatch(setTrafficRouteTime(routeTime))
+        }
 
         // Now let's draw this
         const speeds = []
