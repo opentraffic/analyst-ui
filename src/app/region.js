@@ -67,9 +67,9 @@ function withinBbox (features, bounds) {
   return features
 }
 
-function getBboxArea (bounds) {
-  const width = (bounds.east - bounds.west)
-  const height = (bounds.north - bounds.south)
+export function getBboxArea (bounds) {
+  const width = Math.abs(bounds.east - bounds.west)
+  const height = Math.abs(bounds.north - bounds.south)
   const area = width * height
   return area
 }

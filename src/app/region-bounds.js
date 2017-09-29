@@ -1,6 +1,7 @@
 /* global map, L */
 import store from '../store'
 import { setBounds } from '../store/actions/view'
+import { getBboxArea } from './region'
 
 // Store for existing bounds.
 const bounds = []
@@ -10,7 +11,6 @@ let shades = false
 // Subscribe to changes in state to affect the behavior of Leaflet.Editable.
 store.subscribe(() => {
   const state = store.getState()
-
   // If bounds are cleared from state, remove current bounds.
   if (!state.view.bounds) removeAllExistingBounds()
 
@@ -34,6 +34,21 @@ store.subscribe(() => {
   }
 })
 
+function compareRegionAndMap(bounds) {
+  const regionBounds = bounds[0].getBounds()
+  const northEastPoint = map.latLngToContainerPoint(regionBounds.getNorthEast())
+  const southWestPoint = map.latLngToContainerPoint(regionBounds.getSouthWest())
+  const bbox = {
+    north: northEastPoint.x,
+    east: northEastPoint.y,
+    south: southWestPoint.x,
+    west: southWestPoint.y
+  }
+  const regionArea = getBboxArea(bbox)
+  const mapSize = map.getSize()
+  const mapArea = mapSize.x * mapSize.y
+  return regionArea / mapArea > 0.5
+}
 /**
  * Removes an existing bounds.
  *
