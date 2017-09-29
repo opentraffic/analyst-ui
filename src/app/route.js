@@ -132,7 +132,9 @@ export function showRoute (waypoints) {
           properties: {
             analysisMode: 'route',
             analyisName: store.getState().app.viewName,
-            date: store.getState().date
+            date: store.getState().date,
+            baselineTime: store.getState().route.baselineTime,
+            trafficRouteTime: store.getState().route.trafficRouteTime
           }
         }
 
