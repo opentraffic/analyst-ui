@@ -8,6 +8,25 @@ const tileCache = {} // Tiles cached by lookup tree
 const urlCache = {} // Tiles cached by url
 window.tileCache = tileCache
 
+// TODO: move to state or somewhere better
+const timeFilterChartData = {
+  'binnedByHour': [],
+  'bySegment': []
+}
+
+// Array.from(Array(7), (_, day) => {
+//   timeFilterChartData.binnedByHour.push(Array.from(Array(24), (_, hour) => {
+//     return {
+//       'hourOfDay': hour + 1,
+//       'dayOfWeek': day + 1,
+//       'meanSpeedThisHour': hour * day //Math.floor(Math.random() * 100)
+//     }
+//   }))
+//   timeFilterChartData.binnedByHour = flatten(timeFilterChartData.binnedByHour)
+// })
+
+window.timeFilterChartData = timeFilterChartData
+
 /**
  * Uses `protobuf.js` module to parse and read a `SpeedTile` protocol buffer.
  * Throws an error if the message cannot be verified.

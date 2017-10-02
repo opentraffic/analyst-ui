@@ -6,9 +6,9 @@ import dc from 'dc'
 import crossfilter from 'crossfilter'
 import { createChart } from './chart'
 import { toggleTimeFilters, setDayFilter, setHourFilter } from '../../../store/actions/date'
+import { isEqual } from 'lodash'
 
 import './TimeFilters.css'
-import data from './testdata.json'
 
 const DAILY_X_SHIFT = -0.5
 const HOURLY_X_SHIFT = 0.5
@@ -17,11 +17,12 @@ export class TimeFilters extends React.Component {
   static propTypes = {
     filtersEnabled: PropTypes.bool,
     dayFilter: PropTypes.arrayOf(PropTypes.number),
-    hourFilter: PropTypes.arrayOf(PropTypes.number)
+    hourFilter: PropTypes.arrayOf(PropTypes.number),
+    speedsBinnedByHour: PropTypes.array
   }
 
   componentDidMount () {
-    const chartData = crossfilter(data.hours)
+    const chartData = crossfilter(this.props.speedsBinnedByHour)
 
     this.makeDailyChart(chartData)
     this.makeHourlyChart(chartData)
@@ -45,6 +46,32 @@ export class TimeFilters extends React.Component {
     }
 
     dc.renderAll()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (!isEqual(prevProps.speedsBinnedByHour, this.props.speedsBinnedByHour)) {
+      const chartData = crossfilter(this.props.speedsBinnedByHour)
+      this.makeDailyChart(chartData)
+      this.makeHourlyChart(chartData)
+      if (this.props.filtersEnabled) {
+        this.activateFilterExtents()
+
+        // All of this is necessary because after setting a brush programatically,
+        // it doesn't re-render them. We have to manually re-call the brush
+        // to render. See: https://groups.google.com/forum/#!topic/d3-js/vNaR-vJ9hMg
+        // There's more repetitive code here than I like, but we'll have to
+        // figure out how to refactor this later.
+        dc.renderAll()
+        if (this.props.dayFilter) {
+          this.dailyChart.select('.brush').call(this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT)))
+        }
+        if (this.props.hourFilter) {
+          this.hourlyChart.select('.brush').call(this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT)))
+        }
+      } else {
+        dc.renderAll()
+      }
+    }
   }
 
   makeDailyChart = (chartData) => {
@@ -150,7 +177,8 @@ function mapStateToProps (state) {
   return {
     filtersEnabled: state.date.filtersEnabled,
     dayFilter: state.date.dayFilter,
-    hourFilter: state.date.hourFilter
+    hourFilter: state.date.hourFilter,
+    speedsBinnedByHour: state.barchart.speedsBinnedByHour
   }
 }
 

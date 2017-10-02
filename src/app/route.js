@@ -3,7 +3,7 @@ import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
-import { addSpeedToThing } from './processing'
+import { addSpeedToMapGeometry } from './processing'
 import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
 import { setGeoJSON } from '../store/actions/view'
@@ -114,7 +114,7 @@ export function showRoute (waypoints) {
       fetchDataTiles(parsedIds, date).then((tiles) => {
         parsedIds.forEach((item) => {
           // Will add either meaured or reference speed
-          addSpeedToThing(tiles, date, item, item)
+          addSpeedToMapGeometry(tiles, date, item, item)
         })
 
         // TODO: when year and week aren't specified, we should also

@@ -3,8 +3,14 @@ import store from '../store'
 import { parseSegmentId } from '../lib/tiles'
 import { getCachedTiles } from './data'
 
-// TODO: rename / refactor.
-export function addSpeedToThing (tiles, date, segment, thing) {
+/**
+ *
+ * @param {*} tiles
+ * @param {*} date
+ * @param {*} segment
+ * @param {*} geometry
+ */
+export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
   try {
@@ -16,14 +22,37 @@ export function addSpeedToThing (tiles, date, segment, thing) {
 
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
-      // Append the speed to the thing to render later
-      thing.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
+      // Append the speed to the geometry to render later
+      geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
+    }
+  } catch (e) {}
+}
 
-      // } else if (reftile && reftile.referenceSpeeds80[desiredIndex] !== -1) {
-      //   thing.speed = getMeanSpeed(reftile.referenceSpeeds80[desiredIndex]
-      // } else {
-      //   thing.speed = 0
-      // }
+/**
+ * Collect speeds from the entire week for use in bar chart
+ * @param {*} tiles
+ * @param {*} date
+ * @param {*} segment
+ */
+export function prepareSpeedsForBarChart (tiles, date, segment) {
+  // not all levels and tiles are available yet, so try()
+  // skips it if it doesn't work
+  try {
+    const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
+    const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
+    if (subtile) {
+      let speedsByHour = []
+      let speeds = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'speeds')
+      chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
+        speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
+          speedsByHour.push({
+            'hourOfDay': hourIndex + 1,
+            'dayOfWeek': dayIndex + 1,
+            'meanSpeedThisHour': speedForThisHour
+          })
+        })
+      })
+      return speedsByHour
     }
   } catch (e) {}
 }
