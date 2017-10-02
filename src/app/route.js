@@ -3,9 +3,10 @@ import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
-import { addSpeedToMapGeometry } from './processing'
+import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
 import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
+import { clearBarchart, addSegmentsToBarchart } from '../store/actions/barchart'
 import { setGeoJSON } from '../store/actions/view'
 import {
   clearRouteSegments,
@@ -111,11 +112,15 @@ export function showRoute (waypoints) {
         year: store.getState().date.year,
         week: store.getState().date.week
       }
+      store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date).then((tiles) => {
-        parsedIds.forEach((item) => {
+        let speedsForBarchart = []
+        parsedIds.forEach((id) => {
           // Will add either meaured or reference speed
-          addSpeedToMapGeometry(tiles, date, item, item)
+          addSpeedToMapGeometry(tiles, date, id, id)
+          speedsForBarchart = speedsForBarchart.concat(prepareSpeedsForBarChart(tiles, date, id))
         })
+        store.dispatch(addSegmentsToBarchart(speedsForBarchart))
 
         // TODO: when year and week aren't specified, we should also
         // skip the step of trying to fetch data tiles
