@@ -10,7 +10,6 @@ import { startLoading, stopLoading, hideLoading } from '../store/actions/loading
 import { clearBarchart, addSegmentsToBarchart } from '../store/actions/barchart'
 import { setRouteError } from '../store/actions/route'
 import { displayRegionInfo } from './route-info'
-import { reduce } from 'lodash'
 
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
