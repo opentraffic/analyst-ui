@@ -29,7 +29,7 @@ export class TimeFilters extends React.Component {
 
     // Turn on filter brushes, if initial props include them!
     if (this.props.filtersEnabled) {
-      this.activateFilterExtents()
+      this.activateFilterExtents(this.props)
 
       // All of this is necessary because after setting a brush programatically,
       // it doesn't re-render them. We have to manually re-call the brush
@@ -48,13 +48,17 @@ export class TimeFilters extends React.Component {
     dc.renderAll()
   }
 
-  componentDidUpdate (prevProps) {
-    if (!isEqual(prevProps.speedsBinnedByHour, this.props.speedsBinnedByHour)) {
-      const chartData = crossfilter(this.props.speedsBinnedByHour)
+  shouldComponentUpdate (nextProps) {
+    return !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.speedsBinnedByHour.length > 0) {
+      const chartData = crossfilter(nextProps.speedsBinnedByHour)
       this.makeDailyChart(chartData)
       this.makeHourlyChart(chartData)
-      if (this.props.filtersEnabled) {
-        this.activateFilterExtents()
+      if (nextProps.filtersEnabled) {
+        this.activateFilterExtents(nextProps)
 
         // All of this is necessary because after setting a brush programatically,
         // it doesn't re-render them. We have to manually re-call the brush
@@ -62,11 +66,11 @@ export class TimeFilters extends React.Component {
         // There's more repetitive code here than I like, but we'll have to
         // figure out how to refactor this later.
         dc.renderAll()
-        if (this.props.dayFilter) {
-          this.dailyChart.select('.brush').call(this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT)))
+        if (nextProps.dayFilter) {
+          this.dailyChart.select('.brush').call(this.dailyChart.brush().extent(nextProps.dayFilter.map(i => i + DAILY_X_SHIFT)))
         }
-        if (this.props.hourFilter) {
-          this.hourlyChart.select('.brush').call(this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT)))
+        if (nextProps.hourFilter) {
+          this.hourlyChart.select('.brush').call(this.hourlyChart.brush().extent(nextProps.hourFilter.map(i => i + HOURLY_X_SHIFT)))
         }
       } else {
         dc.renderAll()
@@ -112,15 +116,15 @@ export class TimeFilters extends React.Component {
 
   // Restore filter state if there are saved extents
   // Put the shift amount back in
-  activateFilterExtents = () => {
+  activateFilterExtents = (props) => {
     this.dailyChart.brushOn(true)
     this.hourlyChart.brushOn(true)
 
-    if (this.props.dayFilter) {
-      this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT))
+    if (props.dayFilter) {
+      this.dailyChart.brush().extent(props.dayFilter.map(i => i + DAILY_X_SHIFT))
     }
-    if (this.props.hourFilter) {
-      this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
+    if (props.hourFilter) {
+      this.hourlyChart.brush().extent(props.hourFilter.map(i => i + HOURLY_X_SHIFT))
     }
   }
 
