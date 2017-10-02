@@ -137,10 +137,6 @@ export function showRegion (bounds) {
             addSpeedToMapGeometry(tiles, date, id, features[index].properties)
             speedsForBarchart = speedsForBarchart.concat(prepareSpeedsForBarChart(tiles, date, id))
           })
-          // let reducedSpeedForBarchart = reduce(speedsForBarchart, (accumulator, value, index) => {
-
-          // }, { m: 0 })
-          // debugger
           store.dispatch(addSegmentsToBarchart(speedsForBarchart))
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
