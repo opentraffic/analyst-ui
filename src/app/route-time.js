@@ -1,6 +1,15 @@
 import { getSpeedFromDataTilesForSegmentId, getNextSegmentDelayFromDataTiles } from './processing'
 import { getLevelFromSegmentId } from '../lib/tiles'
 
+/**
+ * Returns the route time in seconds for the specified traceAttributes object.
+ * The route time will use the time based on historic traffic if a traffic segment
+ * exists, otherwise it will use the time based on OSM speed limit or road
+ * classification.
+ *
+ * @param {object} traceAttributes - detailed attribution along a route.
+ * @return route time in seconds
+ */
 export function getRouteTime (traceAttributes) {
   var edges = traceAttributes.edges
   var routeTime = 0
@@ -19,11 +28,13 @@ export function getRouteTime (traceAttributes) {
         if (tempEdge.internal_intersection || tempEdge.roundabout || (tempEdge.use === 'turn_channel')) {
           continue
         }
+        // If valid intersection time is found then update the current edge and index and exit loop
         if (edgeHasTrafficInfo(tempEdge) && validIntersectionTime(prevEdge, tempEdge)) {
           currEdge = tempEdge
           i = j
           break
         }
+        // Not found - exit loop
         break
       }
     }
@@ -33,7 +44,7 @@ export function getRouteTime (traceAttributes) {
       edgeTime = getTrafficSegmentsTime(currEdge)
     }
 
-    // if valid traffic edge time then use it
+    // if valid traffic edge time then use it, otherwise use elapsed time
     if (edgeTime !== null) {
       edgeTime += getIntersectionTime(prevEdge, currEdge)
     } else {
@@ -46,6 +57,15 @@ export function getRouteTime (traceAttributes) {
   return routeTime
 }
 
+/**
+ * Returns the route time in seconds for the specified current edge.
+ * The edge time will use the time based on OSM speed limit or road
+ * classification.
+ *
+ * @param {object} prevEdge - the previous edge to the targeted edge.
+ * @param {object} currEdge - the target edge for the requested time.
+ * @return edge time in seconds
+ */
 export function getEdgeElapsedTime (prevEdge, currEdge) {
   if (prevEdge) {
     return currEdge.end_node.elapsed_time - prevEdge.end_node.elapsed_time
@@ -54,6 +74,12 @@ export function getEdgeElapsedTime (prevEdge, currEdge) {
   }
 }
 
+/**
+ * Returns the time in seconds based on historic traffic for the specified edge.
+ *
+ * @param {object} edge - the target edge for the requested time.
+ * @return edge time in seconds
+ */
 function getTrafficSegmentsTime (edge) {
   var edgeTime = 0
   var speed = 0
@@ -82,6 +108,14 @@ function getTrafficSegmentsTime (edge) {
   return edgeTime
 }
 
+/**
+ * Returns the intersection time in seconds based on historic traffic to travel
+ * from the specified previous edge to the specified current edge.
+ *
+ * @param {object} prevEdge - the from edge.
+ * @param {object} currEdge - the to edge.
+ * @return intersection time in seconds
+ */
 function getIntersectionTime (prevEdge, currEdge) {
   var intersectionTime = 0
   if (edgeHasTrafficInfo(prevEdge) && edgeHasTrafficInfo(currEdge)) {
@@ -95,6 +129,15 @@ function getIntersectionTime (prevEdge, currEdge) {
   return intersectionTime
 }
 
+/**
+ * Returns true if a valid intersection time exists between the
+ * specified previous edge to the specified current edge, false otherwise.
+ *
+ * @param {object} prevEdge - the from edge.
+ * @param {object} currEdge - the to edge.
+ * @return true if a valid intersection time exists between the
+ * specified previous edge to the specified current edge, false otherwise.
+ */
 function validIntersectionTime (prevEdge, currEdge) {
   if (edgeHasTrafficInfo(prevEdge) && edgeHasTrafficInfo(currEdge) &&
       (getNextSegmentDelayFromDataTiles(
@@ -105,6 +148,12 @@ function validIntersectionTime (prevEdge, currEdge) {
   return false
 }
 
+/**
+ * Returns true if the specified edge has traffic information, false otherwise.
+ *
+ * @param {object} edge - the edge to check for traffic information.
+ * @return true if the specified edge has traffic information, false otherwise.
+ */
 function edgeHasTrafficInfo (edge) {
   return (edge && edge.traffic_segments && (edge.traffic_segments.length > 0) &&
     (getLevelFromSegmentId(edge.traffic_segments[0].segment_id) < 2))
