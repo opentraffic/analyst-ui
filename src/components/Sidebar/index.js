@@ -12,14 +12,6 @@ import ExportData from './ExportData'
 import './Sidebar.css'
 
 class Sidebar extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      hourValue: 9
-    }
-  }
-
   render () {
     let errors = null
     if (this.props.errors.length > 0) {
@@ -40,14 +32,14 @@ class Sidebar extends React.Component {
         {this.props.analysisMode &&
           <DatePicker />
         }
-        {this.props.date && this.props.date.startDate &&
+        {this.props.analysisMode && this.props.date && this.props.date.startDate &&
           <TimeFilters />
         }
         <ETAView />
-        {this.props.date && this.props.date.startDate &&
+        {this.props.analysisMode && this.props.date && this.props.date.startDate &&
           <Legend />
         }
-        {this.props.date && this.props.date.startDate &&
+        {this.props.analysisMode && this.props.date && this.props.date.startDate &&
           <ExportData />
         }
       </div>

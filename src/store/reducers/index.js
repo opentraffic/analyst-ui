@@ -8,6 +8,7 @@ import route from './route'
 import tangram from './tangram'
 import view from './view'
 import loading from './loading'
+import barchart from './barchart'
 
 const reducers = combineReducers({
   app,
@@ -18,7 +19,8 @@ const reducers = combineReducers({
   route,
   tangram,
   view,
-  loading
+  loading,
+  barchart
 })
 
 export default reducers
