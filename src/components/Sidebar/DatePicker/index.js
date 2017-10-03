@@ -26,11 +26,12 @@ class DatePicker extends React.Component {
     let start,
       end
     // if start/end is not equal to null then take unix of timestamp of start/end
-
-    // also here is where we enforce the selection of one week (7 days)
     if (date.startDate instanceof (moment)) {
+      // also here is where we enforce the selection of one week (7 days)
       start = date.startDate.startOf('isoWeek').valueOf()
       end = date.startDate.endOf('isoWeek').valueOf()
+      // now that we have both a start and and end, let's close the date picker
+      this.setState({ focusedInput: false })
     } else {
       start = null
       end = null
