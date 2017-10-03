@@ -105,7 +105,7 @@ function initDataGeojson(url) {
   window.fetch(url)
     .then(response => response.json())
     .then(results => {
-      L.geoJSON(results, {
+      const coverage = L.geoJSON(results, {
         style: function (feature) {
           return {color: feature.properties.color}
         },
@@ -113,6 +113,7 @@ function initDataGeojson(url) {
           layer.on({ click: featureClicked })
         }
       }).addTo(window.map)
+      window.dataGeojson = coverage
     })
 }
 
