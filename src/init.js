@@ -2,7 +2,7 @@ import L from 'leaflet'
 import config from './config'
 import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
-import { setDate, enableTimeFilters, setDayFilter, setHourFilter } from './store/actions/date'
+import { setDate, setDateRange, enableTimeFilters, setDayFilter, setHourFilter } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/view'
@@ -16,6 +16,7 @@ const VALUE_DELIMITER = '/'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
+  initDataGeojson(config.dataGeojson)
   // Parse URL to get all params
   const object = getQueryStringObject(queryString)
   const date = {
@@ -100,3 +101,24 @@ function initBounds (west, south, east, north) {
   store.dispatch(setRegionAnalysisMode())
 }
 
+function initDataGeojson(url) {
+  window.fetch(url)
+    .then(response => response.json())
+    .then(results => {
+      L.geoJSON(results, {
+        style: function (feature) {
+          return {color: feature.properties.color}
+        },
+        onEachFeature: function (feature, layer) {
+          layer.on({ click: featureClicked })
+        }
+      }).addTo(window.map)
+    })
+}
+
+function featureClicked(event) {
+  const latlng = [event.latlng.lat, event.latlng.lng]
+  store.dispatch(recenterMap(latlng, 10))
+  const { rangeStartDate, rangeEndDate } = event.target.feature.properties
+  store.dispatch(setDateRange(rangeStartDate, rangeEndDate))
+}

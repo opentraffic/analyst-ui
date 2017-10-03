@@ -39,6 +39,12 @@ class DatePicker extends React.Component {
     this.props.dispatch(setDate(start, end))
   }
 
+  isDayBlocked = (day) => {
+    if (!this.props.dateRange.rangeStart) return false
+    const { rangeStart, rangeEnd } = this.props.dateRange
+    return (day.isBefore(rangeStart) || day.isAfter(rangeEnd))
+  }
+
   render () {
     // changing unix timestamp back into moment to initialize props of DateRangePicker
     function changeUnixToMoment (timestamp) {
@@ -64,6 +70,7 @@ class DatePicker extends React.Component {
           focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
           hideKeyboardShortcutsPanel
+          isDayBlocked={this.isDayBlocked}
         />
       </Segment>
     )
@@ -73,7 +80,8 @@ class DatePicker extends React.Component {
 function mapStateToProps (state) {
   return {
     startDate: state.date.startDate,
-    endDate: state.date.endDate
+    endDate: state.date.endDate,
+    dateRange: state.date.dateRange
   }
 }
 
