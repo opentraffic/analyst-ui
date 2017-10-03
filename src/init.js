@@ -76,7 +76,6 @@ export function initApp (queryString = window.location.search) {
   // Listen for updates to store, which updates the URL
   initUrlUpdate()
   initDocTitle()
-  initDataAvailability(config.dataGeojson)
 }
 
 function initRoute (value) {
@@ -101,13 +100,3 @@ function initBounds (west, south, east, north) {
   store.dispatch(setRegionAnalysisMode())
 }
 
-function initDataAvailability(url) {
-  window.fetch(url)
-    .then((response) => {
-      L.geojson(response, {
-        style: function (feature) {
-          return {color: feature.properties.color};
-        }
-      }).addTo(window.map)
-    })
-}
