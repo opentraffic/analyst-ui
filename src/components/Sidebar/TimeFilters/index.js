@@ -1,14 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { Segment, Header, Button } from 'semantic-ui-react'
+import { Segment, Header } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter'
 import { createChart } from './chart'
 import { toggleTimeFilters, setDayFilter, setHourFilter } from '../../../store/actions/date'
+import { isEqual } from 'lodash'
 
 import './TimeFilters.css'
-import data from './testdata.json'
 
 const DAILY_X_SHIFT = -0.5
 const HOURLY_X_SHIFT = 0.5
@@ -17,18 +17,19 @@ export class TimeFilters extends React.Component {
   static propTypes = {
     filtersEnabled: PropTypes.bool,
     dayFilter: PropTypes.arrayOf(PropTypes.number),
-    hourFilter: PropTypes.arrayOf(PropTypes.number)
+    hourFilter: PropTypes.arrayOf(PropTypes.number),
+    speedsBinnedByHour: PropTypes.array
   }
 
-  componentDidMount () {
-    const chartData = crossfilter(data.hours)
+  componentDidUpdate () {
+    const chartData = crossfilter(this.props.speedsBinnedByHour)
 
     this.makeDailyChart(chartData)
     this.makeHourlyChart(chartData)
 
     // Turn on filter brushes, if initial props include them!
     if (this.props.filtersEnabled) {
-      this.activateFilterExtents()
+      this.activateFilterExtents(this.props)
 
       // All of this is necessary because after setting a brush programatically,
       // it doesn't re-render them. We have to manually re-call the brush
@@ -45,6 +46,36 @@ export class TimeFilters extends React.Component {
     }
 
     dc.renderAll()
+  }
+
+  shouldComponentUpdate (nextProps) {
+    return !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour)
+  }
+
+  componentWillUpdate (nextProps, nextState) {
+    if (nextProps.speedsBinnedByHour.length > 0) {
+      const chartData = crossfilter(nextProps.speedsBinnedByHour)
+      this.makeDailyChart(chartData)
+      this.makeHourlyChart(chartData)
+      if (nextProps.filtersEnabled) {
+        this.activateFilterExtents(nextProps)
+
+        // All of this is necessary because after setting a brush programatically,
+        // it doesn't re-render them. We have to manually re-call the brush
+        // to render. See: https://groups.google.com/forum/#!topic/d3-js/vNaR-vJ9hMg
+        // There's more repetitive code here than I like, but we'll have to
+        // figure out how to refactor this later.
+        dc.renderAll()
+        if (nextProps.dayFilter) {
+          this.dailyChart.select('.brush').call(this.dailyChart.brush().extent(nextProps.dayFilter.map(i => i + DAILY_X_SHIFT)))
+        }
+        if (nextProps.hourFilter) {
+          this.hourlyChart.select('.brush').call(this.hourlyChart.brush().extent(nextProps.hourFilter.map(i => i + HOURLY_X_SHIFT)))
+        }
+      } else {
+        dc.renderAll()
+      }
+    }
   }
 
   makeDailyChart = (chartData) => {
@@ -85,15 +116,15 @@ export class TimeFilters extends React.Component {
 
   // Restore filter state if there are saved extents
   // Put the shift amount back in
-  activateFilterExtents = () => {
+  activateFilterExtents = (props) => {
     this.dailyChart.brushOn(true)
     this.hourlyChart.brushOn(true)
 
-    if (this.props.dayFilter) {
-      this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT))
+    if (props.dayFilter) {
+      this.dailyChart.brush().extent(props.dayFilter.map(i => i + DAILY_X_SHIFT))
     }
-    if (this.props.hourFilter) {
-      this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
+    if (props.hourFilter) {
+      this.hourlyChart.brush().extent(props.hourFilter.map(i => i + HOURLY_X_SHIFT))
     }
   }
 
@@ -113,7 +144,7 @@ export class TimeFilters extends React.Component {
 
     // Update charts
     if (brushState === true) {
-      this.activateFilterExtents()
+      this.activateFilterExtents(this.props)
     } else {
       this.deactivateFilterExtents()
     }
@@ -124,16 +155,19 @@ export class TimeFilters extends React.Component {
   render () {
     return (
       <Segment>
+        <Header>Segment speeds</Header>
         <div className="timefilter-daily">
-          <Header>Speed by day of week</Header>
+          <strong>Average by day-of-week</strong>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
         <div className="timefilter-hourly">
-          <Header>Speed by hour of day</Header>
+          <strong>Average by hour-of-day</strong>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
 
+        {/* NOTE: this button doesn't seem important anymore, but
+            we'll save it for now, in case users want the option.
         <div className="timefilter-controls">
           {
             (this.props.filtersEnabled)
@@ -141,6 +175,7 @@ export class TimeFilters extends React.Component {
             : <Button onClick={this.toggleFilters} fluid>enable chart filters</Button>
           }
         </div>
+        */}
       </Segment>
     )
   }
@@ -150,7 +185,8 @@ function mapStateToProps (state) {
   return {
     filtersEnabled: state.date.filtersEnabled,
     dayFilter: state.date.dayFilter,
-    hourFilter: state.date.hourFilter
+    hourFilter: state.date.hourFilter,
+    speedsBinnedByHour: state.barchart.speedsBinnedByHour
   }
 }
 

@@ -3,10 +3,11 @@ import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import { merge } from '../lib/geojson'
 import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import { fetchDataTiles } from './data'
-import { addSpeedToThing } from './processing'
+import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
 import store from '../store'
 import { setGeoJSON } from '../store/actions/view'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
+import { clearBarchart, addSegmentsToBarchart } from '../store/actions/barchart'
 import { setRouteError } from '../store/actions/route'
 import { displayRegionInfo } from './route-info'
 
@@ -127,12 +128,15 @@ export function showRegion (bounds) {
         year: store.getState().date.year,
         week: store.getState().date.week
       }
-
+      store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date)
         .then((tiles) => {
-          parsedIds.forEach((item, index) => {
-            addSpeedToThing(tiles, date, item, features[index].properties)
+          let speedsForBarchart = []
+          parsedIds.forEach((id, index) => {
+            addSpeedToMapGeometry(tiles, date, id, features[index].properties)
+            speedsForBarchart = speedsForBarchart.concat(prepareSpeedsForBarChart(tiles, date, id))
           })
+          store.dispatch(addSegmentsToBarchart(speedsForBarchart))
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
             analysisMode: 'region',

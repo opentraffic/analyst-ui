@@ -11,7 +11,8 @@ const config = {
   historicSpeedTileUrl: 'https://speedtiles-dev.s3-accelerate.amazonaws.com/',
   nextSegmentTileUrl: 'https://speedtiles-dev.s3-accelerate.amazonaws.com/',
   refSpeedTileUrl: 'https://referencetiles-dev.s3-accelerate.amazonaws.com/',
-  valhallaHost: 'routing-dev.opentraffic.io'
+  valhallaHost: 'routing-dev.opentraffic.io',
+  dataGeojson: 'https://s3.amazonaws.com/referencetiles-prod/coverage_map.geojson'
 }
 
 export default config

@@ -5,6 +5,8 @@ import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds, removeShades } from '../../../app/region-bounds'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
+import { clearBarchart } from '../../../store/actions/barchart'
+import { setDayFilter, setHourFilter } from '../../../store/actions/date'
 
 export class ModeSelect extends React.PureComponent {
   static propTypes = {
@@ -39,6 +41,9 @@ export class ModeSelect extends React.PureComponent {
       this.props.dispatch(setRouteAnalysisMode())
     }
     this.setState({case: null})
+    this.props.dispatch(clearBarchart())
+    this.props.dispatch(setDayFilter([0, 7]))
+    this.props.dispatch(setHourFilter([0, 24]))
     removeShades()
   }
 
