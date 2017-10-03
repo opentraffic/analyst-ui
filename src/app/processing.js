@@ -72,7 +72,8 @@ export function prepareSpeedsForBarChart (tiles, date, segment) {
 export function getMeanSpeed (segmentIdx, subtile, days, hours) {
   // we want to know the overall average; TODO: consider weighting by prevalence
   const speeds = getValuesFromSubtile(segmentIdx, subtile, days, hours, 'speeds')
-  const meanSpeed = mean(speeds)
+  // remove the zero values from the mean calculation
+  const meanSpeed = mean(speeds.filter(function (val) { return val !== 0 }))
 
   // if result is not a number or is Infinity, return null
   return (Number.isFinite(meanSpeed)) ? meanSpeed : null
