@@ -166,6 +166,8 @@ export class TimeFilters extends React.Component {
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
 
+        {/* NOTE: this button doesn't seem important anymore, but
+            we'll save it for now, in case users want the option.
         <div className="timefilter-controls">
           {
             (this.props.filtersEnabled)
@@ -173,6 +175,7 @@ export class TimeFilters extends React.Component {
             : <Button onClick={this.toggleFilters} fluid>enable chart filters</Button>
           }
         </div>
+        */}
       </Segment>
     )
   }
