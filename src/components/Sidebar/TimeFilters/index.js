@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { Segment, Header, Button } from 'semantic-ui-react'
+import { Segment, Header } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter'
 import { createChart } from './chart'
