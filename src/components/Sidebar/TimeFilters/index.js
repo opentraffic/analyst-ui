@@ -21,7 +21,7 @@ export class TimeFilters extends React.Component {
     speedsBinnedByHour: PropTypes.array
   }
 
-  componentDidMount () {
+  componentDidUpdate () {
     const chartData = crossfilter(this.props.speedsBinnedByHour)
 
     this.makeDailyChart(chartData)
@@ -52,7 +52,7 @@ export class TimeFilters extends React.Component {
     return !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillUpdate (nextProps, nextState) {
     if (nextProps.speedsBinnedByHour.length > 0) {
       const chartData = crossfilter(nextProps.speedsBinnedByHour)
       this.makeDailyChart(chartData)
@@ -144,7 +144,7 @@ export class TimeFilters extends React.Component {
 
     // Update charts
     if (brushState === true) {
-      this.activateFilterExtents()
+      this.activateFilterExtents(this.props)
     } else {
       this.deactivateFilterExtents()
     }
@@ -155,13 +155,14 @@ export class TimeFilters extends React.Component {
   render () {
     return (
       <Segment>
+        <Header>Segment speeds</Header>
         <div className="timefilter-daily">
-          <Header>Speed by day of week</Header>
+          <strong>Average by day-of-week</strong>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
         <div className="timefilter-hourly">
-          <Header>Speed by hour of day</Header>
+          <strong>Average by hour-of-day</strong>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
 
