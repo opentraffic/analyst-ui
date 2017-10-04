@@ -25,16 +25,17 @@ const scene = {
           width: STOPS,
           color: function () {
             const speed = feature.speed
-            const colorIndex = speed >= 100 ? 10 / 10
-                        : speed >= 90 ? 9 / 10
-                        : speed >= 80 ? 8 / 10
-                        : speed >= 70 ? 7 / 10
-                        : speed >= 60 ? 6 / 10
-                        : speed >= 50 ? 5 / 10
-                        : speed >= 40 ? 4 / 10
-                        : speed >= 30 ? 3 / 10
-                        : speed >= 20 ? 2 / 10
-                        : speed > 0 ? 1 / 10
+            // divide by an even multiple of 255 for lossless conversion to 8 bits
+            const colorIndex = speed >= 100 ? 10 / 15
+                        : speed >= 90 ? 9 / 15
+                        : speed >= 80 ? 8 / 15
+                        : speed >= 70 ? 7 / 15
+                        : speed >= 60 ? 6 / 15
+                        : speed >= 50 ? 5 / 15
+                        : speed >= 40 ? 4 / 15
+                        : speed >= 30 ? 3 / 15
+                        : speed >= 20 ? 2 / 15
+                        : speed > 0 ? 1 / 15
                         : 0
             return [ colorIndex, feature.drive_on_right, feature.oneway ]
           },
@@ -81,7 +82,8 @@ const scene = {
           color: `
             // Speed to color from palette LUT
             // color = texture2D(u_palette, vec2(clamp(v_color.r,0.,1.),.5));
-            int i = int(floor(v_color.r * 10.));
+            int i = int(floor(v_color.r * 15.));
+
             if (i == 0) color.rgb = vec3(${getColorAtIndexInVec3(0)});
             if (i == 1) color.rgb = vec3(${getColorAtIndexInVec3(1)});
             if (i == 2) color.rgb = vec3(${getColorAtIndexInVec3(2)});
