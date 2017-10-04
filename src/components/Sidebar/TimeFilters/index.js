@@ -57,32 +57,6 @@ export class TimeFilters extends React.Component {
     )
   }
 
-  componentWillUpdate (nextProps, nextState) {
-    if (nextProps.speedsBinnedByHour.length > 0) {
-      const chartData = crossfilter(nextProps.speedsBinnedByHour)
-      this.makeDailyChart(chartData)
-      this.makeHourlyChart(chartData)
-      if (nextProps.filtersEnabled) {
-        this.activateFilterExtents(nextProps)
-
-        // All of this is necessary because after setting a brush programatically,
-        // it doesn't re-render them. We have to manually re-call the brush
-        // to render. See: https://groups.google.com/forum/#!topic/d3-js/vNaR-vJ9hMg
-        // There's more repetitive code here than I like, but we'll have to
-        // figure out how to refactor this later.
-        dc.renderAll()
-        if (nextProps.dayFilter) {
-          this.dailyChart.select('.brush').call(this.dailyChart.brush().extent(nextProps.dayFilter.map(i => i + DAILY_X_SHIFT)))
-        }
-        if (nextProps.hourFilter) {
-          this.hourlyChart.select('.brush').call(this.hourlyChart.brush().extent(nextProps.hourFilter.map(i => i + HOURLY_X_SHIFT)))
-        }
-      } else {
-        dc.renderAll()
-      }
-    }
-  }
-
   makeDailyChart = (chartData) => {
     const dayLabel = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
 
