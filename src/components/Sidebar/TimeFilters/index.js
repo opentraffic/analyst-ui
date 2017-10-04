@@ -173,7 +173,7 @@ export class TimeFilters extends React.Component {
         <Divider />
         <Radio
           toggle
-          label='Compare against reference speeds'
+          label="Compare against reference speeds"
           checked={this.props.refSpeedComparisonEnabled}
           onChange={(event, data) => this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))}
         />
