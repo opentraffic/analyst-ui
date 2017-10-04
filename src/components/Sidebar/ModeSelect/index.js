@@ -19,7 +19,17 @@ export class ModeSelect extends React.PureComponent {
 
     this.state = {
       open: false,
-      case: null
+      case: null,
+      available: (this.props.activeMode === null)
+    }
+  }
+
+  handleDataClick = () => {
+    this.setState({
+      available: !(this.state.available)
+    })
+    if (window.dataGeojson) {
+      (!this.state.available) ? window.dataGeojson.addTo(window.map) : window.dataGeojson.remove()
     }
   }
 
@@ -44,7 +54,6 @@ export class ModeSelect extends React.PureComponent {
     this.props.dispatch(clearBarchart())
     this.props.dispatch(setDayFilter([0, 7]))
     this.props.dispatch(setHourFilter([0, 24]))
-    window.dataGeojson.addTo(window.map)
     removeShades()
   }
 
@@ -58,7 +67,7 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else allow region to be drawn
       this.props.dispatch(setRegionAnalysisMode())
-      window.dataGeojson.remove()
+      this.handleDataClick()
       startDrawingBounds()
     }
   }
@@ -73,7 +82,7 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else if route button is clicked and no region exists, change mode
       this.props.dispatch(setRouteAnalysisMode())
-      window.dataGeojson.remove()
+      this.handleDataClick()
     }
   }
 
@@ -88,7 +97,6 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else if route/region is not drawn but was clicked, turn off mode
       this.props.dispatch(resetAnalysis())
-      window.dataGeojson.addTo(window.map)
     }
   }
 
@@ -127,6 +135,14 @@ export class ModeSelect extends React.PureComponent {
           open={this.state.open}
           onCancel={this.handleCancel}
           onConfirm={this.handleConfirm}
+        />
+        <Button
+          content={(this.state.available) ? "Hide Data Availability" : "Show Data Availability"}
+          onClick={this.handleDataClick}
+          fluid
+          toggle
+          active={this.state.available}
+          style={{ marginTop: '0.5em' }}
         />
       </Segment>
     )
