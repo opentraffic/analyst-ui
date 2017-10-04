@@ -99,10 +99,8 @@ export function createChart (el, opts) {
     .renderHorizontalGridLines(true)
     .elasticY(true)
     // Filter brush
-    // The filter is initially off (because if it is on by default, it can
-    // introduce undesirable interaction effects).
     // We also force the brush to snap to the space between bars
-    .brushOn(false)
+    .brushOn(true)
     .round(n => Math.floor(n) + 0.5)
     .alwaysUseRounding(true)
 
