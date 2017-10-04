@@ -10,6 +10,7 @@ import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './
 import { initUrlUpdate } from './app/update-url'
 import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
+import { setDataGeojson } from './app/dataGeojson'
 import { getQueryStringObject, updateURL } from './lib/url-state'
 
 const VALUE_DELIMITER = '/'
@@ -70,7 +71,7 @@ export function initApp (queryString = window.location.search) {
     initBounds(object.rw, object.rs, object.re, object.rn)
   } else {
     // if route or bounds are not present, initialize data availability geojson
-    initDataGeojson(config.dataGeojson)
+    setDataGeojson(config.dataGeojson)
   }
 
   // Initialize Tangram scene file
@@ -101,27 +102,4 @@ function initRoute (value) {
 function initBounds (west, south, east, north) {
   store.dispatch(setBounds({ north, south, east, west }))
   store.dispatch(setRegionAnalysisMode())
-}
-
-function initDataGeojson (url) {
-  window.fetch(url)
-    .then(response => response.json())
-    .then(results => {
-      const coverage = L.geoJSON(results, {
-        style: function (feature) {
-          return {color: feature.properties.color}
-        },
-        onEachFeature: function (feature, layer) {
-          layer.on({ click: featureClicked })
-        }
-      }).addTo(window.map)
-      window.dataGeojson = coverage
-    })
-}
-
-function featureClicked (event) {
-  const latlng = [event.latlng.lat, event.latlng.lng]
-  store.dispatch(recenterMap(latlng, 10))
-  const { rangeStartDate, rangeEndDate } = event.target.feature.properties
-  store.dispatch(setDateRange(rangeStartDate, rangeEndDate))
 }
