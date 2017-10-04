@@ -71,7 +71,10 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else allow region to be drawn
       this.props.dispatch(setRegionAnalysisMode())
-      this.handleDataClick()
+      if (window.dataGeojson) {
+        this.setState({ available: false })
+        window.dataGeojson.remove()
+      }
       startDrawingBounds()
     }
   }
@@ -86,7 +89,10 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else if route button is clicked and no region exists, change mode
       this.props.dispatch(setRouteAnalysisMode())
-      this.handleDataClick()
+      if (window.dataGeojson) {
+        this.setState({ available: false})
+        window.dataGeojson.remove()
+      }
     }
   }
 
