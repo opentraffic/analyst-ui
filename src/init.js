@@ -6,7 +6,7 @@ import { setDate, enableTimeFilters, setDayFilter, setHourFilter } from './store
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/view'
-import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './store/actions/app'
+import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName, setRefSpeedComparisonEnabled } from './store/actions/app'
 import { initUrlUpdate } from './app/update-url'
 import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
@@ -60,6 +60,9 @@ export function initApp (queryString = window.location.search) {
     const viewName = object.name
     store.dispatch(setAnalysisName(viewName))
   }
+
+  // Initialize reference speed comparison mode
+  store.dispatch(setRefSpeedComparisonEnabled((object.refSpeed === 'true')))
 
   // Initializing markers and route, or view bounds.
   // Existence of markers will override existence of bounds.

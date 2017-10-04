@@ -1,10 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { Segment, Header } from 'semantic-ui-react'
+import { Segment, Header, Radio, Divider } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter'
 import { createChart } from './chart'
+import { setRefSpeedComparisonEnabled } from '../../../store/actions/app'
 import { toggleTimeFilters, setDayFilter, setHourFilter } from '../../../store/actions/date'
 import { isEqual } from 'lodash'
 
@@ -18,7 +19,8 @@ export class TimeFilters extends React.Component {
     filtersEnabled: PropTypes.bool,
     dayFilter: PropTypes.arrayOf(PropTypes.number),
     hourFilter: PropTypes.arrayOf(PropTypes.number),
-    speedsBinnedByHour: PropTypes.array
+    speedsBinnedByHour: PropTypes.array,
+    refSpeedComparisonEnabled: PropTypes.bool
   }
 
   componentDidUpdate () {
@@ -49,7 +51,10 @@ export class TimeFilters extends React.Component {
   }
 
   shouldComponentUpdate (nextProps) {
-    return !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour)
+    return (
+      !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour) ||
+      !isEqual(nextProps.refSpeedComparisonEnabled, this.props.refSpeedComparisonEnabled)
+    )
   }
 
   componentWillUpdate (nextProps, nextState) {
@@ -165,7 +170,13 @@ export class TimeFilters extends React.Component {
           <strong>Average by hour-of-day</strong>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
-
+        <Divider />
+        <Radio
+          toggle
+          label='Compare against reference speeds'
+          checked={this.props.refSpeedComparisonEnabled}
+          onChange={(event, data) => this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))}
+        />
         {/* NOTE: this button doesn't seem important anymore, but
             we'll save it for now, in case users want the option.
         <div className="timefilter-controls">
@@ -186,7 +197,8 @@ function mapStateToProps (state) {
     filtersEnabled: state.date.filtersEnabled,
     dayFilter: state.date.dayFilter,
     hourFilter: state.date.hourFilter,
-    speedsBinnedByHour: state.barchart.speedsBinnedByHour
+    speedsBinnedByHour: state.barchart.speedsBinnedByHour,
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
   }
 }
 
