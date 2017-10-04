@@ -52,7 +52,7 @@ export function setHourFilter (filter) {
   }
 }
 
-export function setDateRange(start, end) {
+export function setDateRange (start, end) {
   return {
     type: SET_DATE_RANGE,
     start,
