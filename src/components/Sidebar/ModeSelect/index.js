@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds, removeShades } from '../../../app/region-bounds'
+import { setDataGeojson } from '../../../app/dataGeojson'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 import { clearBarchart } from '../../../store/actions/barchart'
@@ -25,12 +26,15 @@ export class ModeSelect extends React.PureComponent {
   }
 
   handleDataClick = () => {
+    // if originally data is available
+    if (window.dataGeojson) {
+      (this.state.available) ? window.dataGeojson.remove() : window.dataGeojson.addTo(window.map)
+    } else if (!this.state.available) {
+      setDataGeojson()
+    }
     this.setState({
       available: !(this.state.available)
     })
-    if (window.dataGeojson) {
-      (!this.state.available) ? window.dataGeojson.addTo(window.map) : window.dataGeojson.remove()
-    }
   }
 
   handleCancel = () => {
