@@ -16,7 +16,6 @@ const VALUE_DELIMITER = '/'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
-  initDataGeojson(config.dataGeojson)
   // Parse URL to get all params
   const object = getQueryStringObject(queryString)
   const date = {
@@ -69,6 +68,9 @@ export function initApp (queryString = window.location.search) {
   } else if (object.rw && object.rs && object.re && object.rn) {
     // All bounds must be present to be valid, otherwise it's discarded.
     initBounds(object.rw, object.rs, object.re, object.rn)
+  } else {
+    // if route or bounds are not present, initialize data availability geojson
+    initDataGeojson(config.dataGeojson)
   }
 
   // Initialize Tangram scene file
@@ -101,7 +103,7 @@ function initBounds (west, south, east, north) {
   store.dispatch(setRegionAnalysisMode())
 }
 
-function initDataGeojson(url) {
+function initDataGeojson (url) {
   window.fetch(url)
     .then(response => response.json())
     .then(results => {
@@ -117,7 +119,7 @@ function initDataGeojson(url) {
     })
 }
 
-function featureClicked(event) {
+function featureClicked (event) {
   const latlng = [event.latlng.lat, event.latlng.lng]
   store.dispatch(recenterMap(latlng, 10))
   const { rangeStartDate, rangeEndDate } = event.target.feature.properties
