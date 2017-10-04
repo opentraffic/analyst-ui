@@ -70,7 +70,7 @@ export class ModeSelect extends React.PureComponent {
       this.props.dispatch(setRegionAnalysisMode())
       if (window.dataGeojson) {
         window.dataGeojson.remove()
-        this.setState({ available: false })
+        this.setState({available: false})
       }
       startDrawingBounds()
     }
@@ -88,7 +88,7 @@ export class ModeSelect extends React.PureComponent {
       this.props.dispatch(setRouteAnalysisMode())
       if (window.dataGeojson) {
         window.dataGeojson.remove()
-        this.setState({ available: false })
+        this.setState({available: false})
       }
     }
   }
@@ -144,7 +144,7 @@ export class ModeSelect extends React.PureComponent {
           onConfirm={this.handleConfirm}
         />
         <Button
-          content={ (this.state.available) ? "Hide Data Availability" : "Display Data Availability" }
+          content={(this.state.available) ? 'Hide Data Availability' : 'Display Data Availability'}
           onClick={this.handleDataClick}
           fluid
           toggle

@@ -6,7 +6,7 @@ import { setDateRange } from '../store/actions/date'
 
 const DATA_GEOJSON_URL = config.dataGeojson
 
-export function setDataGeojson() {
+export function setDataGeojson () {
   window.fetch(DATA_GEOJSON_URL)
     .then(response => response.json())
     .then(results => {
@@ -23,7 +23,7 @@ export function setDataGeojson() {
     })
 }
 
-function featureClicked(event) {
+function featureClicked (event) {
   const latlng = [event.latlng.lat, event.latlng.lng]
   store.dispatch(recenterMap(latlng, 10))
   const { rangeStartDate, rangeEndDate } = event.target.feature.properties
