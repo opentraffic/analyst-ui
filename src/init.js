@@ -2,7 +2,7 @@ import L from 'leaflet'
 import config from './config'
 import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
-import { setDate, setDateRange, enableTimeFilters, setDayFilter, setHourFilter } from './store/actions/date'
+import { setDate, enableTimeFilters, setDayFilter, setHourFilter } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/view'
@@ -10,13 +10,13 @@ import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './
 import { initUrlUpdate } from './app/update-url'
 import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
+import { setDataGeojson } from './app/dataGeojson'
 import { getQueryStringObject, updateURL } from './lib/url-state'
 
 const VALUE_DELIMITER = '/'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
-  initDataGeojson(config.dataGeojson)
   // Parse URL to get all params
   const object = getQueryStringObject(queryString)
   const date = {
@@ -69,6 +69,8 @@ export function initApp (queryString = window.location.search) {
   } else if (object.rw && object.rs && object.re && object.rn) {
     // All bounds must be present to be valid, otherwise it's discarded.
     initBounds(object.rw, object.rs, object.re, object.rn)
+  } else {
+    setDataGeojson()
   }
 
   // Initialize Tangram scene file
@@ -99,27 +101,4 @@ function initRoute (value) {
 function initBounds (west, south, east, north) {
   store.dispatch(setBounds({ north, south, east, west }))
   store.dispatch(setRegionAnalysisMode())
-}
-
-function initDataGeojson(url) {
-  window.fetch(url)
-    .then(response => response.json())
-    .then(results => {
-      const coverage = L.geoJSON(results, {
-        style: function (feature) {
-          return {color: feature.properties.color}
-        },
-        onEachFeature: function (feature, layer) {
-          layer.on({ click: featureClicked })
-        }
-      }).addTo(window.map)
-      window.dataGeojson = coverage
-    })
-}
-
-function featureClicked(event) {
-  const latlng = [event.latlng.lat, event.latlng.lng]
-  store.dispatch(recenterMap(latlng, 10))
-  const { rangeStartDate, rangeEndDate } = event.target.feature.properties
-  store.dispatch(setDateRange(rangeStartDate, rangeEndDate))
 }
