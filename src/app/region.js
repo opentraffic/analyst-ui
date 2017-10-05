@@ -141,22 +141,6 @@ export function showRegion (bounds) {
             totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
             totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
           })
-          let meanSpeedArray = totalSpeedArray.map((value, index, matrix) => {
-            let count = totalCountArray.get(index)
-            if (count && count > 0) {
-              return (value / count)
-            } else {
-              return 0
-            }
-          })
-          let speedsForBarchart = []
-          meanSpeedArray.forEach((speed, index) => {
-            speedsForBarchart.push({
-              'dayOfWeek': index[0] + 1,
-              'hourOfDay': index[1] + 1,
-              'meanSpeedThisHour': speed
-            })
-          })
           store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
