@@ -6,7 +6,7 @@ import { fetchDataTiles } from './data'
 import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
 import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { clearBarchart, addSegmentsToBarchart } from '../store/actions/barchart'
+import { clearBarchart, setBarchartSpeeds } from '../store/actions/barchart'
 import { setGeoJSON } from '../store/actions/view'
 import {
   clearRouteSegments,
@@ -19,6 +19,7 @@ import {
   setTrafficRouteTime
 } from '../store/actions/route'
 import store from '../store'
+import mathjs from 'mathjs'
 
 function resetRouteState () {
   store.dispatch(clearRoute())
@@ -114,13 +115,16 @@ export function showRoute (waypoints) {
       }
       store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date).then((tiles) => {
-        let speedsForBarchart = []
+        let totalSpeedArray = mathjs.zeros(7, 24)
+        let totalCountArray = mathjs.zeros(7, 24)
         parsedIds.forEach((id) => {
           // Will add either meaured or reference speed
           addSpeedToMapGeometry(tiles, date, id, id)
-          speedsForBarchart = speedsForBarchart.concat(prepareSpeedsForBarChart(tiles, date, id))
+          let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
+          totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+          totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
         })
-        store.dispatch(addSegmentsToBarchart(speedsForBarchart))
+        store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
 
         // TODO: when year and week aren't specified, we should also
         // skip the step of trying to fetch data tiles

@@ -7,9 +7,10 @@ import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
 import store from '../store'
 import { setGeoJSON } from '../store/actions/view'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { clearBarchart, addSegmentsToBarchart } from '../store/actions/barchart'
+import { clearBarchart, setBarchartSpeeds } from '../store/actions/barchart'
 import { setRouteError } from '../store/actions/route'
 import { displayRegionInfo } from './route-info'
+import mathjs from 'mathjs'
 
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
@@ -132,12 +133,31 @@ export function showRegion (bounds) {
       store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date)
         .then((tiles) => {
-          let speedsForBarchart = []
+          let totalSpeedArray = mathjs.zeros(7, 24)
+          let totalCountArray = mathjs.zeros(7, 24)
           parsedIds.forEach((id, index) => {
             addSpeedToMapGeometry(tiles, date, id, features[index].properties)
-            speedsForBarchart = speedsForBarchart.concat(prepareSpeedsForBarChart(tiles, date, id))
+            let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
+            totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+            totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
           })
-          store.dispatch(addSegmentsToBarchart(speedsForBarchart))
+          let meanSpeedArray = totalSpeedArray.map((value, index, matrix) => {
+            let count = totalCountArray.get(index)
+            if (count && count > 0) {
+              return (value / count)
+            } else {
+              return 0
+            }
+          })
+          let speedsForBarchart = []
+          meanSpeedArray.forEach((speed, index) => {
+            speedsForBarchart.push({
+              'dayOfWeek': index[0] + 1,
+              'hourOfDay': index[1] + 1,
+              'meanSpeedThisHour': speed
+            })
+          })
+          store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
             analysisMode: 'region',

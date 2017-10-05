@@ -14,7 +14,7 @@ const barchart = (state = initialState, action) => {
     case ADD_SEGMENTS_TO_BARCHART:
       return {
         ...state,
-        speedsBinnedByHour: action.segments
+        speedsBinnedByHour: action.speedsBinnedByHour
       }
     default:
       return state
