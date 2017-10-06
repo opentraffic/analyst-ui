@@ -128,7 +128,6 @@ export function showRoute (waypoints) {
             totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
           })
           store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
-          
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
         }
