@@ -7,11 +7,6 @@ const scene = {
   import: [
     'https://mapzen.com/carto/refill-style/7/refill-style.zip',
     'https://mapzen.com/carto/refill-style/7/themes/gray.zip',
-    // 'https://mapzen.com/carto/refill-style/7/themes/gray-gold.zip'
-    'https://tangrams.github.io/blocks/functions/zoom.yaml',
-    'https://tangrams.github.io/blocks/functions/aastep.yaml',
-    'https://tangrams.github.io/blocks/generative/random.yaml'
-  ],
   global: {
     'sdk_mapzen_api_key': config.mapzen.apiKey
   },
@@ -62,26 +57,13 @@ const scene = {
   styles: {
     otRoads: {
       base: 'lines',
-      mix: ['functions-zoom', 'functions-aastep', 'generative-random'],
       texcoords: true,
       lighting: false,
       blend: 'inlay',
       shaders: {
-        defines: {
-          ZOOM_START: 18,
-          ZOOM_END: 20,
-          ZOOM_IN: 0,
-          ZOOM_OUT: 0.5
-        },
-        uniforms: {
-          u_palette: 'palette'
-        },
         blocks: {
-          // One or two lanes
-          width: 'width *= v_texcoord.x;',
           color: `
-            // Speed to color from palette LUT
-            // color = texture2D(u_palette, vec2(clamp(v_color.r,0.,1.),.5));
+            // convert back to ints from 8-bit floats
             int i = int(floor(v_color.r * 15.));
 
             if (i == 0) color.rgb = vec3(${getColorAtIndexInVec3(0)});
