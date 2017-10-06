@@ -41,44 +41,6 @@ describe('if speed != 0, returns segment width value using STOPS array based on 
   })
 })
 
-describe('if speed == 0, returns segment width value using ZERO_SPEED_STOPS array based on zoom level', () => {
-  it('returns the value of segment width matching the zoom level using ZERO_SPEED_STOPS if speed = null or speed = undefined', () => {
-    const zoomValue = ZERO_SPEED_STOPS[1][0]
-    const segmentWidth = ZERO_SPEED_STOPS[1][1]
-    const result1 = getSegmentWidth(zoomValue, null)
-    const result2 = getSegmentWidth(zoomValue, undefined)
-    const expected = parseFloat(segmentWidth)
-
-    expect(result1).toEqual(expected)
-    expect(result2).toEqual(expected)
-  })
-
-  it('returns the first value of ZERO_SPEED_STOPS array if zoom level <= first zoom value and speed == 0', () => {
-    const firstZeroZoom = ZERO_SPEED_STOPS[0][0]
-    const firstZeroWidth = ZERO_SPEED_STOPS[0][1]
-    const result = getSegmentWidth(firstZeroZoom, 0)
-    const expected = parseFloat(firstZeroWidth)
-
-    expect(result).toEqual(expected)
-  })
-
-  it('returns the last value of ZERO_SPEED_STOPS array if zoom level >= last zoom value and speed == 0', () => {
-    const lastZeroZoom = ZERO_SPEED_STOPS[ZERO_SPEED_STOPS.length - 1][0]
-    const lastZeroWidth = ZERO_SPEED_STOPS[ZERO_SPEED_STOPS.length - 1][1]
-    const result = getSegmentWidth(lastZeroZoom, 0)
-    const expected = parseFloat(lastZeroWidth)
-
-    expect(result).toEqual(expected)
-  })
-
-  it('returns the linear interpolation of zoom value using ZERO_SPEED_STOPS array if given intermediate zoom level and speed == 0', () => {
-    const result = getSegmentWidth(16, 0)
-    const expected = 0.75
-
-    expect(result).toEqual(expected)
-  })
-})
-
 describe('returns y value (segment width) by calculating linear equation using two given points', () => {
   it('returns the linear interpolation of zoom value, given two points in (zoom, width) format', () => {
     const point1 = [12, 3]
