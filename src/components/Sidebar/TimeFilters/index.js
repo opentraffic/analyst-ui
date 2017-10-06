@@ -35,14 +35,12 @@ export class TimeFilters extends React.Component {
     // figure out how to refactor this later.
     dc.renderAll()
     if (this.props.dayFilter) {
-      // this.dailyChart.select('.brush').call(this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT)))
-      this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT))
-      this.dailyDimension.filter(this.props.dayFilter.map(i => i + DAILY_X_SHIFT))
+      this.dailyChart.brush().extent(this.props.dayFilter.map(i => i + DAILY_X_SHIFT)) // update brush
+      this.dailyDimension.filter(this.props.dayFilter.map(i => i + DAILY_X_SHIFT)) // apply filter
     }
     if (this.props.hourFilter) {
-      // this.hourlyChart.select('.brush').call(this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT)))
-      this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
-      this.hourlyDimension.filter(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT))
+      this.hourlyChart.brush().extent(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT)) // update brush
+      this.hourlyDimension.filter(this.props.hourFilter.map(i => i + HOURLY_X_SHIFT)) // apply filter
     }
 
     dc.renderAll()
