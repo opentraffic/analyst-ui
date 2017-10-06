@@ -16,7 +16,6 @@ const MAP_LONGITUDE = 'lng'
 const MAP_ZOOM = 'zoom'
 const MAP_LABEL = 'label'
 const ANALYSIS_NAME = 'name'
-const REF_SPEED_COMPARISON_ENABLED = 'refSpeed'
 
 const VALUE_DELIMITER = '/'
 
@@ -31,8 +30,7 @@ export function initUrlUpdate () {
       ...getTimeFilters(state.date),
       ...getMapView(state.map),
       [MAP_LABEL]: getMapLabel(state.map),
-      [ANALYSIS_NAME]: getAnalysisName(state.app),
-      [REF_SPEED_COMPARISON_ENABLED]: getRefSpeedComparisonEnabled(state.app)
+      [ANALYSIS_NAME]: getAnalysisName(state.app)
     })
   })
 }
@@ -108,8 +106,4 @@ function getMapLabel (map) {
 
 function getAnalysisName (app) {
   return app.viewName !== '' ? app.viewName : null
-}
-
-function getRefSpeedComparisonEnabled (app) {
-  return app.refSpeedComparisonEnabled || false
 }
