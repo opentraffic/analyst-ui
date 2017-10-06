@@ -115,20 +115,20 @@ export function showRoute (waypoints) {
       }
       store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date).then((tiles) => {
-        let totalSpeedArray = mathjs.zeros(7, 24)
-        let totalCountArray = mathjs.zeros(7, 24)
-        parsedIds.forEach((id) => {
-          // Will add either meaured or reference speed
-          addSpeedToMapGeometry(tiles, date, id, id)
-          let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-          totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
-          totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
-        })
-        store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
-
         // TODO: when year and week aren't specified, we should also
         // skip the step of trying to fetch data tiles
         if (date.year && date.week) {
+          let totalSpeedArray = mathjs.zeros(7, 24)
+          let totalCountArray = mathjs.zeros(7, 24)
+          parsedIds.forEach((id) => {
+            // Will add either meaured or reference speed
+            addSpeedToMapGeometry(tiles, date, id, id)
+            let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
+            totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+            totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+          })
+          store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+          
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
         }

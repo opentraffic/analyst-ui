@@ -133,15 +133,17 @@ export function showRegion (bounds) {
       store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date)
         .then((tiles) => {
-          let totalSpeedArray = mathjs.zeros(7, 24)
-          let totalCountArray = mathjs.zeros(7, 24)
-          parsedIds.forEach((id, index) => {
-            addSpeedToMapGeometry(tiles, date, id, features[index].properties)
-            let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-            totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
-            totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
-          })
-          store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+          if (date.year && date.week) {
+            let totalSpeedArray = mathjs.zeros(7, 24)
+            let totalCountArray = mathjs.zeros(7, 24)
+            parsedIds.forEach((id, index) => {
+              addSpeedToMapGeometry(tiles, date, id, features[index].properties)
+              let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
+              totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+              totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+            })
+            store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+          }
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
             analysisMode: 'region',
