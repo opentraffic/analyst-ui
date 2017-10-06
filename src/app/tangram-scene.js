@@ -1,6 +1,6 @@
 /* global feature */
 import config from '../config'
-import { STOPS, ZERO_SPEED_STOPS } from '../lib/route-segments'
+import { STOPS, ZERO_SPEED_STOPS, OUTLINE_STOPS, ZERO_SPEED_OUTLINE_STOPS } from '../lib/route-segments'
 import { getColorAtIndexInVec3 } from '../lib/color-ramps'
 
 const scene = {

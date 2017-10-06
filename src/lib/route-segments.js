@@ -1,5 +1,8 @@
 export const STOPS = [[15, '3px'], [17, '4px'], [18, '10px'], [20, '45px']]
+// outline is the same line + 2px width, to give 1px on either side
+export const OUTLINE_STOPS = [[15, '3px'], [17, '5px'], [18, '12px'], [20, '47px']]
 export const ZERO_SPEED_STOPS = [[15, '0.5px'], [17, '1px'], [18, '2.5px'], [20, '11.25px']]
+// export const ZERO_SPEED_OUTLINE_STOPS = [[15, '0px'], [17, '2px'], [18, '3.5px'], [20, '12.25px']]
 
 // Calculate the slope and y-intercept in order to get linear equation
 // Values given as params are (x, y) and (c, d)
