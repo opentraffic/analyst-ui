@@ -117,5 +117,8 @@ export function createChart (el, opts) {
     opts.onExtentChange(adjusted)
   })
 
-  return chart
+  return {
+    chart: chart,
+    dimension: dimension
+  }
 }
