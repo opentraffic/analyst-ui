@@ -38,7 +38,8 @@ const scene = {
                           : speed > 0 ? 1 / 15
                           : 0
               return [ colorIndex, feature.drive_on_right, feature.oneway ]
-            }
+            },
+            cap: 'round'
           }
         },
         otOutlines: {
