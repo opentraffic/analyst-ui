@@ -31,7 +31,7 @@ class DatePicker extends React.Component {
       start = date.startDate.startOf('isoWeek').valueOf()
       end = date.startDate.endOf('isoWeek').valueOf()
       // now that we have both a start and and end, let's close the date picker
-      this.setState({ focusedInput: false })
+      this.setState({ focusedInput: null })
     } else {
       start = null
       end = null
