@@ -1,8 +1,7 @@
 /* eslint-env jest */
 import { getSegmentWidth,
          getLinearValue,
-         STOPS,
-         ZERO_SPEED_STOPS
+         STOPS
 } from '../route-segments.js'
 
 describe('if speed != 0, returns segment width value using STOPS array based on zoom level', () => {
