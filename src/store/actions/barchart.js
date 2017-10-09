@@ -6,9 +6,30 @@ export function clearBarchart () {
   }
 }
 
-export function addSegmentsToBarchart (segments) {
+export function setBarchartSpeeds (speedsArray, countArray) {
+  let meanSpeedArray
+  if (countArray) {
+    meanSpeedArray = speedsArray.map((value, index, matrix) => {
+      let count = countArray.get(index)
+      if (count && count > 0) {
+        return (value / count)
+      } else {
+        return 0
+      }
+    })
+  } else {
+    meanSpeedArray = speedsArray
+  }
+  let hoursForCrossFilter = []
+  meanSpeedArray.forEach((speed, index) => {
+    hoursForCrossFilter.push({
+      'dayOfWeek': index[0] + 1,
+      'hourOfDay': index[1] + 1,
+      'meanSpeedThisHour': speed
+    })
+  })
   return {
     type: ADD_SEGMENTS_TO_BARCHART,
-    segments: segments
+    speedsBinnedByHour: hoursForCrossFilter
   }
 }
