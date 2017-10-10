@@ -197,7 +197,6 @@ export function showRoute (waypoints) {
 
           let coordsSlice = coordinates.slice(begin, end + 1)
           const fullArrayDist = Distance(coordsSlice[0], coordsSlice[coordsSlice.length - 1])
-          console.log('Full Array TOTAL DISTANCE: ', fullArrayDist)
           let speed = -1
           let dist = 0
           if (edge.traffic_segments) {
@@ -209,23 +208,17 @@ export function showRoute (waypoints) {
                 // calculate the distance for each coord pair and increment
                 // once the distance exceeds the percentage of the end percent of the polyline, split the polyline
                 const targetDist = fullArrayDist * edge.traffic_segments[t].end_percent
-                console.log('Target distance is: ', targetDist)
                 let total = 0
                 for (let polyIdx = 0; polyIdx < coordsSlice.length; polyIdx++) {
                   // accumulate the distance total and keep track of previous distance
                   let prevTotal = dist
                   dist = (polyIdx < coordsSlice.length - 1) ? Distance(coordsSlice[polyIdx], coordsSlice[polyIdx + 1]) : 0
                   total += dist
-                  console.log('DISTANCE: ', dist)
-                  console.log('TOTAL: ', total)
 
                   if (total > targetDist) {
                     let deltaToTarget = targetDist - prevTotal
                     let percentAlong = deltaToTarget / dist
                     let newPoint = (polyIdx < coordsSlice.length - 1) ? alongSegment(coordsSlice[polyIdx], coordsSlice[polyIdx + 1], percentAlong) : null
-                    console.log('Delta to target: ', deltaToTarget)
-                    console.log('% along: ', percentAlong)
-                    console.log('New segment point: ', newPoint)
                     // insert new point into original array and then create new coords array for just that traffic segment
                     coordsSlice.splice(polyIdx + 1, 0, [newPoint.lat, newPoint.lng])
                     let newcoords = coordsSlice.slice(0, polyIdx + 2)
@@ -234,8 +227,6 @@ export function showRoute (waypoints) {
                     // reset
                     dist = 0
                     total = 0
-                    console.log(newcoords)
-                    console.log(coordsSlice)
 
                     for (let i = 0; i < parsedIds.length; i++) {
                       if (id === parsedIds[i].id) {
