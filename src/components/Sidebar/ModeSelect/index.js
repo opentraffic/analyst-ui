@@ -90,7 +90,7 @@ export class ModeSelect extends React.PureComponent {
     } else { // Else if route button is clicked and no region exists, change mode
       this.props.dispatch(setRouteAnalysisMode())
       if (window.dataCoverage) {
-        this.setState({ available: false})
+        this.setState({available: false})
         window.dataCoverage.remove()
       }
     }
@@ -147,7 +147,7 @@ export class ModeSelect extends React.PureComponent {
           onConfirm={this.handleConfirm}
         />
         <Button
-          content={(this.state.available) ? "Hide Data Availability" : "Show Data Availability"}
+          content={(this.state.available) ? 'Hide Data Availability' : 'Show Data Availability'}
           onClick={this.handleDataClick}
           fluid
           toggle
