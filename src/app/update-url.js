@@ -73,25 +73,21 @@ function getDateRange (date) {
 }
 
 export function getTimeFilters (date) {
-  if (date.filtersEnabled) {
-    let dayFilter
-    let hourFilter
+  let dayFilter
+  let hourFilter
 
-    if (date && date.dayFilter) {
-      dayFilter = date.dayFilter[0] + VALUE_DELIMITER + date.dayFilter[1]
-    }
-
-    if (date && date.hourFilter) {
-      hourFilter = date.hourFilter[0] + VALUE_DELIMITER + date.hourFilter[1]
-    }
-
-    return {
-      [DAY_FILTER]: dayFilter || null,
-      [HOUR_FILTER]: hourFilter || null
-    }
+  if (date && date.dayFilter) {
+    dayFilter = date.dayFilter[0] + VALUE_DELIMITER + date.dayFilter[1]
   }
 
-  return null
+  if (date && date.hourFilter) {
+    hourFilter = date.hourFilter[0] + VALUE_DELIMITER + date.hourFilter[1]
+  }
+
+  return {
+    [DAY_FILTER]: dayFilter || null,
+    [HOUR_FILTER]: hourFilter || null
+  }
 }
 
 function getMapView (map) {

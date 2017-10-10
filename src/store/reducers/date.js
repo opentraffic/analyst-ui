@@ -1,7 +1,6 @@
 import moment from 'moment'
 import {
   SET_DATE,
-  TOGGLE_TIME_FILTERS,
   SET_DAY_FILTER,
   SET_HOUR_FILTER
 } from '../actions'
@@ -12,7 +11,6 @@ const initialState = {
   endDate: null,
 
   // For time chart filters
-  filtersEnabled: true,
   dayFilter: null,
   hourFilter: null
 }
@@ -28,11 +26,6 @@ const date = (state = initialState, action) => {
         endDate: action.endDate,
         year: year,
         week: week
-      }
-    case TOGGLE_TIME_FILTERS:
-      return {
-        ...state,
-        filtersEnabled: action.filtersEnabled || !state.filtersEnabled
       }
     case SET_DAY_FILTER:
       return {
