@@ -28,7 +28,6 @@ export function setDataCoverage () {
 function featureClicked (event) {
   const latlng = [event.latlng.lat, event.latlng.lng]
   store.dispatch(recenterMap(latlng, 10))
-  console.log(event.target.feature)
   const { rangeStartDate, rangeEndDate } = event.target.feature.properties
   store.dispatch(setDateRange(rangeStartDate, rangeEndDate))
 }

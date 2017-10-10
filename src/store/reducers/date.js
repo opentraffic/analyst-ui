@@ -29,7 +29,6 @@ const date = (state = initialState, action) => {
         year: year,
         week: week
       }
-<<<<<<< HEAD
     case SET_DATE_RANGE:
       const startRange = moment(action.start)
       const endRange = moment(action.end)
@@ -40,13 +39,6 @@ const date = (state = initialState, action) => {
           rangeEnd: endRange
         }
       }
-    case TOGGLE_TIME_FILTERS:
-      return {
-        ...state,
-        filtersEnabled: action.filtersEnabled || !state.filtersEnabled
-      }
-=======
->>>>>>> 05474fecf004c38977361e0efb03101c9d5d74d7
     case SET_DAY_FILTER:
       return {
         ...state,
