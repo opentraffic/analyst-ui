@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds, removeShades } from '../../../app/region-bounds'
-import { setDataGeojson } from '../../../app/dataGeojson'
+import { setDataCoverage } from '../../../app/dataGeojson'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 import { clearBarchart } from '../../../store/actions/barchart'
@@ -27,10 +27,10 @@ export class ModeSelect extends React.PureComponent {
 
   handleDataClick = () => {
     // if originally data is available
-    if (window.dataGeojson) {
-      (this.state.available) ? window.dataGeojson.remove() : window.dataGeojson.addTo(window.map)
+    if (window.dataCoverage) {
+      (this.state.available) ? window.dataCoverage.remove() : window.dataCoverage.addTo(window.map)
     } else if (!this.state.available) {
-      setDataGeojson()
+      setDataCoverage()
     }
     this.setState({
       available: !(this.state.available)
@@ -71,9 +71,9 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else allow region to be drawn
       this.props.dispatch(setRegionAnalysisMode())
-      if (window.dataGeojson) {
+      if (window.dataCoverage) {
         this.setState({ available: false })
-        window.dataGeojson.remove()
+        window.dataCoverage.remove()
       }
       startDrawingBounds()
     }
@@ -89,9 +89,9 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else if route button is clicked and no region exists, change mode
       this.props.dispatch(setRouteAnalysisMode())
-      if (window.dataGeojson) {
+      if (window.dataCoverage) {
         this.setState({ available: false})
-        window.dataGeojson.remove()
+        window.dataCoverage.remove()
       }
     }
   }

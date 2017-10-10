@@ -10,7 +10,7 @@ import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './
 import { initUrlUpdate } from './app/update-url'
 import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
-import { setDataGeojson } from './app/dataGeojson'
+import { setDataCoverage } from './app/dataGeojson'
 import { getQueryStringObject, updateURL } from './lib/url-state'
 
 const VALUE_DELIMITER = '/'
@@ -71,7 +71,7 @@ export function initApp (queryString = window.location.search) {
     initBounds(object.rw, object.rs, object.re, object.rn)
   } else {
     // if route or bounds are not present, initialize data availability geojson
-    setDataGeojson(config.dataGeojson)
+    setDataCoverage(config.dataGeojson)
   }
 
   // Initialize Tangram scene file

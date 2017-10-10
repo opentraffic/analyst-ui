@@ -42,6 +42,7 @@ export const UPDATE_SCENE = 'UPDATE_SCENE'
 export const SET_VIEW_BOUNDS = 'SET_VIEW_BOUNDS'
 export const CLEAR_VIEW_BOUNDS = 'CLEAR_VIEW_BOUNDS'
 export const SET_GEOJSON = 'SET_GEOJSON'
+export const SET_DATA_GEOJSON = 'SET_DATA_GEOJSON'
 
 /* barchart */
 export const CLEAR_BARCHART = 'CLEAR_BARCHART'

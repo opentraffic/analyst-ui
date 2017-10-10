@@ -51,7 +51,7 @@ const scene = {
         },
         draw: {
           lines: {
-            order: 400,
+            order: 500,
             width: ZERO_SPEED_STOPS
           }
         }
