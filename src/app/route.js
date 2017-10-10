@@ -32,28 +32,29 @@ const RAD_PER_DEG = PI / 180.0
 const kRadEarthMeters = 6378160.187
 // Calculates the distance between two lat/lng's in meters. Uses spherical
 // geometry (law of cosines).
-export function Distance(ll1, ll2) {
+export function Distance (ll1, ll2) {
   // If points are the same, return 0
-  if (ll1 === ll2)
+  if (ll1 === ll2) {
     return 0.0
-
+  }
   // Delta longitude. Don't need to worry about crossing 180
   // since cos(x) = cos(-x)
-  const deltalng = (ll2[1] - ll1[1]) * RAD_PER_DEG;
-  const a = ll1[0] * RAD_PER_DEG;
-  const c = ll2[0] * RAD_PER_DEG;
+  const deltalng = (ll2[1] - ll1[1]) * RAD_PER_DEG
+  const a = ll1[0] * RAD_PER_DEG
+  const c = ll2[0] * RAD_PER_DEG
 
   // Find the angle subtended in radians (law of cosines)
-  const cosb = (Math.sin(a) * Math.sin(c)) + (Math.cos(a) * Math.cos(c) * Math.cos(deltalng));
+  const cosb = (Math.sin(a) * Math.sin(c)) + (Math.cos(a) * Math.cos(c) * Math.cos(deltalng))
 
   // Angle subtended * radius of earth (portion of the circumference).
   // Protect against cosb being outside -1 to 1 range.
-  if (cosb >= 1.0)
+  if (cosb >= 1.0) {
     return 0.00001
-  else if (cosb < -1.0)
-    return PI * kRadEarthMeters;
-  else
+  } else if (cosb < -1.0) {
+    return PI * kRadEarthMeters
+  } else {
     return (Math.acos(cosb) * kRadEarthMeters)
+  }
 }
 
 /**
@@ -64,12 +65,11 @@ export function Distance(ll1, ll2) {
  * @param  pct  Percentage along the segment.
  * @return Returns the point along the segment.
  */
-export function along_segment(beginll, endll, pct) {
- const lat = beginll[0] + (endll[0] - beginll[0]) * pct
- const lng = beginll[1] + (endll[1] - beginll[1]) * pct
- return {lat,lng}
+export function alongSegment (beginll, endll, pct) {
+  const lat = beginll[0] + (endll[0] - beginll[0]) * pct
+  const lng = beginll[1] + (endll[1] - beginll[1]) * pct
+  return {lat, lng}
 }
-
 
 export function showRoute (waypoints) {
   if (waypoints.length <= 1) {
@@ -197,41 +197,41 @@ export function showRoute (waypoints) {
 
           let coordsSlice = coordinates.slice(begin, end + 1)
           const fullArrayDist = Distance(coordsSlice[0], coordsSlice[coordsSlice.length - 1])
-          console.log("Full Array TOTAL DISTANCE: ", fullArrayDist)
+          console.log('Full Array TOTAL DISTANCE: ', fullArrayDist)
           let speed = -1
           let dist = 0
           if (edge.traffic_segments) {
             for (let t = 0; t < edge.traffic_segments.length; t++) {
               let id = edge.traffic_segments ? edge.traffic_segments[t].segment_id : null
-              //there are multiple segments within an edge or there are segments crossing over multiple edges
+              // there are multiple segments within an edge or there are segments crossing over multiple edges
               if (edge.traffic_segments.length > 1) {
-                //set the index to the rounded begin percent of the coord array
-                //calculate the distance for each coord pair and increment
-                //once the distance exceeds the percentage of the end percent of the polyline, split the polyline
+                // set the index to the rounded begin percent of the coord array
+                // calculate the distance for each coord pair and increment
+                // once the distance exceeds the percentage of the end percent of the polyline, split the polyline
                 const targetDist = fullArrayDist * edge.traffic_segments[t].end_percent
-                console.log("Target distance is: ", targetDist)
+                console.log('Target distance is: ', targetDist)
                 let total = 0
                 for (let polyIdx = 0; polyIdx < coordsSlice.length; polyIdx++) {
-                  //accumulate the distance total and keep track of previous distance
+                  // accumulate the distance total and keep track of previous distance
                   let prevTotal = dist
-                  dist = (polyIdx < coordsSlice.length-1) ? Distance(coordsSlice[polyIdx], coordsSlice[polyIdx+1]) : 0
+                  dist = (polyIdx < coordsSlice.length - 1) ? Distance(coordsSlice[polyIdx], coordsSlice[polyIdx + 1]) : 0
                   total += dist
-                  console.log("DISTANCE: ", dist)
-                  console.log("TOTAL: ", total)
+                  console.log('DISTANCE: ', dist)
+                  console.log('TOTAL: ', total)
 
                   if (total > targetDist) {
                     let deltaToTarget = targetDist - prevTotal
                     let percentAlong = deltaToTarget / dist
-                    let newPoint = (polyIdx < coordsSlice.length-1) ? along_segment(coordsSlice[polyIdx],coordsSlice[polyIdx+1],percentAlong) : null
-                    console.log("Delta to target: ", deltaToTarget)
-                    console.log("% along: ", percentAlong)
-                    console.log("New segment point: ", newPoint)
-                    //insert new point into original array and then create new coords array for just that traffic segment
-                    coordsSlice.splice(polyIdx+1, 0, [newPoint.lat, newPoint.lng])
-                    let newcoords = coordsSlice.slice(0, polyIdx+2)
-                    //then remove the new coords array points from the original slice
-                    coordsSlice = coordsSlice.slice(newcoords.length-1, coordsSlice.length)
-                    //reset
+                    let newPoint = (polyIdx < coordsSlice.length - 1) ? alongSegment(coordsSlice[polyIdx], coordsSlice[polyIdx + 1], percentAlong) : null
+                    console.log('Delta to target: ', deltaToTarget)
+                    console.log('% along: ', percentAlong)
+                    console.log('New segment point: ', newPoint)
+                    // insert new point into original array and then create new coords array for just that traffic segment
+                    coordsSlice.splice(polyIdx + 1, 0, [newPoint.lat, newPoint.lng])
+                    let newcoords = coordsSlice.slice(0, polyIdx + 2)
+                    // then remove the new coords array points from the original slice
+                    coordsSlice = coordsSlice.slice(newcoords.length - 1, coordsSlice.length)
+                    // reset
                     dist = 0
                     total = 0
                     console.log(newcoords)
@@ -245,7 +245,7 @@ export function showRoute (waypoints) {
                           speed: speed,
                           properties: parsedIds[i]
                         })
-                        break;
+                        break
                       }
                     }
                   }
@@ -259,7 +259,7 @@ export function showRoute (waypoints) {
                     speed: speed,
                     properties: parsedIds[i]
                   })
-                  break;
+                  break
                 }
               }
               // Make geoJSON feature
@@ -284,13 +284,13 @@ export function showRoute (waypoints) {
         store.dispatch(setGeoJSON(geojson))
         store.dispatch(setRouteSegments(speeds))
         store.dispatch(stopLoading())
-       })
-       .catch((error) => {
-         console.log('[fetchDataTiles error]', error)
-         store.dispatch(hideLoading())
-       })
-     })
-     .catch((error) => {
-       console.log(error)
-     })
+      })
+      .catch((error) => {
+        console.log('[fetchDataTiles error]', error)
+        store.dispatch(hideLoading())
+      })
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 }
