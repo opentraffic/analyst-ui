@@ -19,11 +19,6 @@ const scene = {
         //   return feature.speed !== 0 && feature.speed !== null && typeof feature.speed !== 'undefined'
         // },
         draw: {
-<<<<<<< HEAD
-          lines: {
-            order: 500,
-            width: ZERO_SPEED_STOPS
-=======
           otRoads: {
             interactive: true,
             order: 500,
@@ -54,7 +49,6 @@ const scene = {
               width: OUTLINE_STOPS,
               color: '#222'
             }
->>>>>>> 05474fecf004c38977361e0efb03101c9d5d74d7
           }
         }
       // },
