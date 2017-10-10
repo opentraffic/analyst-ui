@@ -2,6 +2,7 @@ import { flow, chunk, flatten, mean } from 'lodash'
 import store from '../store'
 import { parseSegmentId } from '../lib/tiles'
 import { getCachedTiles } from './data'
+import mathjs from 'mathjs'
 
 /**
  *
@@ -41,18 +42,21 @@ export function prepareSpeedsForBarChart (tiles, date, segment) {
     const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
-      let speedsByHour = []
-      let speeds = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'speeds')
+      var speedsByDayAndHourArray = mathjs.zeros(7, 24)
+      var nonZeroSpeedCountByDayAndHourArray = mathjs.zeros(7, 24)
+      var speeds = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'speeds')
       chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
         speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
-          speedsByHour.push({
-            'hourOfDay': hourIndex + 1,
-            'dayOfWeek': dayIndex + 1,
-            'meanSpeedThisHour': speedForThisHour
-          })
+          if (speedForThisHour > 0) {
+            speedsByDayAndHourArray.set([dayIndex, hourIndex], speedForThisHour)
+            nonZeroSpeedCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
+          }
         })
       })
-      return speedsByHour
+      return {
+        speeds: speedsByDayAndHourArray,
+        counts: nonZeroSpeedCountByDayAndHourArray
+      }
     }
   } catch (e) {}
 }

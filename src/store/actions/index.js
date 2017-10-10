@@ -10,7 +10,6 @@ export const HIDE_LOADING = 'HIDE_LOADING'
 /* date */
 export const SET_DATE = 'SET_DATE'
 export const SET_DATE_RANGE = 'SET_DATE_RANGE'
-export const TOGGLE_TIME_FILTERS = 'TOGGLE_TIME_FILTERS'
 export const SET_DAY_FILTER = 'SET_DAY_FILTER'
 export const SET_HOUR_FILTER = 'SET_HOUR_FILTER'
 
