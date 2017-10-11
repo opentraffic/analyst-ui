@@ -2,6 +2,7 @@ import moment from 'moment'
 import {
   SET_DATE,
   SET_DATE_RANGE,
+  CLEAR_DATE_RANGE,
   SET_DAY_FILTER,
   SET_HOUR_FILTER
 } from '../actions'
@@ -37,6 +38,14 @@ const date = (state = initialState, action) => {
         dateRange: {
           rangeStart: startRange,
           rangeEnd: endRange
+        }
+      }
+    case CLEAR_DATE_RANGE:
+      return {
+        ...state,
+        dateRange: {
+          rangeStart: null,
+          rangeENd: null
         }
       }
     case SET_DAY_FILTER:

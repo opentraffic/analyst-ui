@@ -1,9 +1,8 @@
-import { SET_VIEW_BOUNDS, SET_GEOJSON, SET_DATA_GEOJSON, CLEAR_VIEW_BOUNDS, CLEAR_ANALYSIS } from '../actions'
+import { SET_VIEW_BOUNDS, SET_GEOJSON, CLEAR_VIEW_BOUNDS, CLEAR_ANALYSIS } from '../actions'
 
 const initialState = {
   bounds: null,
-  geoJSON: null,
-  dataGeoJSON: null
+  geoJSON: null
 }
 
 const view = (state = initialState, action) => {
@@ -17,11 +16,6 @@ const view = (state = initialState, action) => {
       return {
         ...state,
         geoJSON: action.geoJSON
-      }
-    case SET_DATA_GEOJSON:
-      return {
-        ...state,
-        dataGeoJSON: action.dataGeoJSON
       }
     case CLEAR_VIEW_BOUNDS:
     case CLEAR_ANALYSIS:
