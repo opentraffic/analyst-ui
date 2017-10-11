@@ -2,7 +2,7 @@ import L from 'leaflet'
 import config from './config'
 import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
-import { setDate, enableTimeFilters, setDayFilter, setHourFilter } from './store/actions/date'
+import { setDate, setDayFilter, setHourFilter } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/view'
@@ -44,9 +44,6 @@ export function initApp (queryString = window.location.search) {
   store.dispatch(setDate(date.startDate, date.endDate))
 
   // Initialize time/day filters if present
-  if (object.df || object.hf) {
-    store.dispatch(enableTimeFilters())
-  }
   if (object.df) {
     const dayFilter = object.df.split(VALUE_DELIMITER)
     store.dispatch(setDayFilter(dayFilter))
