@@ -47,13 +47,13 @@ function featureClicked (event) {
  * Once feature is found, gets date range available and stores it in Redux.
  * If no feature is found, clears date range in Redux.
  *
- * Date picker is connected to Redux store and will have info panel 
+ * Date picker is connected to Redux store and will have info panel
  * stating what dates are available for that route or region.
  * If no feature is found, info panel does not state anything.
  *
  * @param {Object} northEast - latitude and longitude of northeast point of region/route
  * @param {Object} southWest - latitude and longitude of southeast point of region/route
- * 
+ *
  */
 export function getDateRange (northEast, southWest) {
   const features = store.getState().data.dataGeoJSON.features
