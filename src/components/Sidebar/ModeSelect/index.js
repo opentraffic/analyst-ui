@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds, removeShades } from '../../../app/region-bounds'
-import { setDataGeojson } from '../../../app/dataGeojson'
+import { setDataCoverage } from '../../../app/dataGeojson'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 import { clearBarchart } from '../../../store/actions/barchart'
-import { setDayFilter, setHourFilter } from '../../../store/actions/date'
+import { setDayFilter, setHourFilter, clearDateRange } from '../../../store/actions/date'
 
 export class ModeSelect extends React.PureComponent {
   static propTypes = {
@@ -26,12 +26,15 @@ export class ModeSelect extends React.PureComponent {
   }
 
   handleDataClick = () => {
-    if (window.dataGeojson) {
-      (this.state.available) ? window.dataGeojson.remove() : window.dataGeojson.addTo(window.map)
+    // Check if dataCoverage is global
+    if (window.dataCoverage) {
+      (this.state.available) ? window.dataCoverage.remove() : window.dataCoverage.addTo(window.map)
     } else if (!this.state.available) {
-      setDataGeojson()
+      setDataCoverage()
     }
-    this.setState({ available: !this.state.available })
+    this.setState({
+      available: !(this.state.available)
+    })
   }
 
   handleCancel = () => {
@@ -52,6 +55,7 @@ export class ModeSelect extends React.PureComponent {
       this.props.dispatch(setRouteAnalysisMode())
     }
     this.setState({case: null})
+    this.props.dispatch(clearDateRange())
     this.props.dispatch(clearBarchart())
     this.props.dispatch(setDayFilter([0, 7]))
     this.props.dispatch(setHourFilter([0, 24]))
@@ -68,9 +72,9 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else allow region to be drawn
       this.props.dispatch(setRegionAnalysisMode())
-      if (window.dataGeojson) {
-        window.dataGeojson.remove()
-        this.setState({available: false})
+      if (window.dataCoverage) {
+        this.setState({ available: false })
+        window.dataCoverage.remove()
       }
       startDrawingBounds()
     }
@@ -86,9 +90,9 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else if route button is clicked and no region exists, change mode
       this.props.dispatch(setRouteAnalysisMode())
-      if (window.dataGeojson) {
-        window.dataGeojson.remove()
+      if (window.dataCoverage) {
         this.setState({available: false})
+        window.dataCoverage.remove()
       }
     }
   }
@@ -104,6 +108,7 @@ export class ModeSelect extends React.PureComponent {
       })
     } else { // Else if route/region is not drawn but was clicked, turn off mode
       this.props.dispatch(resetAnalysis())
+      this.props.dispatch(clearDateRange())
     }
   }
 
@@ -144,7 +149,7 @@ export class ModeSelect extends React.PureComponent {
           onConfirm={this.handleConfirm}
         />
         <Button
-          content={(this.state.available) ? 'Hide Data Availability' : 'Display Data Availability'}
+          content={(this.state.available) ? 'Hide Data Availability' : 'Show Data Availability'}
           onClick={this.handleDataClick}
           fluid
           toggle

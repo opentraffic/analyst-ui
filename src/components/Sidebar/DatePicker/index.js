@@ -40,10 +40,20 @@ class DatePicker extends React.Component {
     this.props.dispatch(setDate(start, end))
   }
 
-  isDayBlocked = (day) => {
-    if (!this.props.dateRange.rangeStart) return false
+  // isDayBlocked = (day) => {
+  //   if (!this.props.dateRange.rangeStart) return false
+  //   const { rangeStart, rangeEnd } = this.props.dateRange
+  //   return (day.isBefore(rangeStart) || day.isAfter(rangeEnd))
+  // }
+
+  displayDateRange = () => {
+    if (!this.props.dateRange.rangeStart) return
     const { rangeStart, rangeEnd } = this.props.dateRange
-    return (day.isBefore(rangeStart) || day.isAfter(rangeEnd))
+    return (
+      <div className="info-panel">
+        <i> {'Data available from ' + rangeStart.format('dddd, MMMM Do YYYY') + ' to ' + rangeEnd.format('dddd, MMMM Do YYYY')} </i>
+      </div>
+    )
   }
 
   render () {
@@ -71,7 +81,8 @@ class DatePicker extends React.Component {
           focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
           hideKeyboardShortcutsPanel
-          isDayBlocked={this.isDayBlocked}
+          // isDayBlocked={this.isDayBlocked}
+          renderCalendarInfo={this.displayDateRange}
         />
       </Segment>
     )
