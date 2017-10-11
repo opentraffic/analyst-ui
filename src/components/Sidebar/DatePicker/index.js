@@ -40,12 +40,6 @@ class DatePicker extends React.Component {
     this.props.dispatch(setDate(start, end))
   }
 
-  // isDayBlocked = (day) => {
-  //   if (!this.props.dateRange.rangeStart) return false
-  //   const { rangeStart, rangeEnd } = this.props.dateRange
-  //   return (day.isBefore(rangeStart) || day.isAfter(rangeEnd))
-  // }
-
   displayDateRange = () => {
     if (!this.props.dateRange.rangeStart) return
     const { rangeStart, rangeEnd } = this.props.dateRange
@@ -86,7 +80,6 @@ class DatePicker extends React.Component {
           focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
           hideKeyboardShortcutsPanel
-          // isDayBlocked={this.isDayBlocked}
           initialVisibleMonth={() => this.getInitialMonth(today)}
           renderCalendarInfo={this.displayDateRange}
         />
