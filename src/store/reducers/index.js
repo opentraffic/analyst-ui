@@ -9,7 +9,7 @@ import tangram from './tangram'
 import view from './view'
 import loading from './loading'
 import barchart from './barchart'
-import dataAvailability from './dataGeoJSON'
+import data from './data'
 
 const reducers = combineReducers({
   app,
@@ -22,7 +22,7 @@ const reducers = combineReducers({
   view,
   loading,
   barchart,
-  dataAvailability
+  data
 })
 
 export default reducers

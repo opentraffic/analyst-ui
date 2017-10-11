@@ -4,7 +4,7 @@ const initialState = {
   dataGeoJSON: null
 }
 
-const dataAvailability = (state = initialState, action) => {
+const data = (state = initialState, action) => {
   switch (action.type) {
     case SET_DATA_GEOJSON:
       return {
@@ -16,4 +16,4 @@ const dataAvailability = (state = initialState, action) => {
   }
 }
 
-export default dataAvailability
+export default data

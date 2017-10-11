@@ -4,7 +4,7 @@ import config from '../config'
 import { parseQueryString } from '../lib/url-state'
 import { recenterMap } from '../store/actions/map'
 import { setDateRange, clearDateRange } from '../store/actions/date'
-import { setDataGeoJSON } from '../store/actions/dataGeoJSON'
+import { setDataGeoJSON } from '../store/actions/data'
 
 const DATA_GEOJSON_URL = config.dataGeojson
 const LINE_OVERLAP_BUFFER = 0.005
@@ -56,7 +56,7 @@ function featureClicked (event) {
  * 
  */
 export function getDateRange (northEast, southWest) {
-  const features = store.getState().dataAvailability.dataGeoJSON.features
+  const features = store.getState().data.dataGeoJSON.features
   let found = false
 
   for (let i = 0; i < features.length; i++) {
