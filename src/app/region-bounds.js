@@ -1,7 +1,7 @@
 /* global map, L */
 import store from '../store'
 import { setBounds } from '../store/actions/view'
-// import { getDateRange } from './dataGeojson'
+import { getDateRange } from './dataGeojson'
 
 // Store for existing bounds.
 const bounds = []
@@ -87,12 +87,13 @@ function storeBounds (bounds) {
 }
 
 function onDrawingFinished (event) {
+  getDateRange(event.layer.getBounds())
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
+
   // If the region shades do not exist, create them
   if (!shades) { createShades(event.layer) }
-  // get date range
-  // getDateRange(event.layer.getBounds())
+
   // Remove previous bounds after the new one has been drawn.
   if (bounds.length > 1) {
     removeExistingBounds(0)
@@ -102,6 +103,7 @@ function onDrawingFinished (event) {
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
   updateShades(event.layer)
+  getDateRange(event.layer.getBounds())
 }
 
 function addEventListeners () {
