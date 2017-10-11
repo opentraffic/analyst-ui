@@ -7,6 +7,7 @@ import { setDateRange, clearDateRange } from '../store/actions/date'
 import { setDataGeoJSON } from '../store/actions/dataGeoJSON'
 
 const DATA_GEOJSON_URL = config.dataGeojson
+const LINE_OVERLAP_BUFFER = 0.005
 
 export function setDataCoverage () {
   window.fetch(DATA_GEOJSON_URL)
@@ -31,14 +32,12 @@ export function setDataCoverage () {
 
 function featureClicked (event) {
   const latlng = [event.latlng.lat, event.latlng.lng]
+  console.log(event.target.feature.geometry.coordinates)
   store.dispatch(recenterMap(latlng, 10))
 }
 
 // geojson feature.geometry.coordinates are in lng, lat
-export function getDateRange (query) {
-  const northEast = query.getNorthEast()
-  const southWest = query.getSouthWest()
-
+export function getDateRange (northEast, southWest) {
   const features = store.getState().dataAvailability.dataGeoJSON.features
   let found = false
 
@@ -52,8 +51,10 @@ export function getDateRange (query) {
       lat: coordinates[0][1],
       lng: coordinates[0][0]
     }
-    if (northEast.lat < northEastTile.lat && northEast.lng < northEastTile.lng &&
-        southWest.lat > southWestTile.lat && southWest.lng > southWestTile.lng) {
+    if (northEast.lat < northEastTile.lat + LINE_OVERLAP_BUFFER &&
+        northEast.lng < northEastTile.lng + LINE_OVERLAP_BUFFER &&
+        southWest.lat > southWestTile.lat - LINE_OVERLAP_BUFFER &&
+        southWest.lng > southWestTile.lng - LINE_OVERLAP_BUFFER) {
       const { rangeStartDate, rangeEndDate } = features[i].properties
       store.dispatch(setDateRange(rangeStartDate, rangeEndDate))
       found = true

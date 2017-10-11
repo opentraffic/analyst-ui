@@ -87,7 +87,11 @@ function storeBounds (bounds) {
 }
 
 function onDrawingFinished (event) {
-  getDateRange(event.layer.getBounds())
+  const region = {
+    northEast: event.layer.getBounds().getNorthEast(),
+    southWest: event.layer.getBounds().getSouthWest()
+  }
+  getDateRange(region.northEast, region.southWest)
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
 
@@ -103,7 +107,11 @@ function onDrawingFinished (event) {
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
   updateShades(event.layer)
-  getDateRange(event.layer.getBounds())
+  const bounds = {
+    northEast: event.layer.getBounds().getNorthEast(),
+    southWest: event.layer.getBounds().getSouthWest()
+  }
+  getDateRange(bounds.northEast, bounds.southWest)
 }
 
 function addEventListeners () {
