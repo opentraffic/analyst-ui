@@ -17,6 +17,9 @@ const VALUE_DELIMITER = '/'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
+  // Initialize data availability geojson and save to store
+  setDataCoverage(config.dataGeojson)
+
   // Parse URL to get all params
   const object = getQueryStringObject(queryString)
   const date = {
@@ -24,16 +27,12 @@ export function initApp (queryString = window.location.search) {
     endDate: Number(object.endDate) || null
   }
 
-  const dateRange = {
-    rangeStart: Number(object.rangeStart) || null,
-    rangeEnd: Number(object.rangeEnd) || null
-  }
-
   const mapView = {
     lat: Number(object.lat) || config.map.center[0],
     lng: Number(object.lng) || config.map.center[1],
     zoom: Number(object.zoom) || config.map.zoom
   }
+
   const coordinates = [mapView.lat, mapView.lng]
   const label = object.label || ''
 
@@ -48,8 +47,6 @@ export function initApp (queryString = window.location.search) {
   store.dispatch(setLocation(coordinates, label))
   // Initializing dates
   store.dispatch(setDate(date.startDate, date.endDate))
-  // Initializing data range
-  store.dispatch(setDateRange(dateRange.rangeStart, dateRange.rangeEnd))
 
   // Initialize time/day filters if present
   if (object.df) {
@@ -74,9 +71,12 @@ export function initApp (queryString = window.location.search) {
   } else if (object.rw && object.rs && object.re && object.rn) {
     // All bounds must be present to be valid, otherwise it's discarded.
     initBounds(object.rw, object.rs, object.re, object.rn)
-  } else {
-    // if route or bounds are not present, initialize data availability geojson
-    setDataCoverage(config.dataGeojson)
+  }
+
+  if (object.rangeStart && object.rangeEnd) {
+    const rangeStart = Number(object.rangeStart)
+    const rangeEnd = Number(object.rangeEnd)
+    store.dispatch(setDateRange(rangeStart, rangeEnd))
   }
 
   // Initialize Tangram scene file
