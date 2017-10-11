@@ -5,10 +5,9 @@ import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
 import { startDrawingBounds, removeShades } from '../../../app/region-bounds'
 import { setDataCoverage } from '../../../app/dataGeojson'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
-import { clearDateRange } from '../../../store/actions/date'
 import { resetAnalysis } from '../../../store/actions/reset'
 import { clearBarchart } from '../../../store/actions/barchart'
-import { setDayFilter, setHourFilter } from '../../../store/actions/date'
+import { setDayFilter, setHourFilter, clearDateRange } from '../../../store/actions/date'
 
 export class ModeSelect extends React.PureComponent {
   static propTypes = {

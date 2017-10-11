@@ -50,8 +50,8 @@ class DatePicker extends React.Component {
     if (!this.props.dateRange.rangeStart) return
     const { rangeStart, rangeEnd } = this.props.dateRange
     return (
-      <div className='info-panel'>
-        <i> {"Data available from " + rangeStart.format("dddd, MMMM Do YYYY") + " to " + rangeEnd.format("dddd, MMMM Do YYYY")} </i>
+      <div className="info-panel">
+        <i> {'Data available from ' + rangeStart.format('dddd, MMMM Do YYYY') + ' to ' + rangeEnd.format('dddd, MMMM Do YYYY')} </i>
       </div>
     )
   }

@@ -40,7 +40,7 @@ export function setDateRange (start, end) {
   }
 }
 
-export function clearDateRange() {
+export function clearDateRange () {
   return {
     type: CLEAR_DATE_RANGE
   }

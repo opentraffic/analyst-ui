@@ -32,11 +32,10 @@ export function setDataCoverage () {
 function featureClicked (event) {
   const latlng = [event.latlng.lat, event.latlng.lng]
   store.dispatch(recenterMap(latlng, 10))
-  const { rangeStartDate, rangeEndDate } = event.target.feature.properties
 }
 
 // geojson feature.geometry.coordinates are in lng, lat
-export function getDateRange(query) {
+export function getDateRange (query) {
   const northEast = query.getNorthEast()
   const southWest = query.getSouthWest()
 
@@ -63,4 +62,3 @@ export function getDateRange(query) {
   }
   if (!found) { store.dispatch(clearDateRange()) }
 }
-
