@@ -56,6 +56,11 @@ class DatePicker extends React.Component {
     )
   }
 
+  getInitialMonth = (today) => {
+    const { rangeStart } = this.props.dateRange
+    return (!rangeStart) ? today : rangeStart
+  }
+
   render () {
     // changing unix timestamp back into moment to initialize props of DateRangePicker
     function changeUnixToMoment (timestamp) {
@@ -82,6 +87,7 @@ class DatePicker extends React.Component {
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
           hideKeyboardShortcutsPanel
           // isDayBlocked={this.isDayBlocked}
+          initialVisibleMonth={() => this.getInitialMonth(today)}
           renderCalendarInfo={this.displayDateRange}
         />
       </Segment>
