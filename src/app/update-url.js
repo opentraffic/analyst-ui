@@ -16,6 +16,8 @@ const MAP_LONGITUDE = 'lng'
 const MAP_ZOOM = 'zoom'
 const MAP_LABEL = 'label'
 const ANALYSIS_NAME = 'name'
+const DATA_RANGE_START = 'rangeStart'
+const DATA_RANGE_END = 'rangeEnd'
 
 const VALUE_DELIMITER = '/'
 
@@ -28,6 +30,7 @@ export function initUrlUpdate () {
       ...getRegionBounds(state.view.bounds),
       ...getDateRange(state.date),
       ...getTimeFilters(state.date),
+      ...getDataRange(state.date),
       ...getMapView(state.map),
       [MAP_LABEL]: getMapLabel(state.map),
       [ANALYSIS_NAME]: getAnalysisName(state.app)
@@ -62,6 +65,13 @@ function getRegionBounds (bounds) {
     [REGION_BOUNDS_SOUTH]: (bounds && bounds.south) || null,
     [REGION_BOUNDS_EAST]: (bounds && bounds.east) || null,
     [REGION_BOUNDS_WEST]: (bounds && bounds.west) || null
+  }
+}
+
+function getDataRange (date) {
+  return {
+    [DATA_RANGE_START]: (date && date.dateRange.rangeStart && date.dateRange.rangeStart.valueOf()) || null,
+    [DATA_RANGE_END]: (date && date.dateRange.rangeEnd && date.dateRange.rangeEnd.valueOf()) || null
   }
 }
 

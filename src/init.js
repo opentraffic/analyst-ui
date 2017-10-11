@@ -2,7 +2,7 @@ import L from 'leaflet'
 import config from './config'
 import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
-import { setDate, setDayFilter, setHourFilter } from './store/actions/date'
+import { setDate, setDayFilter, setHourFilter, setDateRange } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/view'
@@ -23,6 +23,12 @@ export function initApp (queryString = window.location.search) {
     startDate: Number(object.startDate) || null,
     endDate: Number(object.endDate) || null
   }
+
+  const dateRange = {
+    rangeStart: Number(object.rangeStart) || null,
+    rangeEnd: Number(object.rangeEnd) || null
+  }
+
   const mapView = {
     lat: Number(object.lat) || config.map.center[0],
     lng: Number(object.lng) || config.map.center[1],
@@ -42,6 +48,8 @@ export function initApp (queryString = window.location.search) {
   store.dispatch(setLocation(coordinates, label))
   // Initializing dates
   store.dispatch(setDate(date.startDate, date.endDate))
+  // Initializing data range
+  store.dispatch(setDateRange(dateRange.rangeStart, dateRange.rangeEnd))
 
   // Initialize time/day filters if present
   if (object.df) {
