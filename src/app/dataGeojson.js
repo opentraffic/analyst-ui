@@ -9,6 +9,13 @@ import { setDataGeoJSON } from '../store/actions/dataGeoJSON'
 const DATA_GEOJSON_URL = config.dataGeojson
 const LINE_OVERLAP_BUFFER = 0.005
 
+/**
+ * Gets data availability geojson and if no selected region or route on load,
+ * adds geojson layer to map and event listener to recenter map when feature clicked
+ *
+ * Also stores data availability geojson in Redux for later use
+ *
+ */
 export function setDataCoverage () {
   window.fetch(DATA_GEOJSON_URL)
     .then(response => response.json())
@@ -32,11 +39,22 @@ export function setDataCoverage () {
 
 function featureClicked (event) {
   const latlng = [event.latlng.lat, event.latlng.lng]
-  console.log(event.target.feature.geometry.coordinates)
   store.dispatch(recenterMap(latlng, 10))
 }
 
-// geojson feature.geometry.coordinates are in lng, lat
+/**
+ * Goes through data availability geojson to see which feature the route or region is in.
+ * Once feature is found, gets date range available and stores it in Redux.
+ * If no feature is found, clears date range in Redux.
+ *
+ * Date picker is connected to Redux store and will have info panel 
+ * stating what dates are available for that route or region.
+ * If no feature is found, info panel does not state anything.
+ *
+ * @param {Object} northEast - latitude and longitude of northeast point of region/route
+ * @param {Object} southWest - latitude and longitude of southeast point of region/route
+ * 
+ */
 export function getDateRange (northEast, southWest) {
   const features = store.getState().dataAvailability.dataGeoJSON.features
   let found = false

@@ -22,9 +22,11 @@ export default class RouteMarkers extends React.PureComponent {
   }
 
   componentDidUpdate () {
+    // Getting date range for route if more than two waypoints
     const { waypoints } = this.props
     const endIndex = waypoints.length
     if (waypoints.length >= 2) {
+      // Find out which one is 'northEast' and which one is 'southWest'
       const northEast = (waypoints[0].lat > waypoints[endIndex - 1]) ? waypoints[0] : waypoints[endIndex - 1]
       const southWest = (waypoints[0].lat < waypoints[endIndex - 1]) ? waypoints[0] : waypoints[endIndex - 1]
       getDateRange(northEast, southWest)
