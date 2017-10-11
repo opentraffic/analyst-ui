@@ -33,7 +33,7 @@ export default class Map extends React.Component {
   }
 
   // When map is dragged/zoomed and lat/lng/zoom are changed, update URL to reflect change
-  // Config is now also updated whenenver lat/lng/zoom are changed
+  // Config is now also updated whenever lat/lng/zoom are changed
   onChange = (event) => {
     const newCenter = event.target.getCenter()
     const newZoom = event.target.getZoom()
