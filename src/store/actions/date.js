@@ -1,5 +1,7 @@
 import {
   SET_DATE,
+  SET_DATE_RANGE,
+  CLEAR_DATE_RANGE,
   SET_DAY_FILTER,
   SET_HOUR_FILTER
 } from '../actions'
@@ -27,5 +29,19 @@ export function setHourFilter (filter) {
 
     // Cast values to number
     hourFilter: filter.map(i => Number(i))
+  }
+}
+
+export function setDateRange (start, end) {
+  return {
+    type: SET_DATE_RANGE,
+    start,
+    end
+  }
+}
+
+export function clearDateRange () {
+  return {
+    type: CLEAR_DATE_RANGE
   }
 }

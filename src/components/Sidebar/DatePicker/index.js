@@ -40,6 +40,21 @@ class DatePicker extends React.Component {
     this.props.dispatch(setDate(start, end))
   }
 
+  displayDateRange = () => {
+    if (!this.props.dateRange.rangeStart) return
+    const { rangeStart, rangeEnd } = this.props.dateRange
+    return (
+      <div className="info-panel">
+        <i> {'Data available from ' + rangeStart.format('dddd, MMMM Do YYYY') + ' to ' + rangeEnd.format('dddd, MMMM Do YYYY')} </i>
+      </div>
+    )
+  }
+
+  getInitialMonth = (today) => {
+    const { rangeStart } = this.props.dateRange
+    return (!rangeStart) ? today : rangeStart
+  }
+
   render () {
     // changing unix timestamp back into moment to initialize props of DateRangePicker
     function changeUnixToMoment (timestamp) {
@@ -65,6 +80,8 @@ class DatePicker extends React.Component {
           focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
           hideKeyboardShortcutsPanel
+          initialVisibleMonth={() => this.getInitialMonth(today)}
+          renderCalendarInfo={this.displayDateRange}
         />
       </Segment>
     )
@@ -74,7 +91,8 @@ class DatePicker extends React.Component {
 function mapStateToProps (state) {
   return {
     startDate: state.date.startDate,
-    endDate: state.date.endDate
+    endDate: state.date.endDate,
+    dateRange: state.date.dateRange
   }
 }
 

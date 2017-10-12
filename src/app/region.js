@@ -46,7 +46,6 @@ function withinBbox (features, bounds) {
 
   // Coordinates have array of lines
   // Lines have array of points [lng, lat]
-
   for (let lineIndex = coordinates.length - 1; lineIndex >= 0; lineIndex--) {
     const line = coordinates[lineIndex]
     for (let pointsIndex = line.length - 1; pointsIndex >= 0; pointsIndex--) {

@@ -17,7 +17,7 @@ export function displayRegionInfo (selection) {
   const { speed, osmlr_id, id } = selection.feature.properties
   featureInfo.innerHTML =
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
-         OSMLR_ID: ${osmlr_id} <br/> 
+         OSMLR_ID: ${osmlr_id} <br/>
          ID: ${id} <br/>
      </p>`
   /* eslint-enable camelcase */
