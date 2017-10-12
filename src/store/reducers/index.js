@@ -9,7 +9,7 @@ import tangram from './tangram'
 import view from './view'
 import loading from './loading'
 import barchart from './barchart'
-import data from './data'
+import coverage from './coverage'
 
 const reducers = combineReducers({
   app,
@@ -22,7 +22,7 @@ const reducers = combineReducers({
   view,
   loading,
   barchart,
-  data
+  coverage
 })
 
 export default reducers

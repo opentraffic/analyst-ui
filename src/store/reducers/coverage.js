@@ -4,7 +4,7 @@ const initialState = {
   dataGeoJSON: null
 }
 
-const data = (state = initialState, action) => {
+const coverage = (state = initialState, action) => {
   switch (action.type) {
     case SET_DATA_GEOJSON:
       return {
@@ -16,4 +16,4 @@ const data = (state = initialState, action) => {
   }
 }
 
-export default data
+export default coverage
