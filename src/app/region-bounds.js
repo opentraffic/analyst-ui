@@ -4,6 +4,8 @@ import { setBounds } from '../store/actions/view'
 import { getBboxArea } from './region'
 import { getDateRange } from './dataGeojson'
 
+const PAN_OUT_VALUE = 0.6
+
 // Store for existing bounds.
 const bounds = []
 let handlersAdded = false
@@ -17,15 +19,12 @@ store.subscribe(() => {
 
   // While data is still being rendered, disable interactivity of bounds
   if (state.loading.isLoading && bounds.length) {
+    bounds.forEach(function (bound) { bound.editor.disable() })
+  } else if (!state.loading.isLoading && bounds.length) {
+    // If data is not being loaded, check if bounds is bigger than map container
+    // If so, disable interactivity of bounds, else reenable them
     bounds.forEach(function (bound) {
-      bound.editor.disable()
-      bound.dragging.disable()
-    })
-  }
-  if (!state.loading.isLoading && bounds.length) {
-    bounds.forEach(function (bound) {
-      bound.editor.enable()
-      bound.dragging.enable()
+      if (!compareRegionAndMap(bound)) bound.editor.enable()
     })
   }
 
@@ -35,8 +34,15 @@ store.subscribe(() => {
   }
 })
 
-function compareRegionAndMap(bounds) {
-  const regionBounds = bounds[0].getBounds()
+/**
+ * Compares selected region's area to map container area
+ * Returns true if selected region's area is bigger than map container area by
+ * a certain percentage labeled PAN_OUT_VALUE
+ *
+ * @param {LatLngBounds} bounds - current bounds of selected region
+ */
+function compareRegionAndMap (bounds) {
+  const regionBounds = bounds.getBounds()
   const northEastPoint = map.latLngToContainerPoint(regionBounds.getNorthEast())
   const southWestPoint = map.latLngToContainerPoint(regionBounds.getSouthWest())
   const bbox = {
@@ -48,8 +54,11 @@ function compareRegionAndMap(bounds) {
   const regionArea = getBboxArea(bbox)
   const mapSize = map.getSize()
   const mapArea = mapSize.x * mapSize.y
-  return regionArea / mapArea > 0.5
+  const ratio = regionArea / mapArea
+  // if (ratio > PAN_OUT_VALUE) bounds.editor.disable()
+  return ratio > PAN_OUT_VALUE
 }
+
 /**
  * Removes an existing bounds.
  *
@@ -129,11 +138,18 @@ function onDrawingEdited (event) {
   getDateRange(bounds.northEast, bounds.southWest)
 }
 
+function onMapMoved (event) {
+  updateShades(bounds[0])
+  if (compareRegionAndMap(bounds[0])) {
+    bounds[0].editor.disable()
+  }
+}
+
 function addEventListeners () {
   map.on('editable:drawing:commit', onDrawingFinished)
   map.on('editable:vertex:dragend', onDrawingEdited)
   map.on('editable:dragend', onDrawingEdited)
-  map.on('moveend', function () { updateShades(bounds[0]) })
+  map.on('moveend', onMapMoved)
 }
 
 /**
@@ -172,6 +188,7 @@ export function drawBounds ({ west, south, east, north }) {
   }
   bounds.push(rect)
   storeBounds(rect.getBounds())
+  compareRegionAndMap(rect)
 }
 
 function createShades (rect) {
