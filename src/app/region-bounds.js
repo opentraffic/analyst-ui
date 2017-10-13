@@ -19,12 +19,17 @@ store.subscribe(() => {
 
   // While data is still being rendered, disable interactivity of bounds
   if (state.loading.isLoading && bounds.length) {
-    bounds.forEach(function (bound) { bound.editor.disable() })
+    bounds.forEach(function (bound) {
+      setBoundToDisabledAppearance(bound)
+    })
   } else if (!state.loading.isLoading && bounds.length) {
     // If data is not being loaded, check if bounds is bigger than map container
     // If so, disable interactivity of bounds, else reenable them
     bounds.forEach(function (bound) {
-      if (!compareRegionAndMap(bound)) bound.editor.enable()
+      if (!compareRegionAndMap(bound)) {
+        removeDisabledAppearance(bound)
+        bound.editor.enable()
+      }
     })
   }
 
@@ -79,6 +84,22 @@ function removeAllExistingBounds () {
     bounds[0].remove()
     bounds.shift()
   }
+}
+
+/**
+ * Re-enables the interactivity of a boundary and
+ * removes the appearance of a disabled state.
+ *
+ * @param {LatLngBounds} bound - boundary object to change.
+ */
+function removeDisabledAppearance (bound) {
+  bound.setStyle({
+    weight: 3,
+    color: '#3388ff',
+    fill: false,
+    dashArray: null
+  })
+  bound._path.classList.remove('map-bounding-box-disabled')
 }
 
 /**
@@ -140,7 +161,10 @@ function onDrawingEdited (event) {
 function onMapMoved (event) {
   updateShades(bounds[0])
   if (compareRegionAndMap(bounds[0])) {
-    bounds[0].editor.disable()
+    setBoundToDisabledAppearance(bounds[0])
+  } else {
+    removeDisabledAppearance(bounds[0])
+    bounds[0].editor.enable()
   }
 }
 
@@ -270,6 +294,6 @@ function updateShades (rect) {
 export function removeShades () {
   // If shades exist remove it
   if (shades) { L.DomUtil.remove(map._shadeContainer) }
-  // Set shades to false, since shades rae now removed
+  // Set shades to false, since shades are now removed
   shades = false
 }
