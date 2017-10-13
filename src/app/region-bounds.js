@@ -96,7 +96,7 @@ function removeDisabledAppearance (bound) {
   bound.setStyle({
     weight: 3,
     color: '#3388ff',
-    fill: false,
+    fill: 'transparent',
     dashArray: null
   })
   bound._path.classList.remove('map-bounding-box-disabled')
