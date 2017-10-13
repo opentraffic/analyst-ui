@@ -159,6 +159,7 @@ function onDrawingEdited (event) {
 }
 
 function onMapMoved (event) {
+  if (!bounds[0]) return
   updateShades(bounds[0])
   if (compareRegionAndMap(bounds[0])) {
     setBoundToDisabledAppearance(bounds[0])
