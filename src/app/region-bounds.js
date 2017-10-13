@@ -4,7 +4,7 @@ import { setBounds } from '../store/actions/view'
 import { getBboxArea } from './region'
 import { getDateRange } from './dataGeojson'
 
-const PAN_MAP_RATIO = 0.6
+const PAN_MAP_RATIO = 0.75
 
 // Store for existing bounds.
 const bounds = []
