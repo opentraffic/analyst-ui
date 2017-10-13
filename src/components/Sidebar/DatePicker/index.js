@@ -52,7 +52,11 @@ class DatePicker extends React.Component {
 
   getInitialMonth = (today) => {
     const { rangeStart } = this.props.dateRange
-    return (!rangeStart) ? today : rangeStart
+    if (this.props.startDate) {
+      return moment(this.props.startDate)
+    } else {
+      return (!rangeStart) ? today : rangeStart
+    }
   }
 
   render () {
