@@ -69,9 +69,9 @@ function withinBbox (features, bounds) {
   return features
 }
 
-function getBboxArea (bounds) {
-  const width = (bounds.east - bounds.west)
-  const height = (bounds.north - bounds.south)
+export function getBboxArea (bounds) {
+  const width = Math.abs(bounds.east - bounds.west)
+  const height = Math.abs(bounds.north - bounds.south)
   const area = width * height
   return area
 }
@@ -138,8 +138,10 @@ export function showRegion (bounds) {
             parsedIds.forEach((id, index) => {
               addSpeedToMapGeometry(tiles, date, id, features[index].properties)
               let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-              totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
-              totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+              if (speedsFromThisSegment) {
+                totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+                totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+              }
             })
             store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
           }

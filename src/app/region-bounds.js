@@ -1,7 +1,10 @@
 /* global map, L */
 import store from '../store'
 import { setBounds } from '../store/actions/view'
+import { getBboxArea } from './region'
 import { getDateRange } from './dataGeojson'
+
+const PAN_MAP_RATIO = 0.75
 
 // Store for existing bounds.
 const bounds = []
@@ -11,21 +14,22 @@ let shades = false
 // Subscribe to changes in state to affect the behavior of Leaflet.Editable.
 store.subscribe(() => {
   const state = store.getState()
-
   // If bounds are cleared from state, remove current bounds.
   if (!state.view.bounds) removeAllExistingBounds()
 
   // While data is still being rendered, disable interactivity of bounds
   if (state.loading.isLoading && bounds.length) {
     bounds.forEach(function (bound) {
-      bound.editor.disable()
-      bound.dragging.disable()
+      setBoundToDisabledAppearance(bound)
     })
-  }
-  if (!state.loading.isLoading && bounds.length) {
+  } else if (!state.loading.isLoading && bounds.length) {
+    // If data is not being loaded, check if bounds is bigger than map container
+    // If so, disable interactivity of bounds, else reenable them
     bounds.forEach(function (bound) {
-      bound.editor.enable()
-      bound.dragging.enable()
+      if (!compareRegionAndMap(bound)) {
+        removeDisabledAppearance(bound)
+        bound.editor.enable()
+      }
     })
   }
 
@@ -34,6 +38,30 @@ store.subscribe(() => {
     map.editTools.stopDrawing()
   }
 })
+
+/**
+ * Compares selected region's area to map container area
+ * Returns true if selected region's area is bigger than map container area by
+ * a certain percentage labeled PAN_OUT_VALUE
+ *
+ * @param {LatLngBounds} bounds - current bounds of selected region
+ */
+function compareRegionAndMap (bounds) {
+  const regionBounds = bounds.getBounds()
+  const northEastPoint = map.latLngToContainerPoint(regionBounds.getNorthEast())
+  const southWestPoint = map.latLngToContainerPoint(regionBounds.getSouthWest())
+  const bbox = {
+    north: northEastPoint.x,
+    east: northEastPoint.y,
+    south: southWestPoint.x,
+    west: southWestPoint.y
+  }
+  const regionArea = getBboxArea(bbox)
+  const mapSize = map.getSize()
+  const mapArea = mapSize.x * mapSize.y
+  const ratio = regionArea / mapArea
+  return ratio > PAN_MAP_RATIO
+}
 
 /**
  * Removes an existing bounds.
@@ -56,6 +84,22 @@ function removeAllExistingBounds () {
     bounds[0].remove()
     bounds.shift()
   }
+}
+
+/**
+ * Re-enables the interactivity of a boundary and
+ * removes the appearance of a disabled state.
+ *
+ * @param {LatLngBounds} bound - boundary object to change.
+ */
+function removeDisabledAppearance (bound) {
+  bound.setStyle({
+    weight: 3,
+    color: '#3388ff',
+    fill: 'transparent',
+    dashArray: null
+  })
+  bound._path.classList.remove('map-bounding-box-disabled')
 }
 
 /**
@@ -114,11 +158,22 @@ function onDrawingEdited (event) {
   getDateRange(bounds.northEast, bounds.southWest)
 }
 
+function onMapMoved (event) {
+  if (!bounds[0]) return
+  updateShades(bounds[0])
+  if (compareRegionAndMap(bounds[0])) {
+    setBoundToDisabledAppearance(bounds[0])
+  } else {
+    removeDisabledAppearance(bounds[0])
+    bounds[0].editor.enable()
+  }
+}
+
 function addEventListeners () {
   map.on('editable:drawing:commit', onDrawingFinished)
   map.on('editable:vertex:dragend', onDrawingEdited)
   map.on('editable:dragend', onDrawingEdited)
-  map.on('moveend', function () { updateShades(bounds[0]) })
+  map.on('moveend', onMapMoved)
 }
 
 /**
@@ -157,6 +212,7 @@ export function drawBounds ({ west, south, east, north }) {
   }
   bounds.push(rect)
   storeBounds(rect.getBounds())
+  compareRegionAndMap(rect)
 }
 
 function createShades (rect) {
@@ -239,6 +295,6 @@ function updateShades (rect) {
 export function removeShades () {
   // If shades exist remove it
   if (shades) { L.DomUtil.remove(map._shadeContainer) }
-  // Set shades to false, since shades rae now removed
+  // Set shades to false, since shades are now removed
   shades = false
 }
