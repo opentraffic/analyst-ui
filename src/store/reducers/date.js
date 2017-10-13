@@ -1,7 +1,8 @@
 import moment from 'moment'
 import {
   SET_DATE,
-  TOGGLE_TIME_FILTERS,
+  SET_DATE_RANGE,
+  CLEAR_DATE_RANGE,
   SET_DAY_FILTER,
   SET_HOUR_FILTER
 } from '../actions'
@@ -10,9 +11,9 @@ const initialState = {
   // For date picker
   startDate: null,
   endDate: null,
+  dateRange: {},
 
   // For time chart filters
-  filtersEnabled: true,
   dayFilter: null,
   hourFilter: null
 }
@@ -29,10 +30,23 @@ const date = (state = initialState, action) => {
         year: year,
         week: week
       }
-    case TOGGLE_TIME_FILTERS:
+    case SET_DATE_RANGE:
+      const startRange = moment(action.start)
+      const endRange = moment(action.end)
       return {
         ...state,
-        filtersEnabled: action.filtersEnabled || !state.filtersEnabled
+        dateRange: {
+          rangeStart: startRange,
+          rangeEnd: endRange
+        }
+      }
+    case CLEAR_DATE_RANGE:
+      return {
+        ...state,
+        dateRange: {
+          rangeStart: null,
+          rangeENd: null
+        }
       }
     case SET_DAY_FILTER:
       return {

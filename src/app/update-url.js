@@ -16,6 +16,8 @@ const MAP_LONGITUDE = 'lng'
 const MAP_ZOOM = 'zoom'
 const MAP_LABEL = 'label'
 const ANALYSIS_NAME = 'name'
+const DATA_RANGE_START = 'rangeStart'
+const DATA_RANGE_END = 'rangeEnd'
 
 const VALUE_DELIMITER = '/'
 
@@ -28,6 +30,7 @@ export function initUrlUpdate () {
       ...getRegionBounds(state.view.bounds),
       ...getDateRange(state.date),
       ...getTimeFilters(state.date),
+      ...getDataRange(state.date),
       ...getMapView(state.map),
       [MAP_LABEL]: getMapLabel(state.map),
       [ANALYSIS_NAME]: getAnalysisName(state.app)
@@ -65,6 +68,13 @@ function getRegionBounds (bounds) {
   }
 }
 
+function getDataRange (date) {
+  return {
+    [DATA_RANGE_START]: (date && date.dateRange.rangeStart && date.dateRange.rangeStart.valueOf()) || null,
+    [DATA_RANGE_END]: (date && date.dateRange.rangeEnd && date.dateRange.rangeEnd.valueOf()) || null
+  }
+}
+
 function getDateRange (date) {
   return {
     [DATE_START]: (date && date.startDate) || null,
@@ -73,25 +83,21 @@ function getDateRange (date) {
 }
 
 export function getTimeFilters (date) {
-  if (date.filtersEnabled) {
-    let dayFilter
-    let hourFilter
+  let dayFilter
+  let hourFilter
 
-    if (date && date.dayFilter) {
-      dayFilter = date.dayFilter[0] + VALUE_DELIMITER + date.dayFilter[1]
-    }
-
-    if (date && date.hourFilter) {
-      hourFilter = date.hourFilter[0] + VALUE_DELIMITER + date.hourFilter[1]
-    }
-
-    return {
-      [DAY_FILTER]: dayFilter || null,
-      [HOUR_FILTER]: hourFilter || null
-    }
+  if (date && date.dayFilter) {
+    dayFilter = date.dayFilter[0] + VALUE_DELIMITER + date.dayFilter[1]
   }
 
-  return null
+  if (date && date.hourFilter) {
+    hourFilter = date.hourFilter[0] + VALUE_DELIMITER + date.hourFilter[1]
+  }
+
+  return {
+    [DAY_FILTER]: dayFilter || null,
+    [HOUR_FILTER]: hourFilter || null
+  }
 }
 
 function getMapView (map) {

@@ -2,6 +2,7 @@
 import store from '../store'
 import { setBounds } from '../store/actions/view'
 import { getBboxArea } from './region'
+import { getDateRange } from './dataGeojson'
 
 // Store for existing bounds.
 const bounds = []
@@ -101,8 +102,14 @@ function storeBounds (bounds) {
 }
 
 function onDrawingFinished (event) {
+  const region = {
+    northEast: event.layer.getBounds().getNorthEast(),
+    southWest: event.layer.getBounds().getSouthWest()
+  }
+  getDateRange(region.northEast, region.southWest)
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
+
   // If the region shades do not exist, create them
   if (!shades) { createShades(event.layer) }
 
@@ -115,6 +122,11 @@ function onDrawingFinished (event) {
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
   updateShades(event.layer)
+  const bounds = {
+    northEast: event.layer.getBounds().getNorthEast(),
+    southWest: event.layer.getBounds().getSouthWest()
+  }
+  getDateRange(bounds.northEast, bounds.southWest)
 }
 
 function addEventListeners () {

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { Marker, Popup, LayerGroup } from 'react-leaflet'
 import { Button } from 'semantic-ui-react'
 import 'leaflet-extra-markers'
+import { getDateRange } from '../../../../app/dataGeojson'
 import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css'
 import './RouteMarkers.css'
 
@@ -18,6 +19,24 @@ export default class RouteMarkers extends React.PureComponent {
     waypoints: [],
     removeWaypoint: function () {},
     updateWaypoint: function () {}
+  }
+
+  componentDidUpdate () {
+    // Getting date range for route if more than two waypoints
+    const { waypoints } = this.props
+    const numOfPoints = waypoints.length
+    if (numOfPoints >= 2) {
+      // Calculate 'northEast' and 'southWest' point
+      const northEast = {
+        lat: Math.max(waypoints[0].lat, waypoints[numOfPoints - 1].lat),
+        lng: Math.max(waypoints[0].lng, waypoints[numOfPoints - 1].lng)
+      }
+      const southWest = {
+        lat: Math.min(waypoints[0].lat, waypoints[numOfPoints - 1].lat),
+        lng: Math.min(waypoints[0].lng, waypoints[numOfPoints - 1].lng)
+      }
+      getDateRange(northEast, southWest)
+    }
   }
 
   createMarkers = () => {

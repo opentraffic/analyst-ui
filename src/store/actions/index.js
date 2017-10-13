@@ -9,7 +9,8 @@ export const HIDE_LOADING = 'HIDE_LOADING'
 
 /* date */
 export const SET_DATE = 'SET_DATE'
-export const TOGGLE_TIME_FILTERS = 'TOGGLE_TIME_FILTERS'
+export const SET_DATE_RANGE = 'SET_DATE_RANGE'
+export const CLEAR_DATE_RANGE = 'CLEAR_DATE_RANGE'
 export const SET_DAY_FILTER = 'SET_DAY_FILTER'
 export const SET_HOUR_FILTER = 'SET_HOUR_FILTER'
 
@@ -41,3 +42,8 @@ export const UPDATE_SCENE = 'UPDATE_SCENE'
 export const SET_VIEW_BOUNDS = 'SET_VIEW_BOUNDS'
 export const CLEAR_VIEW_BOUNDS = 'CLEAR_VIEW_BOUNDS'
 export const SET_GEOJSON = 'SET_GEOJSON'
+export const SET_DATA_GEOJSON = 'SET_DATA_GEOJSON'
+
+/* barchart */
+export const CLEAR_BARCHART = 'CLEAR_BARCHART'
+export const ADD_SEGMENTS_TO_BARCHART = 'ADD_SEGMENTS_TO_BARCHART'

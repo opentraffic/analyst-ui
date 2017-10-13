@@ -7,8 +7,8 @@ import 'dc/dc.css'
 
 // Callback for when data is added to the current filter results
 const reduceAdd = function (p, v) {
-  p.count += v.c
-  p.sum += v.s
+  p.count++
+  p.sum += v.meanSpeedThisHour
   if (p.count > 0) {
     p.avg = (p.sum / p.count)
   } else {
@@ -19,8 +19,9 @@ const reduceAdd = function (p, v) {
 
 // Callback for when data is removed from the current filter results
 const reduceRemove = function (p, v) {
-  p.count -= v.c
-  p.sum -= v.s
+  // return p - p.
+  p.count--
+  p.sum -= v.meanSpeedThisHour
   if (p.count > 0) {
     p.avg = (p.sum / p.count)
   } else {
@@ -32,6 +33,7 @@ const reduceRemove = function (p, v) {
 // Initialize `p`
 const reduceInitial = function () {
   return {
+    meanSpeedThisHour: 0,
     count: 0,
     sum: 0,
     avg: 0
@@ -97,10 +99,8 @@ export function createChart (el, opts) {
     .renderHorizontalGridLines(true)
     .elasticY(true)
     // Filter brush
-    // The filter is initially off (because if it is on by default, it can
-    // introduce undesirable interaction effects).
     // We also force the brush to snap to the space between bars
-    .brushOn(false)
+    .brushOn(true)
     .round(n => Math.floor(n) + 0.5)
     .alwaysUseRounding(true)
 
@@ -117,5 +117,8 @@ export function createChart (el, opts) {
     opts.onExtentChange(adjusted)
   })
 
-  return chart
+  return {
+    chart: chart,
+    dimension: dimension
+  }
 }

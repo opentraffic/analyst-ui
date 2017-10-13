@@ -1,12 +1,12 @@
 /* global feature */
 import config from '../config'
-import { STOPS, ZERO_SPEED_STOPS } from '../lib/route-segments'
+import { STOPS, OUTLINE_STOPS } from '../lib/route-segments'
+import { getColorAtIndexInVec3 } from '../lib/color-ramps'
 
 const scene = {
   import: [
     'https://mapzen.com/carto/refill-style/7/refill-style.zip',
     'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
-    // 'https://mapzen.com/carto/refill-style/7/themes/gray-gold.zip'
   ],
   global: {
     'sdk_mapzen_api_key': config.mapzen.apiKey
@@ -14,42 +14,99 @@ const scene = {
   layers: {
     routes: {
       data: { source: 'routes' },
-      draw: {
-        lines: {
-          interactive: true,
-          order: 500,
-          width: STOPS,
-          color: function () {
-            const speed = feature.speed
-            const color = speed >= 100 ? '#313695'
-                        : speed >= 90 ? '#4575b4'
-                        : speed >= 80 ? '#74add1'
-                        : speed >= 70 ? '#abd9e9'
-                        : speed >= 60 ? '#e0f3f8'
-                        : speed >= 50 ? '#fee090'
-                        : speed >= 40 ? '#fdae61'
-                        : speed >= 30 ? '#f46d43'
-                        : speed >= 20 ? '#d73027'
-                        : speed > 0 ? '#a50026'
-                        : '#ccc'
-            return color
-          },
-          outline: {
-            width: '1px',
-            color: '#222'
-          },
-          join: 'round'
-        }
-      },
-      zeroSpeed: {
-        filter: function () {
-          return feature.speed === 0 || feature.speed === null || typeof feature.speed === 'undefined'
-        },
+      nonzero: {
+        // filter: function() {
+        //   return feature.speed !== 0 && feature.speed !== null && typeof feature.speed !== 'undefined'
+        // },
         draw: {
-          lines: {
-            order: 400,
-            width: ZERO_SPEED_STOPS
+          otRoads: {
+            interactive: true,
+            order: 500,
+            width: STOPS,
+            color: function () {
+              const speed = feature.speed
+              // divide by an even multiple of 255 for lossless conversion to 8 bits
+              const colorIndex = speed >= 100 ? 10 / 15
+                          : speed >= 90 ? 9 / 15
+                          : speed >= 80 ? 8 / 15
+                          : speed >= 70 ? 7 / 15
+                          : speed >= 60 ? 6 / 15
+                          : speed >= 50 ? 5 / 15
+                          : speed >= 40 ? 4 / 15
+                          : speed >= 30 ? 3 / 15
+                          : speed >= 20 ? 2 / 15
+                          : speed > 0 ? 1 / 15
+                          : 0
+              return [ colorIndex, feature.drive_on_right, feature.oneway ]
+            },
+            cap: 'round'
           }
+        },
+        otOutlines: {
+          draw: {
+            otOutlines: {
+              order: 499,
+              width: OUTLINE_STOPS,
+              color: '#222'
+            }
+          }
+        }
+      // },
+      // zeroSpeed: {
+      //   filter: function () {
+      //     return feature.speed === 0 || feature.speed === null || typeof feature.speed === 'undefined'
+      //   },
+      //   draw: {
+      //     lines: {
+      //       order: 400,
+      //       width: STOPS,
+      //       color: '#ccc',
+      //       outline: {
+      //         width: '.5px',
+      //         color: '#222'
+      //       },
+      //       join: 'round'
+      //     }
+      //   }
+      }
+    }
+  },
+  styles: {
+    otRoads: {
+      base: 'lines',
+      texcoords: true,
+      lighting: false,
+      blend: 'inlay',
+      shaders: {
+        blocks: {
+          color: `
+            // convert back to ints from 8-bit floats
+            int i = int(floor(v_color.r * 15.));
+
+            if (i == 0) color.rgb = vec3(${getColorAtIndexInVec3(0)});
+            if (i == 1) color.rgb = vec3(${getColorAtIndexInVec3(1)});
+            if (i == 2) color.rgb = vec3(${getColorAtIndexInVec3(2)});
+            if (i == 3) color.rgb = vec3(${getColorAtIndexInVec3(3)});
+            if (i == 4) color.rgb = vec3(${getColorAtIndexInVec3(4)});
+            if (i == 5) color.rgb = vec3(${getColorAtIndexInVec3(5)});
+            if (i == 6) color.rgb = vec3(${getColorAtIndexInVec3(6)});
+            if (i == 7) color.rgb = vec3(${getColorAtIndexInVec3(7)});
+            if (i == 8) color.rgb = vec3(${getColorAtIndexInVec3(8)});
+            if (i == 9) color.rgb = vec3(${getColorAtIndexInVec3(9)});
+            if (i == 10) color.rgb = vec3(${getColorAtIndexInVec3(10)});
+
+            // draw each half-width if it's not a one-way street
+            color.a = floor(v_texcoord.x*2.)+v_color.b;
+          `
+        }
+      }
+    },
+    otOutlines: {
+      base: 'lines',
+      mix: 'otRoads',
+      shaders: {
+        blocks: {
+          color: `color = v_color;`
         }
       }
     }

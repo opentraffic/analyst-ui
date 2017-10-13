@@ -3,9 +3,10 @@ import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
-import { addSpeedToThing } from './processing'
+import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
 import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
+import { clearBarchart, setBarchartSpeeds } from '../store/actions/barchart'
 import { setGeoJSON } from '../store/actions/view'
 import {
   clearRouteSegments,
@@ -18,11 +19,56 @@ import {
   setTrafficRouteTime
 } from '../store/actions/route'
 import store from '../store'
+import mathjs from 'mathjs'
 
 function resetRouteState () {
   store.dispatch(clearRoute())
   store.dispatch(clearRouteError())
   store.dispatch(clearRouteSegments())
+}
+
+const PI = 3.14159265
+const RAD_PER_DEG = PI / 180.0
+const kRadEarthMeters = 6378160.187
+// Calculates the distance between two lat/lng's in meters. Uses spherical
+// geometry (law of cosines).
+export function Distance (ll1, ll2) {
+  // If points are the same, return 0
+  if (ll1 === ll2) {
+    return 0.0
+  }
+  // Delta longitude. Don't need to worry about crossing 180
+  // since cos(x) = cos(-x)
+  const deltalng = (ll2[1] - ll1[1]) * RAD_PER_DEG
+  const a = ll1[0] * RAD_PER_DEG
+  const c = ll2[0] * RAD_PER_DEG
+
+  // Find the angle subtended in radians (law of cosines)
+  const cosb = (Math.sin(a) * Math.sin(c)) + (Math.cos(a) * Math.cos(c) * Math.cos(deltalng))
+
+  // Angle subtended * radius of earth (portion of the circumference).
+  // Protect against cosb being outside -1 to 1 range.
+  if (cosb >= 1.0) {
+    return 0.00001
+  } else if (cosb < -1.0) {
+    return PI * kRadEarthMeters
+  } else {
+    return (Math.acos(cosb) * kRadEarthMeters)
+  }
+}
+
+/**
+ * Returns the point a specified percentage along a segment from this point
+ * to an end point.
+ * @param  begin  Begin point.
+ * @param  end  End point.
+ * @param  pct  Percentage along the segment.
+ * @return Returns the point along the segment.
+ */
+export function alongSegment (beginll, endll, pct) {
+  const lat = beginll[0] + (endll[0] - beginll[0]) * pct
+  const lng = beginll[1] + (endll[1] - beginll[1]) * pct
+  return {lat, lng}
 }
 
 export function showRoute (waypoints) {
@@ -111,14 +157,24 @@ export function showRoute (waypoints) {
         year: store.getState().date.year,
         week: store.getState().date.week
       }
+      store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date).then((tiles) => {
-        parsedIds.forEach((item) => {
-          // Will add either meaured or reference speed
-          addSpeedToThing(tiles, date, item, item)
-        })
-
-        const routeTime = getRouteTime(response)
-        store.dispatch(setTrafficRouteTime(routeTime))
+        // TODO: when year and week aren't specified, we should also
+        // skip the step of trying to fetch data tiles
+        if (date.year && date.week) {
+          let totalSpeedArray = mathjs.zeros(7, 24)
+          let totalCountArray = mathjs.zeros(7, 24)
+          parsedIds.forEach((id) => {
+            // Will add either meaured or reference speed
+            addSpeedToMapGeometry(tiles, date, id, id)
+            let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
+            totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+            totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+          })
+          store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+          const routeTime = getRouteTime(response)
+          store.dispatch(setTrafficRouteTime(routeTime))
+        }
 
         // Now let's draw this
         const speeds = []
@@ -128,7 +184,9 @@ export function showRoute (waypoints) {
           properties: {
             analysisMode: 'route',
             analyisName: store.getState().app.viewName,
-            date: store.getState().date
+            date: store.getState().date,
+            baselineTime: store.getState().route.baselineTime,
+            trafficRouteTime: store.getState().route.trafficRouteTime
           }
         }
 
@@ -136,52 +194,84 @@ export function showRoute (waypoints) {
           // Create individual segments for drawing, later.
           const begin = edge.begin_shape_index
           const end = edge.end_shape_index
-          const coordsSlice = coordinates.slice(begin, end + 1)
-          const id = edge.traffic_segments ? edge.traffic_segments[0].segment_id : null
-          let found
-          for (let i = 0, j = parsedIds.length; i < j; i++) {
-            if (id === parsedIds[i].id) {
-              found = parsedIds[i]
-              break
-            }
-          }
-          // Determine what speed to use
-          // If we found a historic speed, use that.
+
+          let coordsSlice = coordinates.slice(begin, end + 1)
+          const fullArrayDist = Distance(coordsSlice[0], coordsSlice[coordsSlice.length - 1])
           let speed = -1
-          if (found && found.speed !== -1) {
-            speed = found.speed
-          } else {
-            // If no historic speed or reference speed, use elapsed time
-            // -- DISABLED -- this doesn't make sense when visualizing data;
-            // we only need it for ETA.
-            // const elapsedTime = ((index + 1) < response.edges.length) ? (response.edges[index + 1].end_node.elapsed_time - edge.end_node.elapsed_time) : 0
-            // speed = elapsedTime
-          }
+          let dist = 0
+          if (edge.traffic_segments) {
+            for (let t = 0; t < edge.traffic_segments.length; t++) {
+              let id = edge.traffic_segments ? edge.traffic_segments[t].segment_id : null
+              // there are multiple segments within an edge or there are segments crossing over multiple edges
+              if (edge.traffic_segments.length > 1) {
+                // set the index to the rounded begin percent of the coord array
+                // calculate the distance for each coord pair and increment
+                // once the distance exceeds the percentage of the end percent of the polyline, split the polyline
+                const targetDist = fullArrayDist * edge.traffic_segments[t].end_percent
+                let total = 0
+                for (let polyIdx = 0; polyIdx < coordsSlice.length; polyIdx++) {
+                  // accumulate the distance total and keep track of previous distance
+                  let prevTotal = dist
+                  dist = (polyIdx < coordsSlice.length - 1) ? Distance(coordsSlice[polyIdx], coordsSlice[polyIdx + 1]) : 0
+                  total += dist
 
-          speeds.push({
-            coordinates: coordsSlice,
-            speed: speed,
-            properties: found
-          })
+                  if (total > targetDist) {
+                    let deltaToTarget = targetDist - prevTotal
+                    let percentAlong = deltaToTarget / dist
+                    let newPoint = (polyIdx < coordsSlice.length - 1) ? alongSegment(coordsSlice[polyIdx], coordsSlice[polyIdx + 1], percentAlong) : null
+                    // insert new point into original array and then create new coords array for just that traffic segment
+                    coordsSlice.splice(polyIdx + 1, 0, [newPoint.lat, newPoint.lng])
+                    let newcoords = coordsSlice.slice(0, polyIdx + 2)
+                    // then remove the new coords array points from the original slice
+                    coordsSlice = coordsSlice.slice(newcoords.length - 1, coordsSlice.length)
+                    // reset
+                    dist = 0
+                    total = 0
 
-          // Make geoJSON feature
-          // coordinates in GeoJSON must flip lat/lng values
-          const coordsGeo = coordsSlice.map((i) => [i[1], i[0]])
-          geojson.features.push({
-            type: 'Feature',
-            geometry: {
-              type: 'LineString',
-              coordinates: coordsGeo
-            },
-            properties: {
-              id: found && found.segment,
-              osmlr_id: found && found.id,
-              speed: speed
-              // Note, this is missing properties that are already there in the region view
+                    for (let i = 0; i < parsedIds.length; i++) {
+                      if (id === parsedIds[i].id) {
+                        speed = parsedIds[i].speed
+                        speeds.push({
+                          coordinates: newcoords,
+                          speed: speed,
+                          properties: parsedIds[i]
+                        })
+                        break
+                      }
+                    }
+                  }
+                }
+              }
+              for (let i = 0; i < parsedIds.length; i++) {
+                if (id === parsedIds[i].id) {
+                  speed = parsedIds[i].speed
+                  speeds.push({
+                    coordinates: coordsSlice,
+                    speed: speed,
+                    properties: parsedIds[i]
+                  })
+                  break
+                }
+              }
+              // Make geoJSON feature
+              // coordinates in GeoJSON must flip lat/lng values
+              const coordsGeo = coordsSlice.map((i) => [i[1], i[0]])
+              geojson.features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'LineString',
+                  coordinates: coordsGeo
+                },
+                properties: {
+                  id: edge.traffic_segments[t],
+                  osmlr_id: edge.traffic_segments[t].segment_id,
+                  speed: speed
+                  // Note, this is missing properties that are already there in the region view
+                }
+              })
             }
-          })
+          }
         })
-
         store.dispatch(setGeoJSON(geojson))
         store.dispatch(setRouteSegments(speeds))
         store.dispatch(stopLoading())

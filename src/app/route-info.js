@@ -45,8 +45,8 @@ export function removeInfo () {
 export function displayRouteInfo (event, selection) {
   if (!featureFlag) createFeatureInfo()
   setPosition(event.containerPoint.x, event.containerPoint.y)
-
   const { speed, id, tileIdx, segmentIdx } = selection.properties
+
   featureInfo.innerHTML =
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
          ID: ${id} <br/>

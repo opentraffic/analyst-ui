@@ -3,12 +3,14 @@ import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import { merge } from '../lib/geojson'
 import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
 import { fetchDataTiles } from './data'
-import { addSpeedToThing } from './processing'
+import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
 import store from '../store'
 import { setGeoJSON } from '../store/actions/view'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
+import { clearBarchart, setBarchartSpeeds } from '../store/actions/barchart'
 import { setRouteError } from '../store/actions/route'
 import { displayRegionInfo } from './route-info'
+import mathjs from 'mathjs'
 
 const LINE_OVERLAP_BUFFER = 0.0003
 const MAX_AREA_BBOX = 0.01
@@ -127,12 +129,20 @@ export function showRegion (bounds) {
         year: store.getState().date.year,
         week: store.getState().date.week
       }
-
+      store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date)
         .then((tiles) => {
-          parsedIds.forEach((item, index) => {
-            addSpeedToThing(tiles, date, item, features[index].properties)
-          })
+          if (date.year && date.week) {
+            let totalSpeedArray = mathjs.zeros(7, 24)
+            let totalCountArray = mathjs.zeros(7, 24)
+            parsedIds.forEach((id, index) => {
+              addSpeedToMapGeometry(tiles, date, id, features[index].properties)
+              let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
+              totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+              totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+            })
+            store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+          }
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
             analysisMode: 'region',

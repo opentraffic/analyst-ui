@@ -2,7 +2,7 @@ import L from 'leaflet'
 import config from './config'
 import store from './store'
 import { recenterMap, setLocation } from './store/actions/map'
-import { setDate, enableTimeFilters, setDayFilter, setHourFilter } from './store/actions/date'
+import { setDate, setDayFilter, setHourFilter, setDateRange } from './store/actions/date'
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/view'
@@ -10,23 +10,29 @@ import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './
 import { initUrlUpdate } from './app/update-url'
 import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
+import { setDataCoverage } from './app/dataGeojson'
 import { getQueryStringObject, updateURL } from './lib/url-state'
 
 const VALUE_DELIMITER = '/'
 
 // Initialize application based on url query string params
 export function initApp (queryString = window.location.search) {
+  // Initialize data availability geojson and save to store
+  setDataCoverage(config.dataGeojson)
+
   // Parse URL to get all params
   const object = getQueryStringObject(queryString)
   const date = {
     startDate: Number(object.startDate) || null,
     endDate: Number(object.endDate) || null
   }
+
   const mapView = {
     lat: Number(object.lat) || config.map.center[0],
     lng: Number(object.lng) || config.map.center[1],
     zoom: Number(object.zoom) || config.map.zoom
   }
+
   const coordinates = [mapView.lat, mapView.lng]
   const label = object.label || ''
 
@@ -43,9 +49,6 @@ export function initApp (queryString = window.location.search) {
   store.dispatch(setDate(date.startDate, date.endDate))
 
   // Initialize time/day filters if present
-  if (object.df || object.hf) {
-    store.dispatch(enableTimeFilters())
-  }
   if (object.df) {
     const dayFilter = object.df.split(VALUE_DELIMITER)
     store.dispatch(setDayFilter(dayFilter))
@@ -68,6 +71,12 @@ export function initApp (queryString = window.location.search) {
   } else if (object.rw && object.rs && object.re && object.rn) {
     // All bounds must be present to be valid, otherwise it's discarded.
     initBounds(object.rw, object.rs, object.re, object.rn)
+  }
+
+  if (object.rangeStart && object.rangeEnd) {
+    const rangeStart = Number(object.rangeStart)
+    const rangeEnd = Number(object.rangeEnd)
+    store.dispatch(setDateRange(rangeStart, rangeEnd))
   }
 
   // Initialize Tangram scene file

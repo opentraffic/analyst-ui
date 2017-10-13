@@ -1,6 +1,7 @@
 import {
   SET_DATE,
-  TOGGLE_TIME_FILTERS,
+  SET_DATE_RANGE,
+  CLEAR_DATE_RANGE,
   SET_DAY_FILTER,
   SET_HOUR_FILTER
 } from '../actions'
@@ -10,26 +11,6 @@ export function setDate (startDate, endDate) {
     type: SET_DATE,
     startDate,
     endDate
-  }
-}
-
-export function toggleTimeFilters () {
-  return {
-    type: TOGGLE_TIME_FILTERS
-  }
-}
-
-export function enableTimeFilters () {
-  return {
-    type: TOGGLE_TIME_FILTERS,
-    filtersEnabled: true
-  }
-}
-
-export function disableTimeFilters () {
-  return {
-    type: TOGGLE_TIME_FILTERS,
-    filtersEnabled: false
   }
 }
 
@@ -48,5 +29,19 @@ export function setHourFilter (filter) {
 
     // Cast values to number
     hourFilter: filter.map(i => Number(i))
+  }
+}
+
+export function setDateRange (start, end) {
+  return {
+    type: SET_DATE_RANGE,
+    start,
+    end
+  }
+}
+
+export function clearDateRange () {
+  return {
+    type: CLEAR_DATE_RANGE
   }
 }
