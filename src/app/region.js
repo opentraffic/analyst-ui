@@ -138,8 +138,10 @@ export function showRegion (bounds) {
             parsedIds.forEach((id, index) => {
               addSpeedToMapGeometry(tiles, date, id, features[index].properties)
               let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-              totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
-              totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+              if (speedsFromThisSegment) {
+                totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+                totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+              }
             })
             store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
           }
