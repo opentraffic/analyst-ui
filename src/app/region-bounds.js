@@ -4,7 +4,7 @@ import { setBounds } from '../store/actions/view'
 import { getBboxArea } from './region'
 import { getDateRange } from './dataGeojson'
 
-const PAN_OUT_VALUE = 0.6
+const PAN_MAP_RATIO = 0.6
 
 // Store for existing bounds.
 const bounds = []
@@ -55,8 +55,7 @@ function compareRegionAndMap (bounds) {
   const mapSize = map.getSize()
   const mapArea = mapSize.x * mapSize.y
   const ratio = regionArea / mapArea
-  // if (ratio > PAN_OUT_VALUE) bounds.editor.disable()
-  return ratio > PAN_OUT_VALUE
+  return ratio > PAN_MAP_RATIO
 }
 
 /**
