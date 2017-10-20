@@ -24,9 +24,32 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
       // Append the speed to the geometry to render later
+      const speeds = getValuesFromSubtile(segment.segmentIdx, subtile, days, hours, 'speeds')
+      geometry.speedByHour = addSpeedByHour(speeds, days, hours)
       geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
     }
   } catch (e) {}
+}
+
+function addSpeedByHour (speedArray, days, hours) {
+  const speedByHour = []
+  const dayStart = days[0] + 1
+  const hourStart = hours[0] + 1
+  const hourEnd = hours[1]
+
+  let day = dayStart
+  let hour = hourStart
+
+  speedArray.forEach((speed, index) => {
+    hour = (hour % hourEnd === 0 || index === 0) ? hourStart : hour + 1
+    day = (hour !== hourStart || index === 0) ? day : day + 1
+    speedByHour.push({
+      'dayOfWeek': day,
+      'hourOfDay': hour,
+      'speedThisHour': speed
+    })
+  })
+  return speedByHour
 }
 
 /**
