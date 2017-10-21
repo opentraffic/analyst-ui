@@ -39,7 +39,7 @@ export default class RouteLine extends React.PureComponent {
       return (
         <Polyline
           positions={segment.coordinates}
-          color={getSpeedColor(segment.speed)}
+          color={getSpeedColor(segment.properties.percentDiff)}
           weight={getSegmentWidth(this.props.zoom, segment.speed)}
           onMouseDown={this.props.insertWaypoint}
           key={index}

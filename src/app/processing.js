@@ -19,12 +19,14 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
     const days = state.date.dayFilter || [0, 7]
     const hours = state.date.hourFilter || [0, 24]
 
+    const refspeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
     const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
-
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
       // Append the speed to the geometry to render later
       geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
+      // calculate percentage difference between weekly/historical speed and reference speed
+      geometry.percentDiff = ((refspeed - geometry.speed) / mathjs.mean(refspeed, geometry.speed)) * 100
     }
   } catch (e) {}
 }
