@@ -2,6 +2,51 @@ import colorbrewer from 'colorbrewer'
 
 const BLANK_COLOR = '#ccc'
 const CB_RDYLBU10 = colorbrewer.RdYlBu[10]
+const CB_REDS5 = colorbrewer.Reds[5]
+const CB_BLUES5 = colorbrewer.Blues[5]
+
+export const percDiffRamp = [
+  {
+    color: CB_REDS5[4],
+    minValue: -50
+  },
+  {
+    color: CB_REDS5[3],
+    minValue: -40
+  },
+  {
+    color: CB_REDS5[2],
+    minValue: -30
+  },
+  {
+    color: CB_REDS5[1],
+    minValue: -20
+  },
+  {
+    color: CB_REDS5[0],
+    minValue: -10
+  },
+  {
+    color: CB_BLUES5[0],
+    minValue: 0
+  },
+  {
+    color: CB_BLUES5[1],
+    minValue: 10
+  },
+  {
+    color: CB_BLUES5[2],
+    minValue: 20
+  },
+  {
+    color: CB_BLUES5[3],
+    minValue: 30
+  },
+  {
+    color: CB_BLUES5[4],
+    minValue: 30
+  }
+]
 
 export const speedRamp = [
   {
