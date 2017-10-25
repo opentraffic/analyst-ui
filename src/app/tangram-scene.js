@@ -24,19 +24,31 @@ const scene = {
             order: 500,
             width: STOPS,
             color: function () {
-              const speed = feature.speed
+              // const speed = feature.speed
               // divide by an even multiple of 255 for lossless conversion to 8 bits
-              const colorIndex = speed >= 100 ? 10 / 15
-                          : speed >= 90 ? 9 / 15
-                          : speed >= 80 ? 8 / 15
-                          : speed >= 70 ? 7 / 15
-                          : speed >= 60 ? 6 / 15
-                          : speed >= 50 ? 5 / 15
-                          : speed >= 40 ? 4 / 15
-                          : speed >= 30 ? 3 / 15
-                          : speed >= 20 ? 2 / 15
-                          : speed > 0 ? 1 / 15
-                          : 0
+              // const colorIndex = speed >= 100 ? 10 / 15
+              //             : speed >= 90 ? 9 / 15
+              //             : speed >= 80 ? 8 / 15
+              //             : speed >= 70 ? 7 / 15
+              //             : speed >= 60 ? 6 / 15
+              //             : speed >= 50 ? 5 / 15
+              //             : speed >= 40 ? 4 / 15
+              //             : speed >= 30 ? 3 / 15
+              //             : speed >= 20 ? 2 / 15
+              //             : speed > 0 ? 1 / 15
+              //             : 0
+              const percent = feature.percentDiff
+              const colorIndex = percent >= 40 ? 10 / 15
+                            : percent >= 30 ? 9 / 15
+                            : percent >= 20 ? 8 / 15
+                            : percent >= 10 ? 7 / 15
+                            : percent >= 0 ? 6 / 15
+                            : percent >= -10 ? 5 / 15
+                            : percent >= -20 ? 4 / 15
+                            : percent >= -30 ? 3 / 15
+                            : percent >= -40 ? 2 / 15
+                            : percent >- -50 ? 1 / 15
+                            : 0
               return [ colorIndex, feature.drive_on_right, feature.oneway ]
             },
             cap: 'round'
