@@ -198,6 +198,7 @@ export function showRoute (waypoints) {
           let coordsSlice = coordinates.slice(begin, end + 1)
           const fullArrayDist = Distance(coordsSlice[0], coordsSlice[coordsSlice.length - 1])
           let speed = -1
+          let speedByHour = []
           let dist = 0
           if (edge.traffic_segments) {
             for (let t = 0; t < edge.traffic_segments.length; t++) {
@@ -245,6 +246,7 @@ export function showRoute (waypoints) {
               for (let i = 0; i < parsedIds.length; i++) {
                 if (id === parsedIds[i].id) {
                   speed = parsedIds[i].speed
+                  speedByHour = parsedIds[i].speedByHour
                   speeds.push({
                     coordinates: coordsSlice,
                     speed: speed,
@@ -253,6 +255,7 @@ export function showRoute (waypoints) {
                   break
                 }
               }
+
               // Make geoJSON feature
               // coordinates in GeoJSON must flip lat/lng values
               const coordsGeo = coordsSlice.map((i) => [i[1], i[0]])
@@ -265,7 +268,8 @@ export function showRoute (waypoints) {
                 properties: {
                   id: edge.traffic_segments[t],
                   osmlr_id: edge.traffic_segments[t].segment_id,
-                  speed: speed
+                  speed: speed,
+                  speedByHour: speedByHour
                   // Note, this is missing properties that are already there in the region view
                 }
               })

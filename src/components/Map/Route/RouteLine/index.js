@@ -11,6 +11,7 @@ export default class RouteLine extends React.PureComponent {
       coordinates: PropTypes.array,
       color: PropTypes.string
     })),
+    compareEnabled: PropTypes.bool.isRequired,
     insertWaypoint: PropTypes.func,
     zoom: PropTypes.number.isRequired
   }
@@ -39,7 +40,7 @@ export default class RouteLine extends React.PureComponent {
       return (
         <Polyline
           positions={segment.coordinates}
-          color={getSpeedColor(segment.properties.percentDiff)}
+          color={(this.props.compareEnabled) ? getSpeedColor(segment.properties.percentDiff) : getSpeedColor(segment.speed)}
           weight={getSegmentWidth(this.props.zoom, segment.speed)}
           onMouseDown={this.props.insertWaypoint}
           key={index}
