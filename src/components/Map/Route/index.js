@@ -50,6 +50,7 @@ class Route extends React.PureComponent {
           segments={this.props.route.routeSegments}
           zoom={this.props.zoom}
           insertWaypoint={this.insertWaypoint}
+          compareEnabled={this.props.refSpeedComparisonEnabled}
         />
         <RouteMarkers
           waypoints={this.props.route.waypoints}
@@ -63,7 +64,8 @@ class Route extends React.PureComponent {
 
 function mapStateToProps (state) {
   return {
-    zoom: state.map.zoom
+    zoom: state.map.zoom,
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
   }
 }
 

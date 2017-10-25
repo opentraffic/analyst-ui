@@ -20,22 +20,18 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
     const hours = state.date.hourFilter || [0, 24]
 
     const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
-    const referenceTile = tiles.reference[segment.level][segment.tileIdx]
+    const refspeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
+
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
       // Append the speed to the geometry to render later
       const speeds = getValuesFromSubtile(segment.segmentIdx, subtile, days, hours, 'speeds')
       geometry.speedByHour = addSpeedByHour(speeds, days, hours)
       geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
-      const referenceSpeed = getMeanSpeed(segment.segmentIdx, referenceTile, days, hours)
-      geometry.percentDiff = compareHistoricWithReference(geometry.speed, referenceSpeed)
+      // calculate percentage difference between weekly/historical speed and reference speed
+      geometry.percentDiff = ((refspeed - geometry.speed) / mathjs.mean(refspeed, geometry.speed)) * 100
     }
   } catch (e) {}
-}
-
-function compareHistoricWithReference(historic, reference) {
-  const percentDiff = (historic - reference) / reference
-  return percentDiff.toFixed(2)
 }
 
 function addSpeedByHour (speedArray, days, hours) {
