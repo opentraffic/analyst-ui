@@ -14,7 +14,7 @@ export function setDate (startDate, endDate) {
   }
 }
 
-export function clearDate() {
+export function clearDate () {
   return {
     type: SET_DATE,
     startDate: null,
