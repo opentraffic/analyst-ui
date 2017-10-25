@@ -19,11 +19,12 @@ export class TimeFilters extends React.Component {
     dayFilter: PropTypes.arrayOf(PropTypes.number),
     hourFilter: PropTypes.arrayOf(PropTypes.number),
     speedsBinnedByHour: PropTypes.array,
+    percentDiffsBinnedByHour: PropTypes.array,
     refSpeedComparisonEnabled: PropTypes.bool
   }
 
   componentDidUpdate () {
-    const chartData = crossfilter(this.props.speedsBinnedByHour)
+    const chartData = { (!this.props.refSpeedComparisonEnabled) ? crossfilter(this.props.speedsBinnedByHour) : crossfilter(this.props.percentDiffsBinnedByHour) }
 
     this.makeDailyChart(chartData)
     this.makeHourlyChart(chartData)
@@ -132,6 +133,7 @@ function mapStateToProps (state) {
     dayFilter: state.date.dayFilter,
     hourFilter: state.date.hourFilter,
     speedsBinnedByHour: state.barchart.speedsBinnedByHour,
+    percentDiffsBinnedByHour: state.barchart.percentDiffsBinnedByHour,
     refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
   }
 }

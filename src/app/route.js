@@ -3,10 +3,10 @@ import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
-import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
+import { addSpeedToMapGeometry, prepareSpeedsForBarChart, preparePercentDiffsForBarChart } from './processing'
 import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { clearBarchart, setBarchartSpeeds } from '../store/actions/barchart'
+import { clearBarchart, setBarchartSpeeds, setBarchartPercentDiffs } from '../store/actions/barchart'
 import { setGeoJSON } from '../store/actions/view'
 import {
   clearRouteSegments,
@@ -164,14 +164,20 @@ export function showRoute (waypoints) {
         if (date.year && date.week) {
           let totalSpeedArray = mathjs.zeros(7, 24)
           let totalCountArray = mathjs.zeros(7, 24)
+          let totalPercentDiffArray = mathjs.zeros(7, 24)
+          let totalDiffCountArray = mathjs.zeros(7, 24)
           parsedIds.forEach((id) => {
             // Will add either meaured or reference speed
             addSpeedToMapGeometry(tiles, date, id, id)
             let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
+            let percentDiffssFromThisSegment = preparePercentDiffsForBarChart(tiles, date, id)
             totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
             totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+            totalPercentDiffArray = mathjs.add(totalPercentDiffArray, percentDiffssFromThisSegment.percentDiffs)
+            totalDiffCountArray = mathjs.add(totalDiffCountArray, percentDiffssFromThisSegment.diffCounts)
           })
           store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+          store.dispatch(setBarchartPercentDiffs(totalPercentDiffArray, totalDiffCountArray))
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
         }

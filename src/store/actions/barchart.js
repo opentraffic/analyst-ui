@@ -33,3 +33,31 @@ export function setBarchartSpeeds (speedsArray, countArray) {
     speedsBinnedByHour: hoursForCrossFilter
   }
 }
+
+export function setBarchartPercentDiffs (diffsArray, diffCountArray) {
+  let percentDiffArray
+  if (diffCountArray) {
+    percentDiffArray = diffsArray.map((value, index, matrix) => {
+      let count = diffCountArray.get(index)
+      if (count && count > 0) {
+        return (value / count)
+      } else {
+        return 0
+      }
+    })
+  } else {
+    percentDiffArray = diffsArray
+  }
+  let hoursForCrossFilter = []
+  percentDiffArray.forEach((percentDiff, index) => {
+    hoursForCrossFilter.push({
+      'dayOfWeek': index[0] + 1,
+      'hourOfDay': index[1] + 1,
+      'percentDiffThisHour': percentDiff
+    })
+  })
+  return {
+    type: ADD_SEGMENTS_TO_BARCHART,
+    percentDiffsBinnedByHour: hoursForCrossFilter
+  }
+}

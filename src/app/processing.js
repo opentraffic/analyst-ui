@@ -88,6 +88,38 @@ export function prepareSpeedsForBarChart (tiles, date, segment) {
 }
 
 /**
+ * Collect percentDiffs from the entire week for use in bar chart
+ * @param {*} tiles
+ * @param {*} date
+ * @param {*} segment
+ */
+export function preparePercentDiffsForBarChart (tiles, date, segment) {
+  // not all levels and tiles are available yet, so try()
+  // skips it if it doesn't work
+  try {
+    const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
+    const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
+    if (subtile) {
+      var diffsByDayAndHourArray = mathjs.zeros(7, 24)
+      var nonZeroDiffCountByDayAndHourArray = mathjs.zeros(7, 24)
+      var diffs = segment.percentDiff
+      chunk(diffs, 24).forEach((diffsForThisDay, dayIndex) => {
+        diffsForThisDay.forEach((diffsForThisHour, hourIndex) => {
+          if (diffsForThisHour > 0) {
+            diffsByDayAndHourArray.set([dayIndex, hourIndex], diffsForThisHour)
+            nonZeroDiffCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
+          }
+        })
+      })
+      return {
+        percentDiffs: diffsByDayAndHourArray,
+        diffCounts: nonZeroDiffCountByDayAndHourArray
+      }
+    }
+  } catch (e) {}
+}
+
+/**
  * Given a segment index, its historic data subtile, and the range of days
  * and hours selected, calculate the mean traffic speed on that segment.
  *
