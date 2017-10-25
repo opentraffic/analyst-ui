@@ -9,43 +9,53 @@ const CB_BLUES5 = colorbrewer.Blues[5]
 export const percDiffRamp = [
   {
     color: CB_REDS5[4],
-    minValue: -50
+    minValue: -50,
+    label: 'Less than -40%'
   },
   {
     color: CB_REDS5[3],
-    minValue: -40
+    minValue: -40,
+    label: '-30%'
   },
   {
     color: CB_REDS5[2],
-    minValue: -30
+    minValue: -30,
+    label: '-20%'
   },
   {
     color: CB_REDS5[1],
-    minValue: -20
+    minValue: -20,
+    label: '-10%'
   },
   {
     color: CB_REDS5[0],
-    minValue: -10
+    minValue: -10,
+    label: '-0%'
   },
   {
     color: CB_BLUES5[0],
-    minValue: 0
+    minValue: 0,
+    label: '+0%'
   },
   {
     color: CB_BLUES5[1],
-    minValue: 10
+    minValue: 10,
+    label: '+10%'
   },
   {
     color: CB_BLUES5[2],
-    minValue: 20
+    minValue: 20,
+    label: '+20%'
   },
   {
     color: CB_BLUES5[3],
-    minValue: 30
+    minValue: 30,
+    label: '+30%'
   },
   {
     color: CB_BLUES5[4],
-    minValue: 40
+    minValue: 40,
+    label: 'Greater than +40%'
   }
 ]
 
@@ -156,5 +166,8 @@ export function getColorAtIndexInVec3 (index) {
   if (!index) return hexToVec3(BLANK_COLOR)
 
   // index is 1-indexed
-  return hexToVec3(speedRamp[index - 1].color)
+  const { refSpeedComparisonEnabled } = store.getState().app
+  // use percDiffRamp if refSpeedComparisonEnabled = true
+  const colorRamp = (refSpeedComparisonEnabled) ? percDiffRamp : speedRamp
+  return hexToVec3(colorRamp[index - 1].color)
 }

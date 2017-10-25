@@ -19,8 +19,8 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
     const days = state.date.dayFilter || [0, 7]
     const hours = state.date.hourFilter || [0, 24]
 
-    const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
     const refspeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
+    const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
 
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {

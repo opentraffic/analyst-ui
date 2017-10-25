@@ -99,12 +99,16 @@ export class TimeFilters extends React.Component {
       <Segment>
         <Header>Segment speeds</Header>
         <div className="timefilter-daily">
-          <strong>Average by day-of-week</strong>
+          <strong>
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by day-of-week' : 'Average by day-of-week' }
+          </strong>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
         <div className="timefilter-hourly">
-          <strong>Average by hour-of-day</strong>
+          <strong>
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by hour-of-day' : 'Average by hour-of-day' }
+          </strong>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
         <Divider />
