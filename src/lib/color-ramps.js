@@ -10,7 +10,7 @@ export const percDiffRamp = [
   {
     color: CB_REDS5[4],
     minValue: -50,
-    label: 'Greater than -40%'
+    label: 'Less than -40%'
   },
   {
     color: CB_REDS5[3],
@@ -55,7 +55,7 @@ export const percDiffRamp = [
   {
     color: CB_BLUES5[4],
     minValue: 40,
-    label: 'Less than +40%'
+    label: 'Greater than +40%'
   }
 ]
 
