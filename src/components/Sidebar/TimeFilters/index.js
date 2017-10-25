@@ -101,7 +101,7 @@ export class TimeFilters extends React.Component {
         <div className="timefilter-daily">
           <strong>
             { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by day-of-week' : 'Average by day-of-week' }
-           </strong>
+          </strong>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
@@ -128,7 +128,7 @@ function mapStateToProps (state) {
     dayFilter: state.date.dayFilter,
     hourFilter: state.date.hourFilter,
     speedsBinnedByHour: state.barchart.speedsBinnedByHour,
-    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled,
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
   }
 }
 

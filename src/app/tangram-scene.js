@@ -47,7 +47,7 @@ const scene = {
                             : percent >= -20 ? 4 / 15
                             : percent >= -30 ? 3 / 15
                             : percent >= -40 ? 2 / 15
-                            : percent >- -50 ? 1 / 15
+                            : percent >= -50 ? 1 / 15
                             : 0
               return [ colorIndex, feature.drive_on_right, feature.oneway ]
             },
