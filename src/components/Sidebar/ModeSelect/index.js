@@ -53,9 +53,10 @@ export class ModeSelect extends React.PureComponent {
       startDrawingBounds()
     } else if (this.state.case === 'route') {
       this.props.dispatch(setRouteAnalysisMode())
+    } else {
+      this.props.dispatch(clearDate())
     }
     this.setState({case: null})
-    this.props.dispatch(clearDate())
     this.props.dispatch(clearDateRange())
     this.props.dispatch(clearBarchart())
     this.props.dispatch(setDayFilter([0, 7]))
