@@ -1,4 +1,5 @@
 import colorbrewer from 'colorbrewer'
+import store from '../store'
 
 const BLANK_COLOR = '#ccc'
 const CB_RDYLBU10 = colorbrewer.RdYlBu[10]
@@ -44,7 +45,7 @@ export const percDiffRamp = [
   },
   {
     color: CB_BLUES5[4],
-    minValue: 30
+    minValue: 40
   }
 ]
 
@@ -110,10 +111,12 @@ export const speedRamp = [
  */
 export function getSpeedColor (value) {
   if (!value) return BLANK_COLOR
-
-  for (let i = speedRamp.length - 1; i >= 0; i--) {
-    if (value >= speedRamp[i].minValue) {
-      return speedRamp[i].color
+  const { refSpeedComparisonEnabled } = store.getState().app
+  // use percDiffRamp if refSpeedComparisonEnabled = true
+  const colorRamp = (refSpeedComparisonEnabled) ? percDiffRamp : speedRamp
+  for (let i = colorRamp.length - 1; i >= 0; i--) {
+    if (value >= colorRamp[i].minValue) {
+      return colorRamp[i].color
     }
   }
 
