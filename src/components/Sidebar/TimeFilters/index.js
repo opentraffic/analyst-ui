@@ -24,8 +24,7 @@ export class TimeFilters extends React.Component {
   }
 
   componentDidUpdate () {
-    const chartData = { (!this.props.refSpeedComparisonEnabled) ? crossfilter(this.props.speedsBinnedByHour) : crossfilter(this.props.percentDiffsBinnedByHour) }
-
+    const chartData = this.props.refSpeedComparisonEnabled ? crossfilter(this.props.percentDiffsBinnedByHour) : crossfilter(this.props.speedsBinnedByHour)
     this.makeDailyChart(chartData)
     this.makeHourlyChart(chartData)
 
