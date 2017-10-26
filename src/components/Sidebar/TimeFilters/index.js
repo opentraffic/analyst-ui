@@ -1,10 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { Segment, Header, Radio, Divider } from 'semantic-ui-react'
+import { Segment, Radio, Divider } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter2'
 import { createChart } from './chart'
+import { getCurrentScene, setCurrentScene } from '../../../lib/tangram'
 import { setRefSpeedComparisonEnabled } from '../../../store/actions/app'
 import { setDayFilter, setHourFilter } from '../../../store/actions/date'
 import { isEqual } from 'lodash'
@@ -103,14 +104,12 @@ export class TimeFilters extends React.Component {
               toggle
               label="Compare against reference speeds"
               checked={this.props.refSpeedComparisonEnabled}
-              onChange={(event, data) =>
-                {
-                  this.props.dispatch(setRefSpeedComparisonEnabled(data.checked));
+              onChange={(event, data) => {
+                  this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))
                   // set global tangram property, as tangram can't access the store directly
-                  window.tangramLayer.scene.config.global.refSpeedComparisonEnabled = data.checked;
-                  // trigger a rebuild/redraw
-                  window.tangramLayer.scene.updateConfig();
-
+                  const scene = getCurrentScene()
+                  scene.global.refSpeedComparisonEnabled = data.checked
+                  setCurrentScene(scene)
                 }
               }
             />
