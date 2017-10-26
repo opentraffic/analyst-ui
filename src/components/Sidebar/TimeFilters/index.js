@@ -103,7 +103,16 @@ export class TimeFilters extends React.Component {
               toggle
               label="Compare against reference speeds"
               checked={this.props.refSpeedComparisonEnabled}
-              onChange={(event, data) => this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))}
+              onChange={(event, data) =>
+                {
+                  this.props.dispatch(setRefSpeedComparisonEnabled(data.checked));
+                  // set global tangram property, as tangram can't access the store directly
+                  window.tangramLayer.scene.config.global.refSpeedComparisonEnabled = data.checked;
+                  // trigger a rebuild/redraw
+                  window.tangramLayer.scene.updateConfig();
+
+                }
+              }
             />
           </strong>
         </div>
