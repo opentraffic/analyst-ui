@@ -97,7 +97,17 @@ export class TimeFilters extends React.Component {
   render () {
     return (
       <Segment>
-        <Header>Segment speeds</Header>
+        <div className="radio">
+          <strong>
+            <Radio
+              toggle
+              label="Compare against reference speeds"
+              checked={this.props.refSpeedComparisonEnabled}
+              onChange={(event, data) => this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))}
+            />
+          </strong>
+        </div>
+        <Divider/>
         <div className="timefilter-daily">
           <strong>
             { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by day-of-week' : 'Average by day-of-week' }
@@ -112,12 +122,6 @@ export class TimeFilters extends React.Component {
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
         <Divider />
-        <Radio
-          toggle
-          label="Compare against reference speeds"
-          checked={this.props.refSpeedComparisonEnabled}
-          onChange={(event, data) => this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))}
-        />
       </Segment>
     )
   }
