@@ -10,8 +10,8 @@ export function storeReferenceToTangramLayer (layer) {
 }
 
 export function getTangramLayer () {
-	if (!tangramLayer) return
-	return tangramLayer
+  if (!tangramLayer) return
+  return tangramLayer
 }
 
 /**

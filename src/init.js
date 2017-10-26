@@ -83,7 +83,7 @@ export function initApp (queryString = window.location.search) {
   }
 
   // Initialize Tangram scene file
-  const scene = getInitialTangramScene() 
+  const scene = getInitialTangramScene()
   if (object.refSpeed === 'true') scene.global.refSpeedComparisonEnabled = true
   store.dispatch(updateScene(getInitialTangramScene()))
 

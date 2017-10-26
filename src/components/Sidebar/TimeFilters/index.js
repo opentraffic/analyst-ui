@@ -105,17 +105,16 @@ export class TimeFilters extends React.Component {
               label="Compare against reference speeds"
               checked={this.props.refSpeedComparisonEnabled}
               onChange={(event, data) => {
-                  this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))
-                  // set global tangram property, as tangram can't access the store directly
-                  const scene = getCurrentScene()
-                  scene.global.refSpeedComparisonEnabled = data.checked
-                  setCurrentScene(scene)
-                }
-              }
+                this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))
+                // set global tangram property, as tangram can't access the store directly
+                const scene = getCurrentScene()
+                scene.global.refSpeedComparisonEnabled = data.checked
+                setCurrentScene(scene)
+              }}
             />
           </strong>
         </div>
-        <Divider/>
+        <Divider />
         <div className="timefilter-daily">
           <strong>
             { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by day-of-week' : 'Average by day-of-week' }

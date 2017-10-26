@@ -40,9 +40,9 @@ const scene = {
                               : percent >= -50 ? 1 / 15
                               : 0
               } else {
-                 const speed = feature.speed
-                 // divide by an even multiple of 255 for lossless conversion to 8 bits
-                 colorIndex = speed >= 100 ? 10 / 15
+                const speed = feature.speed
+                // divide by an even multiple of 255 for lossless conversion to 8 bits
+                colorIndex = speed >= 100 ? 10 / 15
                              : speed >= 90 ? 9 / 15
                              : speed >= 80 ? 8 / 15
                              : speed >= 70 ? 7 / 15
