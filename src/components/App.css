@@ -22,7 +22,7 @@
 
 .feature-info {
   position: absolute;
-  max-width: 125px;
+  min-width: 125px;
   min-height: 50px;
   z-index: 1000;
   background: rgba(0,0,0,0.5);
