@@ -52,7 +52,7 @@ export function displayRouteInfo (event, selection) {
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
          ID: ${id} <br/>
          SEGMENT: ${segmentIdx} <br/>
-         TILE: ${tileIdx}
+         TILE: ${tileIdx} <br/>
          PERCENT DIFF: ${percentDiff ? percentDiff.toFixed(2) : 0}% <br/>
      </p>`
 }
