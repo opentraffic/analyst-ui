@@ -166,5 +166,8 @@ export function getColorAtIndexInVec3 (index) {
   if (!index) return hexToVec3(BLANK_COLOR)
 
   // index is 1-indexed
-  return hexToVec3(speedRamp[index - 1].color)
+  const { refSpeedComparisonEnabled } = store.getState().app
+  // use percDiffRamp if refSpeedComparisonEnabled = true
+  const colorRamp = (refSpeedComparisonEnabled) ? percDiffRamp : speedRamp
+  return hexToVec3(colorRamp[index - 1].color)
 }
