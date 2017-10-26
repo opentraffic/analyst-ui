@@ -10,7 +10,8 @@ const scene = {
     'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
   ],
   global: {
-    'sdk_mapzen_api_key': config.mapzen.apiKey
+    'sdk_mapzen_api_key': config.mapzen.apiKey,
+    'refSpeedComparisonEnabled': false // this is set by the "compare" toggle in the UI
   },
   layers: {
     routes: {
@@ -26,7 +27,7 @@ const scene = {
             width: STOPS,
             color: function () {
               let colorIndex = 0
-              if (store.getState().app.refSpeedComparisonEnabled) {
+              if (global.refSpeedComparisonEnabled) {
                 const percent = feature.percentDiff
                 colorIndex = percent >= 40 ? 10 / 15
                               : percent >= 30 ? 9 / 15
