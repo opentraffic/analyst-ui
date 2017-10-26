@@ -9,6 +9,11 @@ export function storeReferenceToTangramLayer (layer) {
   window.tangramLayer = tangramLayer
 }
 
+export function getTangramLayer () {
+	if (!tangramLayer) return
+	return tangramLayer
+}
+
 /**
  * Add a data source to a scene. If the data source doesn't exist, it will create it.
  *
