@@ -53,6 +53,10 @@ export default class TangramLayer extends GridLayer {
     return false
   }
 
+  // We are using componentWillRecieveProps here checking the props
+  // affecting Tangram configuration is changed (if so, update Tangram config)
+  // This is the way we came up with to change the config of Tangram
+  // insdie of the related component (TangramLayer), but outside of React lifecycle
   componentWillReceiveProps (nextProps) {
     if (this.props.refSpeedComparisonEnabled !== nextProps.refSpeedComparisonEnabled) {
       this.tangram.scene.config.global.refSpeedComparisonEnabled = nextProps.refSpeedComparisonEnabled
