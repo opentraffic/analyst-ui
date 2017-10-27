@@ -76,6 +76,6 @@ export function getCurrentConfig () {
  */
 export function setCurrentConfig (newConfig, options) {
   if (!tangramLayer) return
-  tangramLayer.scene.config = newConfig;
-  return tangramLayer.scene.updateConfig();
+  tangramLayer.scene.config = newConfig
+  return tangramLayer.scene.updateConfig()
 }
