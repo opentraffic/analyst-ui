@@ -53,6 +53,6 @@ export function displayRouteInfo (event, selection) {
          ID: ${id} <br/>
          SEGMENT: ${segmentIdx} <br/>
          TILE: ${tileIdx} <br/>
-         PERCENT DIFF: ${percentDiff ? percentDiff.toFixed(2) : 0}% <br/>
+         PERCENT DIFF: ${speed != null && percentDiff ? percentDiff.toFixed(2) : 0}% <br/>
      </p>`
 }
