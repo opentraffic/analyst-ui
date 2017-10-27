@@ -28,7 +28,8 @@ const scene = {
               let colorIndex = 0
               if (global.refSpeedComparisonEnabled) {
                 const percent = feature.percentDiff
-                colorIndex = percent >= 40 ? 10 / 15
+                colorIndex = percent === null ? 0
+                              : percent >= 40 ? 10 / 15
                               : percent >= 30 ? 9 / 15
                               : percent >= 20 ? 8 / 15
                               : percent >= 10 ? 7 / 15
