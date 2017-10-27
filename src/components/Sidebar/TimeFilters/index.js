@@ -50,7 +50,7 @@ export class TimeFilters extends React.Component {
   shouldComponentUpdate (nextProps) {
     return (
       !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour) ||
-      !isEqual(nextProps.refSpeedComparisonEnabled, this.props.refSpeedComparisonEnabled)
+      !isEqual(nextProps.percentDiffsBinnedByHour, this.props.percentDiffsBinnedByHour)
     )
   }
 
