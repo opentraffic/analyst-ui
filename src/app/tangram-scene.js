@@ -2,16 +2,15 @@
 import config from '../config'
 import { STOPS, OUTLINE_STOPS } from '../lib/route-segments'
 import { getColorAtIndexInVec3 } from '../lib/color-ramps'
-import store from '../store'
 
-const isRefSpeedCompare = store.getState().app.refSpeedComparisonEnabled
 const scene = {
   import: [
     'https://mapzen.com/carto/refill-style/7/refill-style.zip',
     'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
   ],
   global: {
-    'sdk_mapzen_api_key': config.mapzen.apiKey
+    'sdk_mapzen_api_key': config.mapzen.apiKey,
+    'refSpeedComparisonEnabled': false // this is set by the "compare" toggle in the UI
   },
   layers: {
     routes: {
@@ -27,7 +26,7 @@ const scene = {
             width: STOPS,
             color: function () {
               let colorIndex = 0
-              if (isRefSpeedCompare) {
+              if (global.refSpeedComparisonEnabled) {
                 const percent = feature.percentDiff
                 colorIndex = percent >= 40 ? 10 / 15
                               : percent >= 30 ? 9 / 15
@@ -41,9 +40,9 @@ const scene = {
                               : percent >= -50 ? 1 / 15
                               : 0
               } else {
-                 const speed = feature.speed
-                 // divide by an even multiple of 255 for lossless conversion to 8 bits
-                 colorIndex = speed >= 100 ? 10 / 15
+                const speed = feature.speed
+                // divide by an even multiple of 255 for lossless conversion to 8 bits
+                colorIndex = speed >= 100 ? 10 / 15
                              : speed >= 90 ? 9 / 15
                              : speed >= 80 ? 8 / 15
                              : speed >= 70 ? 7 / 15

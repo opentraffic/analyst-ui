@@ -1,10 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { Segment, Header, Radio, Divider } from 'semantic-ui-react'
+import { Segment, Radio, Divider } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter2'
 import { createChart } from './chart'
+import { getCurrentScene, setCurrentScene } from '../../../lib/tangram'
 import { setRefSpeedComparisonEnabled } from '../../../store/actions/app'
 import { setDayFilter, setHourFilter } from '../../../store/actions/date'
 import { isEqual } from 'lodash'
@@ -103,22 +104,28 @@ export class TimeFilters extends React.Component {
               toggle
               label="Compare against reference speeds"
               checked={this.props.refSpeedComparisonEnabled}
-              onChange={(event, data) => this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))}
+              onChange={(event, data) => {
+                this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))
+                // set global tangram property, as tangram can't access the store directly
+                const scene = getCurrentScene()
+                scene.global.refSpeedComparisonEnabled = data.checked
+                setCurrentScene(scene)
+              }}
             />
           </strong>
         </div>
-        <Divider/>
+        <Divider />
         <div className="timefilter-daily">
-          <Header as="h3">
-            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in speed by day-of-week' : 'Average by day-of-week' }
-          </Header>
+          <strong>
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by day-of-week' : 'Average by day-of-week' }
+          </strong>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
         <div className="timefilter-hourly">
-          <Header as="h3">
-            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in speed by hour-of-day' : 'Average by hour-of-day' }
-          </Header>
+          <strong>
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by hour-of-day' : 'Average by hour-of-day' }
+          </strong>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
         <Divider />
