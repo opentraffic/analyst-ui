@@ -102,6 +102,7 @@ class MapContainer extends React.Component {
           zoom={map.zoom}
           onClick={this.onClick}
           recenterMap={this.props.recenterMap}
+          refSpeedComparisonEnabled={this.props.refSpeedComparisonEnabled}
           scene={this.props.scene}
         >
           <Route
@@ -120,6 +121,7 @@ class MapContainer extends React.Component {
 function mapStateToProps (state) {
   return {
     mode: state.app.analysisMode,
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled,
     apiKey: state.config.mapzen.apiKey,
     route: state.route,
     days: state.date.dayFilter,
@@ -133,7 +135,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...mapActionCreators, setRouteError, clearRouteError, addWaypoint, insertWaypoint, removeWaypoint, updateWaypoint, updateScene }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, setRouteError, clearRouteError, addWaypoint, insertWaypoint, removeWaypoint, updateWaypoint }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)
