@@ -143,9 +143,6 @@ function onDrawingFinished (event) {
   // The newly created rectangle is stored at `event.layer`
   bounds.push(event.layer)
 
-  // If the region shades do not exist, create them
-  // if (!shades) { createShades(event.layer) }
-
   // Remove previous bounds after the new one has been drawn.
   if (bounds.length > 1) {
     removeExistingBounds(0)
@@ -154,7 +151,6 @@ function onDrawingFinished (event) {
 
 function onDrawingEdited (event) {
   storeBounds(event.layer.getBounds())
-  // updateShades(event.layer)
   const bounds = {
     northEast: event.layer.getBounds().getNorthEast(),
     southWest: event.layer.getBounds().getSouthWest()
@@ -164,7 +160,6 @@ function onDrawingEdited (event) {
 
 function onMapMoved (event) {
   if (!bounds[0]) return
-  // updateShades(bounds[0])
   if (compareRegionAndMap(bounds[0])) {
     setBoundToDisabledAppearance(bounds[0])
   } else {
