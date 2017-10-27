@@ -53,10 +53,11 @@ export default class TangramLayer extends GridLayer {
     return false
   }
 
-
-    componentWillReceiveProps(nextProps) {
-    this.tangram.scene.config.global.refSpeedComparisonEnabled = nextProps.refSpeedComparisonEnabled;
-    this.tangram.scene.updateConfig();
+  componentWillReceiveProps (nextProps) {
+    if (this.props.refSpeedComparisonEnabled !== nextProps.refSpeedComparisonEnabled) {
+      this.tangram.scene.config.global.refSpeedComparisonEnabled = nextProps.refSpeedComparisonEnabled
+      this.tangram.scene.updateConfig()
+    }
   }
 
   createLeafletElement (props) {

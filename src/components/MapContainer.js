@@ -135,7 +135,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ ...mapActionCreators, setRouteError, clearRouteError, addWaypoint, insertWaypoint, removeWaypoint, updateWaypoint }, dispatch)
+  return bindActionCreators({ ...mapActionCreators, setRouteError, clearRouteError, addWaypoint, insertWaypoint, removeWaypoint, updateWaypoint, updateScene }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapContainer)
