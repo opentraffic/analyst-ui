@@ -5,7 +5,7 @@ import { Segment, Radio, Divider } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter2'
 import { createChart } from './chart'
-import { getCurrentScene, setCurrentScene } from '../../../lib/tangram'
+import { getCurrentConfig, setCurrentConfig } from '../../../lib/tangram'
 import { setRefSpeedComparisonEnabled } from '../../../store/actions/app'
 import { setDayFilter, setHourFilter } from '../../../store/actions/date'
 import { isEqual } from 'lodash'
@@ -107,9 +107,9 @@ export class TimeFilters extends React.Component {
               onChange={(event, data) => {
                 this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))
                 // set global tangram property, as tangram can't access the store directly
-                const scene = getCurrentScene()
-                scene.global.refSpeedComparisonEnabled = data.checked
-                setCurrentScene(scene)
+                const config = getCurrentConfig()
+                config.global.refSpeedComparisonEnabled = data.checked
+                setCurrentConfig(config)
               }}
             />
           </strong>
