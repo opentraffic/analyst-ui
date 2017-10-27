@@ -61,7 +61,6 @@ export class ModeSelect extends React.PureComponent {
     this.props.dispatch(clearBarchart())
     this.props.dispatch(setDayFilter([0, 7]))
     this.props.dispatch(setHourFilter([0, 24]))
-    removeShades()
   }
 
   onClickRegion = (event) => {

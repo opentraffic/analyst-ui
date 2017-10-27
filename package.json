@@ -24,6 +24,7 @@
     "leaflet": "1.0.3",
     "leaflet-editable": "1.0.0",
     "leaflet-extra-markers": "1.0.6",
+    "leaflet-shades": "0.1.0",
     "leaflet.path.drag": "0.0.5",
     "lodash": "4.17.4",
     "mathjs": "3.16.4",
