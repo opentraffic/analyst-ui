@@ -19,7 +19,7 @@ export function displayRegionInfo (selection) {
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
          OSMLR_ID: ${osmlr_id} <br/>
          ID: ${id} <br/>
-         PERCENT DIFF: ${percentDiff ? percentDiff.toFixed(2) : 0} % <br/>
+         PERCENT DIFF: ${speed != null && percentDiff ? percentDiff.toFixed(2) : 0} % <br/>
      </p>`
   /* eslint-enable camelcase */
 }
@@ -53,6 +53,6 @@ export function displayRouteInfo (event, selection) {
          ID: ${id} <br/>
          SEGMENT: ${segmentIdx} <br/>
          TILE: ${tileIdx} <br/>
-         PERCENT DIFF: ${percentDiff ? percentDiff.toFixed(2) : 0}% <br/>
+         PERCENT DIFF: ${speed != null && percentDiff ? percentDiff.toFixed(2) : 0}% <br/>
      </p>`
 }
