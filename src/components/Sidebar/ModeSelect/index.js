@@ -7,7 +7,7 @@ import { setDataCoverage } from '../../../app/dataGeojson'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
 import { clearBarchart } from '../../../store/actions/barchart'
-import { setDayFilter, setHourFilter, clearDateRange } from '../../../store/actions/date'
+import { setDayFilter, setHourFilter, clearDateRange, clearDate } from '../../../store/actions/date'
 
 export class ModeSelect extends React.PureComponent {
   static propTypes = {
@@ -53,6 +53,8 @@ export class ModeSelect extends React.PureComponent {
       startDrawingBounds()
     } else if (this.state.case === 'route') {
       this.props.dispatch(setRouteAnalysisMode())
+    } else {
+      this.props.dispatch(clearDate())
     }
     this.setState({case: null})
     this.props.dispatch(clearDateRange())
@@ -109,6 +111,7 @@ export class ModeSelect extends React.PureComponent {
     } else { // Else if route/region is not drawn but was clicked, turn off mode
       this.props.dispatch(resetAnalysis())
       this.props.dispatch(clearDateRange())
+      this.props.dispatch(clearDate())
     }
   }
 

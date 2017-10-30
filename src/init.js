@@ -6,7 +6,7 @@ import { setDate, setDayFilter, setHourFilter, setDateRange } from './store/acti
 import { addWaypoint } from './store/actions/route'
 import { updateScene } from './store/actions/tangram'
 import { setBounds } from './store/actions/view'
-import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName } from './store/actions/app'
+import { setRegionAnalysisMode, setRouteAnalysisMode, setAnalysisName, setRefSpeedComparisonEnabled } from './store/actions/app'
 import { initUrlUpdate } from './app/update-url'
 import { initDocTitle } from './app/doc-title'
 import { getInitialTangramScene } from './app/tangram-scene'
@@ -64,6 +64,9 @@ export function initApp (queryString = window.location.search) {
     store.dispatch(setAnalysisName(viewName))
   }
 
+  // Initialize reference speed comparison mode
+  store.dispatch(setRefSpeedComparisonEnabled((object.refSpeed === 'true')))
+
   // Initializing markers and route, or view bounds.
   // Existence of markers will override existence of bounds.
   if (object.waypoints) {
@@ -80,6 +83,8 @@ export function initApp (queryString = window.location.search) {
   }
 
   // Initialize Tangram scene file
+  const scene = getInitialTangramScene()
+  if (object.refSpeed === 'true') scene.global.refSpeedComparisonEnabled = true
   store.dispatch(updateScene(getInitialTangramScene()))
 
   // Listen for updates to store, which updates the URL

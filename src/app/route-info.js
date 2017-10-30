@@ -14,11 +14,12 @@ export function displayRegionInfo (selection) {
   if (!featureFlag) createFeatureInfo()
   setPosition(selection.pixel.x, selection.pixel.y)
   /* eslint-disable camelcase */
-  const { speed, osmlr_id, id } = selection.feature.properties
+  const { speed, osmlr_id, id, percentDiff } = selection.feature.properties
   featureInfo.innerHTML =
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
          OSMLR_ID: ${osmlr_id} <br/>
          ID: ${id} <br/>
+         PERCENT DIFF: ${percentDiff ? percentDiff.toFixed(2) : 0}% <br/>
      </p>`
   /* eslint-enable camelcase */
 }
@@ -45,12 +46,13 @@ export function removeInfo () {
 export function displayRouteInfo (event, selection) {
   if (!featureFlag) createFeatureInfo()
   setPosition(event.containerPoint.x, event.containerPoint.y)
-  const { speed, id, tileIdx, segmentIdx } = selection.properties
+  const { speed, id, tileIdx, segmentIdx, percentDiff } = selection.properties
 
   featureInfo.innerHTML =
     `<p> SPEED: ${speed ? speed.toFixed(2) : 0} kph <br/>
          ID: ${id} <br/>
          SEGMENT: ${segmentIdx} <br/>
-         TILE: ${tileIdx}
+         TILE: ${tileIdx} <br/>
+         PERCENT DIFF: ${speed != null && percentDiff ? percentDiff.toFixed(2) : 0}% <br/>
      </p>`
 }

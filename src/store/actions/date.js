@@ -14,6 +14,14 @@ export function setDate (startDate, endDate) {
   }
 }
 
+export function clearDate () {
+  return {
+    type: SET_DATE,
+    startDate: null,
+    endDate: null
+  }
+}
+
 export function setDayFilter (filter) {
   return {
     type: SET_DAY_FILTER,

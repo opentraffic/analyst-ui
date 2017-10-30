@@ -1,10 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { Segment, Header } from 'semantic-ui-react'
+import { Segment, Radio, Divider } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter2'
 import { createChart } from './chart'
+import { getCurrentConfig, setCurrentConfig } from '../../../lib/tangram'
+import { setRefSpeedComparisonEnabled } from '../../../store/actions/app'
 import { setDayFilter, setHourFilter } from '../../../store/actions/date'
 import { isEqual } from 'lodash'
 
@@ -17,7 +19,8 @@ export class TimeFilters extends React.Component {
   static propTypes = {
     dayFilter: PropTypes.arrayOf(PropTypes.number),
     hourFilter: PropTypes.arrayOf(PropTypes.number),
-    speedsBinnedByHour: PropTypes.array
+    speedsBinnedByHour: PropTypes.array,
+    refSpeedComparisonEnabled: PropTypes.bool
   }
 
   componentDidUpdate () {
@@ -45,7 +48,10 @@ export class TimeFilters extends React.Component {
   }
 
   shouldComponentUpdate (nextProps) {
-    return !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour)
+    return (
+      !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour) ||
+      !isEqual(nextProps.refSpeedComparisonEnabled, this.props.refSpeedComparisonEnabled)
+    )
   }
 
   makeDailyChart = (chartData) => {
@@ -92,16 +98,37 @@ export class TimeFilters extends React.Component {
   render () {
     return (
       <Segment>
-        <Header>Segment speeds</Header>
+        <div className="radio">
+          <strong>
+            <Radio
+              toggle
+              label="Compare against reference speeds"
+              checked={this.props.refSpeedComparisonEnabled}
+              onChange={(event, data) => {
+                this.props.dispatch(setRefSpeedComparisonEnabled(data.checked))
+                // set global tangram property, as tangram can't access the store directly
+                const config = getCurrentConfig()
+                config.global.refSpeedComparisonEnabled = data.checked
+                setCurrentConfig(config)
+              }}
+            />
+          </strong>
+        </div>
+        <Divider />
         <div className="timefilter-daily">
-          <strong>Average by day-of-week</strong>
+          <strong>
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by day-of-week' : 'Average by day-of-week' }
+          </strong>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
         <div className="timefilter-hourly">
-          <strong>Average by hour-of-day</strong>
+          <strong>
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in Speed by hour-of-day' : 'Average by hour-of-day' }
+          </strong>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
+        <Divider />
       </Segment>
     )
   }
@@ -111,7 +138,8 @@ function mapStateToProps (state) {
   return {
     dayFilter: state.date.dayFilter,
     hourFilter: state.date.hourFilter,
-    speedsBinnedByHour: state.barchart.speedsBinnedByHour
+    speedsBinnedByHour: state.barchart.speedsBinnedByHour,
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
   }
 }
 

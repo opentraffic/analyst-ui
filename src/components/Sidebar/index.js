@@ -37,7 +37,7 @@ class Sidebar extends React.Component {
         }
         <ETAView />
         {this.props.analysisMode && this.props.date && this.props.date.startDate &&
-          <Legend />
+          <Legend compareEnabled={this.props.refSpeedComparisonEnabled} />
         }
         {this.props.analysisMode && this.props.date && this.props.date.startDate &&
           <ExportData />
@@ -51,7 +51,8 @@ function mapStateToProps (state) {
   return {
     errors: state.errors.errors,
     date: state.date,
-    analysisMode: state.app.analysisMode
+    analysisMode: state.app.analysisMode,
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
   }
 }
 

@@ -9,7 +9,8 @@ const scene = {
     'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
   ],
   global: {
-    'sdk_mapzen_api_key': config.mapzen.apiKey
+    'sdk_mapzen_api_key': config.mapzen.apiKey,
+    'refSpeedComparisonEnabled': false // this is set by the "compare" toggle in the UI
   },
   layers: {
     routes: {
@@ -24,19 +25,36 @@ const scene = {
             order: 500,
             width: STOPS,
             color: function () {
-              const speed = feature.speed
-              // divide by an even multiple of 255 for lossless conversion to 8 bits
-              const colorIndex = speed >= 100 ? 10 / 15
-                          : speed >= 90 ? 9 / 15
-                          : speed >= 80 ? 8 / 15
-                          : speed >= 70 ? 7 / 15
-                          : speed >= 60 ? 6 / 15
-                          : speed >= 50 ? 5 / 15
-                          : speed >= 40 ? 4 / 15
-                          : speed >= 30 ? 3 / 15
-                          : speed >= 20 ? 2 / 15
-                          : speed > 0 ? 1 / 15
-                          : 0
+              let colorIndex = 0
+              if (global.refSpeedComparisonEnabled) {
+                const percent = feature.percentDiff
+                colorIndex = percent === null ? 0
+                              : percent >= 40 ? 10 / 15
+                              : percent >= 30 ? 9 / 15
+                              : percent >= 20 ? 8 / 15
+                              : percent >= 10 ? 7 / 15
+                              : percent >= 0 ? 6 / 15
+                              : percent >= -10 ? 5 / 15
+                              : percent >= -20 ? 4 / 15
+                              : percent >= -30 ? 3 / 15
+                              : percent >= -40 ? 2 / 15
+                              : percent >= -50 ? 1 / 15
+                              : 0
+              } else {
+                const speed = feature.speed
+                // divide by an even multiple of 255 for lossless conversion to 8 bits
+                colorIndex = speed >= 100 ? 10 / 15
+                             : speed >= 90 ? 9 / 15
+                             : speed >= 80 ? 8 / 15
+                             : speed >= 70 ? 7 / 15
+                             : speed >= 60 ? 6 / 15
+                             : speed >= 50 ? 5 / 15
+                             : speed >= 40 ? 4 / 15
+                             : speed >= 30 ? 3 / 15
+                             : speed >= 20 ? 2 / 15
+                             : speed > 0 ? 1 / 15
+                             : 0
+              }
               return [ colorIndex, feature.drive_on_right, feature.oneway ]
             },
             cap: 'round'
@@ -47,7 +65,38 @@ const scene = {
             otOutlines: {
               order: 499,
               width: OUTLINE_STOPS,
-              color: '#222'
+              color: function () {
+                let colorIndex = 0
+                if (global.refSpeedComparisonEnabled) {
+                  const percent = feature.percentDiff
+                  colorIndex = percent >= 40 ? 10 / 15
+                                : percent >= 30 ? 9 / 15
+                                : percent >= 20 ? 8 / 15
+                                : percent >= 10 ? 7 / 15
+                                : percent >= 0 ? 6 / 15
+                                : percent >= -10 ? 5 / 15
+                                : percent >= -20 ? 4 / 15
+                                : percent >= -30 ? 3 / 15
+                                : percent >= -40 ? 2 / 15
+                                : percent >= -50 ? 1 / 15
+                                : 0
+                } else {
+                  const speed = feature.speed
+                  // divide by an even multiple of 255 for lossless conversion to 8 bits
+                  colorIndex = speed >= 100 ? 10 / 15
+                               : speed >= 90 ? 9 / 15
+                               : speed >= 80 ? 8 / 15
+                               : speed >= 70 ? 7 / 15
+                               : speed >= 60 ? 6 / 15
+                               : speed >= 50 ? 5 / 15
+                               : speed >= 40 ? 4 / 15
+                               : speed >= 30 ? 3 / 15
+                               : speed >= 20 ? 2 / 15
+                               : speed > 0 ? 1 / 15
+                               : 0
+                }
+                return [ colorIndex, feature.drive_on_right, feature.oneway ]
+              }
             }
           }
         }
@@ -97,6 +146,7 @@ const scene = {
 
             // draw each half-width if it's not a one-way street
             color.a = floor(v_texcoord.x*2.)+v_color.b;
+            // color = vec4(v_color.b, 0, 0, .5);
           `
         }
       }
@@ -106,7 +156,11 @@ const scene = {
       mix: 'otRoads',
       shaders: {
         blocks: {
-          color: `color = v_color;`
+          color: `
+            color = vec4(0.);
+            // draw outline slightly wider for single lanes
+            color.a = floor(v_texcoord.x*2.1)+v_color.b;
+          `
         }
       }
     }

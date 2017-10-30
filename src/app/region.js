@@ -1,7 +1,7 @@
 import { uniq } from 'lodash'
 import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import { merge } from '../lib/geojson'
-import { setDataSource, getCurrentScene, setCurrentScene } from '../lib/tangram'
+import { getTangramLayer, setDataSource, getCurrentConfig, setCurrentConfig } from '../lib/tangram'
 import { fetchDataTiles } from './data'
 import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
 import store from '../store'
@@ -77,10 +77,11 @@ export function getBboxArea (bounds) {
 }
 
 export function clearRegion () {
-  const scene = getCurrentScene()
-  delete scene.sources.routes
-  setCurrentScene(scene)
-  window.tangramLayer.setSelectionEvents({hover: null})
+  const config = getCurrentConfig()
+  delete config.sources.routes
+  setCurrentConfig(config)
+  const tangramLayer = getTangramLayer()
+  tangramLayer.setSelectionEvents({hover: null})
 }
 
 export function showRegion (bounds) {
@@ -153,7 +154,8 @@ export function showRegion (bounds) {
             date: store.getState().date
           }
 
-          window.tangramLayer.setSelectionEvents({
+          const tangramLayer = getTangramLayer()
+          tangramLayer.setSelectionEvents({
             hover: function (selection) { displayRegionInfo(selection) }
           })
 
