@@ -24,7 +24,7 @@ const scene = {
             interactive: true,
             order: 500,
             width: STOPS,
-            color: function () {
+            color: `function () {
               var colorIndex = 0
               if (global.refSpeedComparisonEnabled) {
                 var percent = feature.percentDiff
@@ -56,7 +56,7 @@ const scene = {
                              : 0
               }
               return [ colorIndex, feature.drive_on_right, feature.oneway ]
-            },
+            }`,
             cap: 'round'
           }
         },
@@ -65,7 +65,7 @@ const scene = {
             otOutlines: {
               order: 499,
               width: OUTLINE_STOPS,
-              color: function () {
+              color: `function () {
                 var colorIndex = 0
                 if (global.refSpeedComparisonEnabled) {
                   var percent = feature.percentDiff
@@ -96,7 +96,7 @@ const scene = {
                                : 0
                 }
                 return [ colorIndex, feature.drive_on_right, feature.oneway ]
-              }
+              }`
             }
           }
         }
