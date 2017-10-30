@@ -24,10 +24,10 @@ const scene = {
             interactive: true,
             order: 500,
             width: STOPS,
-            color: function () {
-              let colorIndex = 0
+            color: `function () {
+              var colorIndex = 0
               if (global.refSpeedComparisonEnabled) {
-                const percent = feature.percentDiff
+                var percent = feature.percentDiff
                 colorIndex = percent === null ? 0
                               : percent >= 40 ? 10 / 15
                               : percent >= 30 ? 9 / 15
@@ -41,7 +41,7 @@ const scene = {
                               : percent >= -50 ? 1 / 15
                               : 0
               } else {
-                const speed = feature.speed
+                var speed = feature.speed
                 // divide by an even multiple of 255 for lossless conversion to 8 bits
                 colorIndex = speed >= 100 ? 10 / 15
                              : speed >= 90 ? 9 / 15
@@ -56,7 +56,7 @@ const scene = {
                              : 0
               }
               return [ colorIndex, feature.drive_on_right, feature.oneway ]
-            },
+            }`,
             cap: 'round'
           }
         },
@@ -65,10 +65,10 @@ const scene = {
             otOutlines: {
               order: 499,
               width: OUTLINE_STOPS,
-              color: function () {
-                let colorIndex = 0
+              color: `function () {
+                var colorIndex = 0
                 if (global.refSpeedComparisonEnabled) {
-                  const percent = feature.percentDiff
+                  var percent = feature.percentDiff
                   colorIndex = percent >= 40 ? 10 / 15
                                 : percent >= 30 ? 9 / 15
                                 : percent >= 20 ? 8 / 15
@@ -81,7 +81,7 @@ const scene = {
                                 : percent >= -50 ? 1 / 15
                                 : 0
                 } else {
-                  const speed = feature.speed
+                  var speed = feature.speed
                   // divide by an even multiple of 255 for lossless conversion to 8 bits
                   colorIndex = speed >= 100 ? 10 / 15
                                : speed >= 90 ? 9 / 15
@@ -96,7 +96,7 @@ const scene = {
                                : 0
                 }
                 return [ colorIndex, feature.drive_on_right, feature.oneway ]
-              }
+              }`
             }
           }
         }

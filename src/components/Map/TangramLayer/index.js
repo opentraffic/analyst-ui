@@ -4,21 +4,21 @@ import PropTypes from 'prop-types'
 import { GridLayer } from 'react-leaflet'
 // import { isEqual } from 'lodash'
 import { storeReferenceToTangramLayer } from '../../../lib/tangram'
-
 // Extends react-leaflet's GridLayer and wraps Tangram so it works as a
 // React component in react-leaflet
+
 export default class TangramLayer extends GridLayer {
   static propTypes = {
     scene: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.object
     ]),
+    refSpeedComparisonEnabled: PropTypes.bool,
     attribution: PropTypes.string
   }
 
   constructor (props) {
     super(props)
-
     this.tangram = null
   }
 
@@ -53,9 +53,19 @@ export default class TangramLayer extends GridLayer {
     return false
   }
 
+  // We are using componentWillRecieveProps here checking the props
+  // affecting Tangram configuration is changed (if so, update Tangram config)
+  // This is the way we came up with to change the config of Tangram
+  // insdie of the related component (TangramLayer), but outside of React lifecycle
+  componentWillReceiveProps (nextProps) {
+    if (this.props.refSpeedComparisonEnabled !== nextProps.refSpeedComparisonEnabled) {
+      this.tangram.scene.config.global.refSpeedComparisonEnabled = nextProps.refSpeedComparisonEnabled
+      this.tangram.scene.updateConfig()
+    }
+  }
+
   createLeafletElement (props) {
     this.tangram = Tangram.leafletLayer(this.getOptions(props))
-
     // Expose to another module for access.
     storeReferenceToTangramLayer(this.tangram)
 
