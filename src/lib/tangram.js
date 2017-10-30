@@ -40,7 +40,7 @@ export function setDataSource (name, config) {
  */
 export function getCurrentScene () {
   if (!tangramLayer) return
-  return Object.assign({}, tangramLayer.scene.config)
+  return Object.assign({}, tangramLayer.scene)
 }
 
 /**
@@ -53,4 +53,29 @@ export function getCurrentScene () {
 export function setCurrentScene (newScene, options) {
   if (!tangramLayer) return
   return tangramLayer.scene.load(newScene, options)
+}
+
+/**
+ * Gets the current scene.config object from Tangram. This is a clone of the object
+ * so you do not mutate the original Tangram instance directly. If you edit the
+ * clone of the scene.config, use `setCurrentConfig()` to load it back in.
+ *
+ * @return {Object}
+ */
+export function getCurrentConfig () {
+  if (!tangramLayer) return
+  return Object.assign({}, tangramLayer.scene.config)
+}
+
+/**
+ * Updates the scene.config in Tangram. This is an alias for `scene.updateConfig()`.
+ *
+ * @param {String|Object} scene.config
+ * @param {Object} options
+ * @return {Promise}
+ */
+export function setCurrentConfig (newConfig, options) {
+  if (!tangramLayer) return
+  tangramLayer.scene.config = newConfig
+  return tangramLayer.scene.updateConfig()
 }
