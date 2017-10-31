@@ -8,7 +8,10 @@ import './ExportData.css'
 class ExportData extends React.Component {
   static propTypes = {
     geoJSON: PropTypes.object,
-    name: PropTypes.string
+    analysisName: PropTypes.string,
+    analysisMode: PropTypes.string,
+    date: PropTypes.object,
+    route: PropTypes.object
   }
 
   constructor (props) {
@@ -19,8 +22,8 @@ class ExportData extends React.Component {
     }
   }
 
-  onClickButton = (event) => {
-    const result = exportData(this.props.geoJSON, this.props.name)
+  onClickButton = (format) => {
+    const result = exportData(this.props.geoJSON, this.props.analysisName, format, this.props.analysisMode, this.props.date, this.props.route)
     if (result === false) {
       this.setState({
         message: 'There is no data to download.'
@@ -38,7 +41,10 @@ class ExportData extends React.Component {
     return (
       <Segment>
         <Header as="h3">Export</Header>
-        <Button icon="download" content="Download" color="blue" fluid onClick={this.onClickButton} />
+        <Button.Group fluid basic>
+          <Button icon="download" content="Download as GeoJSON" color="blue" onClick={() => this.onClickButton('geojson')} />
+          <Button icon="download" content="Download as CSV" color="blue" onClick={() => this.onClickButton('csv')} />
+        </Button.Group>
         {message}
       </Segment>
     )
@@ -48,7 +54,10 @@ class ExportData extends React.Component {
 function mapStateToProps (state) {
   return {
     geoJSON: state.view.geoJSON,
-    name: state.app.viewName
+    analysisName: state.app.viewName,
+    analysisMode: state.app.analysisMode,
+    date: state.date,
+    route: state.route
   }
 }
 
