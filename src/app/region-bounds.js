@@ -205,7 +205,8 @@ export function drawBounds ({ west, south, east, north }) {
     [south, east]
   ]).addTo(map)
   rect.enableEdit()
-  shades = new L.LeafletShades({bounds: rect})
+  shades = new L.LeafletShades({bounds: rect.getBounds()})
+  shades.addTo(map)
 
   if (!handlersAdded) {
     addEventListeners()
