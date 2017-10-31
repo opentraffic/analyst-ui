@@ -16,6 +16,7 @@ function convertArrayOfObjectsToCsv (data, columnDelimiter = ',', lineDelimiter 
     return null
   }
 
+  // collect together all possible column names
   keys = _.chain(data).map(_.keys).flatten().uniq().value()
 
   result = ''
@@ -84,5 +85,5 @@ export function exportData (obj, name = 'untitled', format = 'geojson', analysis
   } else {
     throw new Error('exportData() only supports GeoJSON or CSV formats')
   }
-  FileSaver.saveAs(blob, `open-traffic-${analysisMode}-${name}.${format}`)
+  FileSaver.saveAs(blob, `${['open', 'traffic', analysisMode, name].join('-')}.${format}`)
 }
