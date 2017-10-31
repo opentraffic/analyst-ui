@@ -16,9 +16,7 @@ let shades
 store.subscribe(() => {
   const state = store.getState()
   // If bounds are cleared from state, remove current bounds.
-  if (!state.view.bounds) {
-    removeAllExistingBounds()
-  }
+  if (!state.view.bounds) removeAllExistingBounds()
 
   // While data is still being rendered, disable interactivity of bounds
   if (state.loading.isLoading && bounds.length) {
