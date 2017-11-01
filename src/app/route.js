@@ -159,25 +159,25 @@ export function showRoute (waypoints) {
       }
       store.dispatch(clearBarchart())
       fetchDataTiles(parsedIds, date).then((tiles) => {
+
         // TODO: when year and week aren't specified, we should also
         // skip the step of trying to fetch data tiles
         if (date.year && date.week) {
           let totalSpeedArray = mathjs.zeros(7, 24)
           let totalCountArray = mathjs.zeros(7, 24)
           let totalPercentDiffArray = mathjs.zeros(7, 24)
-          let totalDiffCountArray = mathjs.zeros(7, 24)
+
           parsedIds.forEach((id) => {
             // Will add either meaured or reference speed
             addSpeedToMapGeometry(tiles, date, id, id)
             let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-            let percentDiffssFromThisSegment = preparePercentDiffsForBarChart(tiles, date, id)
+            let percentDiffsFromThisSegment = preparePercentDiffsForBarChart(tiles, date, id)
             totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
             totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
-            totalPercentDiffArray = mathjs.add(totalPercentDiffArray, percentDiffssFromThisSegment.percentDiffs)
-            totalDiffCountArray = mathjs.add(totalDiffCountArray, percentDiffssFromThisSegment.diffCounts)
+            totalPercentDiffArray = mathjs.add(totalPercentDiffArray, percentDiffsFromThisSegment.percentDiffs)
           })
           store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
-          store.dispatch(setBarchartPercentDiffs(totalPercentDiffArray, totalDiffCountArray))
+          store.dispatch(setBarchartPercentDiffs(totalPercentDiffArray, totalCountArray))
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
         }
