@@ -6,7 +6,7 @@ import { fetchDataTiles } from './data'
 import { addSpeedToMapGeometry, prepareDataForBarChart } from './processing'
 import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { clearBarchart, setBarchartData} from '../store/actions/barchart'
+import { clearBarchart, setBarchartData } from '../store/actions/barchart'
 import { setGeoJSON } from '../store/actions/view'
 import {
   clearRouteSegments,

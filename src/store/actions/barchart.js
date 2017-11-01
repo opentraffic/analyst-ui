@@ -30,7 +30,7 @@ export function setBarchartData (speedsArray, diffsArray, countArray) {
     meanSpeedArray = speedsArray
     percentDiffArray = diffsArray
   }
-  
+
   let hoursForCrossFilter = []
   let hoursForDiffCrossFilter = []
   meanSpeedArray.forEach((speed, index) => {
