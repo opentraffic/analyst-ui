@@ -18,7 +18,6 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
     const state = store.getState()
     const days = state.date.dayFilter || [0, 7]
     const hours = state.date.hourFilter || [0, 24]
-
     const refspeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
     const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
 
@@ -30,10 +29,11 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
       geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
       // calculate percentage difference between weekly/historical speed and reference speed
       if (geometry.speed === null || geometry.speed === 0 || typeof geometry.speed === 'undefined') {
-        geometry.percentDiff = null
+        geometry.percentDiff = 0
       } else {
         geometry.percentDiff = ((refspeed - geometry.speed) / mathjs.mean(refspeed, geometry.speed)) * 100
       }
+      subtile.percentDiffs.push(geometry.percentDiff)
     }
   } catch (e) {}
 }
@@ -106,7 +106,7 @@ export function preparePercentDiffsForBarChart (tiles, date, segment) {
     if (subtile) {
       var diffsByDayAndHourArray = mathjs.zeros(7, 24)
       var nonZeroDiffCountByDayAndHourArray = mathjs.zeros(7, 24)
-      var diffs = segment.percentDiff
+      var diffs = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'percentDiffs')
       chunk(diffs, 24).forEach((diffsForThisDay, dayIndex) => {
         diffsForThisDay.forEach((diffsForThisHour, hourIndex) => {
           if (diffsForThisHour > 0) {
@@ -175,7 +175,7 @@ export function getValuesFromSubtile (segmentIdx, subtile, days, hours, prop) {
     // filter down to the requested range of days
     x => x.slice(...days),
     // filter down to the requested range of hours
-    x => x.map(speedsForGivenDay => speedsForGivenDay.slice(...hours)),
+    x => x.map(forGivenDay => forGivenDay.slice(...hours)),
     // back to just an array of hours
     flatten
   ])(subtile[prop])
@@ -199,6 +199,8 @@ export function getSubtileForSegmentIdx (segmentIdx, subtiles) {
 
   for (let i = 0, j = indices.length; i < j; i++) {
     const subtile = subtiles[indices[i]]
+    //need to initialize the percentDiffs for the barcharts here
+    subtile.percentDiffs = []
 
     const lowerBounds = subtile.startSegmentIndex
     const upperBounds = subtile.startSegmentIndex + subtile.subtileSegments
