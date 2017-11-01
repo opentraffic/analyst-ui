@@ -136,15 +136,22 @@ export function showRegion (bounds) {
           if (date.year && date.week) {
             let totalSpeedArray = mathjs.zeros(7, 24)
             let totalCountArray = mathjs.zeros(7, 24)
+            let totalPercentDiffArray = mathjs.zeros(7, 24)
+
             parsedIds.forEach((id, index) => {
               addSpeedToMapGeometry(tiles, date, id, features[index].properties)
               let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-              if (speedsFromThisSegment) {
+              let percentDiffsFromThisSegment = preparePercentDiffsForBarChart(tiles, date, id)
+              if (this.props.refSpeedComparisonEnabled) {
+                totalPercentDiffArray = mathjs.add(totalPercentDiffArray, percentDiffsFromThisSegment.percentDiffs)
+                totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+                store.dispatch(setBarchartPercentDiffs(totalPercentDiffArray, totalCountArray))
+              } else {
                 totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
                 totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+                store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
               }
             })
-            store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
           }
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {

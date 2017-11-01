@@ -172,12 +172,16 @@ export function showRoute (waypoints) {
             addSpeedToMapGeometry(tiles, date, id, id)
             let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
             let percentDiffsFromThisSegment = preparePercentDiffsForBarChart(tiles, date, id)
-            totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
-            totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
-            totalPercentDiffArray = mathjs.add(totalPercentDiffArray, percentDiffsFromThisSegment.percentDiffs)
+            if (this.props.refSpeedComparisonEnabled) {
+              totalPercentDiffArray = mathjs.add(totalPercentDiffArray, percentDiffsFromThisSegment.percentDiffs)
+              totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+              store.dispatch(setBarchartPercentDiffs(totalPercentDiffArray, totalCountArray))
+            } else {
+              totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
+              totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+              store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+            }
           })
-          store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
-          store.dispatch(setBarchartPercentDiffs(totalPercentDiffArray, totalCountArray))
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
         }
