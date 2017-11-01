@@ -23,8 +23,8 @@ class Sidebar extends React.Component {
     return (
       <div className={'Sidebar ' + this.props.className}>
         <div>
-          <img className="app-logo" src="./logo.png" alt="OpenTraffic Analyst" />
-          <a href="http://opentraffic.io/"><Icon circular color="grey" name="info" className="info-icon" /></a>
+          <img className="app-logo" src="./logo.png" alt="Open Traffic Analyst" />
+          <a href="https://github.com/opentraffic/analyst-ui/wiki" target="_blank"><Icon circular color="grey" name="info" className="info-icon" title="Learn more about Analyst UI" /></a>
         </div>
         {errors}
         <AnalysisName />

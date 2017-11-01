@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Segment, Header, Button } from 'semantic-ui-react'
+import { Segment, Header, Button, Icon } from 'semantic-ui-react'
 import { exportData } from '../../../lib/exporter'
 import './ExportData.css'
 
@@ -40,7 +40,10 @@ class ExportData extends React.Component {
 
     return (
       <Segment>
-        <Header as="h3">Export</Header>
+        <div>
+          <Header as="h3">Export</Header>
+          <a href="https://github.com/opentraffic/analyst-ui/wiki/Export-Query-Results" target="_blank"><Icon circular color="grey" name="info" className="info-icon" title="Learn more about export formats" /></a>
+        </div>
         <Button.Group fluid basic>
           <Button icon="download" content="Download as GeoJSON" color="blue" onClick={() => this.onClickButton('geojson')} />
           <Button icon="download" content="Download as CSV" color="blue" onClick={() => this.onClickButton('csv')} />
