@@ -60,12 +60,12 @@ function addSpeedByHour (speedArray, days, hours) {
 }
 
 /**
- * Collect speeds from the entire week for use in bar chart
+ * Collect speeds and percent differences from the entire week for use in bar chart
  * @param {*} tiles
  * @param {*} date
  * @param {*} segment
  */
-export function prepareSpeedsForBarChart (tiles, date, segment) {
+export function prepareDataForBarChart (tiles, date, segment) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
   try {
