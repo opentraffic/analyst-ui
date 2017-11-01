@@ -69,15 +69,19 @@ export function prepareSpeedsForBarChart (tiles, date, segment) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
   try {
+    const refSpeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
     const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
+      var percentDiffsByDayAndHourArray = mathjs.zeros(7, 24)
       var speedsByDayAndHourArray = mathjs.zeros(7, 24)
       var nonZeroSpeedCountByDayAndHourArray = mathjs.zeros(7, 24)
       var speeds = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'speeds')
       chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
         speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
           if (speedForThisHour > 0) {
+            const percentDiffForThisHour = ((refSpeed - speedForThisHour) / mathjs.mean(refSpeed, speedForThisHour)) * 100
+            percentDiffsByDayAndHourArray.set([dayIndex, hourIndex], Number(percentDiffForThisHour.toFixed(2)))
             speedsByDayAndHourArray.set([dayIndex, hourIndex], speedForThisHour)
             nonZeroSpeedCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
           }
@@ -85,6 +89,7 @@ export function prepareSpeedsForBarChart (tiles, date, segment) {
       })
       return {
         speeds: speedsByDayAndHourArray,
+        percentDiff: percentDiffsByDayAndHourArray,
         counts: nonZeroSpeedCountByDayAndHourArray
       }
     }
