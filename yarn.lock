@@ -4166,13 +4166,28 @@ leaflet-editable@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/leaflet-editable/-/leaflet-editable-1.0.0.tgz#1befcefdbece550da8b432a9e8413a6c1d7017f6"
 
+leaflet-editable@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/leaflet-editable/-/leaflet-editable-1.1.0.tgz#f777597a40a81a273f287b489fd0fe5ccd60c8d0"
+
 leaflet-extra-markers@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/leaflet-extra-markers/-/leaflet-extra-markers-1.0.6.tgz#e97517006d327e25b2e09be63a6818702f70ad16"
 
+leaflet-shades@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/leaflet-shades/-/leaflet-shades-0.1.0.tgz#88a2e92d83d8a32ad94c5b326c2d2f95fec0eb20"
+  dependencies:
+    leaflet-editable "^1.1.0"
+    leaflet.path.drag "0.0.6"
+
 leaflet.path.drag@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/leaflet.path.drag/-/leaflet.path.drag-0.0.5.tgz#d72499797f2ca690cb8edc777d4eb2ef072e5c70"
+
+leaflet.path.drag@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/leaflet.path.drag/-/leaflet.path.drag-0.0.6.tgz#6d9c3af0b9d7b032544ae16bfde688f0160514a0"
 
 leaflet@1.0.3:
   version "1.0.3"
