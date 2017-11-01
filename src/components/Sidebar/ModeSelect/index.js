@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Confirm, Segment, Header, Button } from 'semantic-ui-react'
-import { startDrawingBounds, removeShades } from '../../../app/region-bounds'
+import { startDrawingBounds } from '../../../app/region-bounds'
 import { setDataCoverage } from '../../../app/dataGeojson'
 import { setRegionAnalysisMode, setRouteAnalysisMode } from '../../../store/actions/app'
 import { resetAnalysis } from '../../../store/actions/reset'
@@ -61,7 +61,6 @@ export class ModeSelect extends React.PureComponent {
     this.props.dispatch(clearBarchart())
     this.props.dispatch(setDayFilter([0, 7]))
     this.props.dispatch(setHourFilter([0, 24]))
-    removeShades()
   }
 
   onClickRegion = (event) => {
