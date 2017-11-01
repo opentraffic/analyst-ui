@@ -42,7 +42,7 @@ class ExportData extends React.Component {
       <Segment>
         <div>
           <Header as="h3">Export</Header>
-          <a href="https://github.com/opentraffic/analyst-ui/wiki/Export-Query-Results" target="_blank"><Icon circular color="grey" name="info" className="info-icon" title="Learn more about export formats" /></a>
+          <a href="https://github.com/opentraffic/analyst-ui/wiki/Export-Query-Results" target="_blank" rel="noopener noreferrer"><Icon circular color="grey" name="info" className="info-icon" title="Learn more about export formats" /></a>
         </div>
         <Button.Group fluid basic>
           <Button icon="download" content="Download as GeoJSON" color="blue" onClick={() => this.onClickButton('geojson')} />
