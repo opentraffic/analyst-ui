@@ -18,6 +18,7 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
     const state = store.getState()
     const days = state.date.dayFilter || [0, 7]
     const hours = state.date.hourFilter || [0, 24]
+    const refSpeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
     const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
 
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
@@ -25,6 +26,13 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
       const speeds = getValuesFromSubtile(segment.segmentIdx, subtile, days, hours, 'speeds')
       geometry.speedByHour = addSpeedByHour(speeds, days, hours)
       geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
+      // calculate percentage difference between weekly/historical speed and reference speed
+      if (geometry.speed === null || geometry.speed === 0 || typeof geometry.speed === 'undefined') {
+        geometry.percentDiff = 0
+      } else {
+        geometry.percentDiff = ((refSpeed - geometry.speed) / mathjs.mean(refSpeed, geometry.speed)) * 100
+      }
+      subtile.percentDiffs.push(geometry.percentDiff)
     }
   } catch (e) {}
 }
@@ -92,18 +100,17 @@ export function preparePercentDiffsForBarChart (tiles, date, segment) {
   // not all levels and tiles are available yet, so try()
   // skips it if it doesn't work
   try {
-    const refspeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
+    const refSpeed = tiles.reference[segment.level][segment.tileIdx].referenceSpeeds80[segment.segmentIdx]
     const subtiles = tiles.historic[date.year][date.week][segment.level][segment.tileIdx]
     const subtile = getSubtileForSegmentIdx(segment.segmentIdx, subtiles)
     if (subtile) {
       var percentDiffsByDayAndHourArray = mathjs.zeros(7, 24)
       var nonZeroDiffCountByDayAndHourArray = mathjs.zeros(7, 24)
-      var diffs = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'percentDiffs')
-      chunk(diffs, 24).forEach((percentDiffsForThisDay, dayIndex) => {
-        percentDiffsForThisDay.forEach((percentDiffsForThisHour, hourIndex) => {
-          if (percentDiffsForThisHour > 0) {
-            // calculate percentage difference between weekly/historical speed and reference speed
-            const percDiff = ((refspeed - percentDiffsForThisHour) / mathjs.mean(refspeed, percentDiffsForThisHour)) * 100
+      var speeds = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'speeds')
+      chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
+        speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
+          if (speedForThisHour > 0) {
+            const percDiff = ((refSpeed - speedForThisHour) / mathjs.mean(refSpeed, speedForThisHour)) * 100
             percentDiffsByDayAndHourArray.set([dayIndex, hourIndex], percDiff)
             nonZeroDiffCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
           }
