@@ -1,6 +1,8 @@
 import FileSaver from 'file-saver'
 import _ from 'lodash'
 
+const DAYS_OF_WEEK = [null, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+
 function prepareCsvForExport (data, analysisMode, route) {
   let rows = []
   if (analysisMode === 'ROUTE') {
@@ -15,9 +17,8 @@ function prepareCsvForExport (data, analysisMode, route) {
       'row_type': 'segment',
       'osmlr_id': segment.properties.osmlr_id
     }
-    const daysOfWeek = [null, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
     segment.properties.speedByHour.forEach((speedByHour) => {
-      let dayOfWeek = daysOfWeek[speedByHour.dayOfWeek]
+      let dayOfWeek = DAYS_OF_WEEK[speedByHour.dayOfWeek]
       row[`average_speed_on_${dayOfWeek}_at_hour_${speedByHour.hourOfDay}`] = speedByHour.speedThisHour
     })
     return row
@@ -78,12 +79,18 @@ export function convertArrayOfObjectsToCsv (data, columnDelimiter = ',', lineDel
  * @param {Object} route
  */
 export function exportData (obj, name = 'untitled', format = 'geojson', analysisMode, date, route) {
-  // Do nothing if obj is falsy
   if (!obj) return false
 
   let blob
 
-  // TODO: include `date` in the export?
+  obj.properties.analysisMode = analysisMode
+  obj.properties.analysisName = name
+  obj.properties.date = {
+    year: date.year,
+    week: parseInt(date.week, 10),
+    days: _.slice(DAYS_OF_WEEK, date.dayFilter[0] + 1, date.dayFilter[1] + 1),
+    hours: _.range(date.hourFilter[0], date.hourFilter[1] + 1)
+  }
 
   if (format === 'geojson') {
     let str = JSON.stringify(obj, null, 2)

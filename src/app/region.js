@@ -148,11 +148,9 @@ export function showRegion (bounds) {
           }
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
-            analysisMode: 'region',
-            analyisName: store.getState().app.viewName,
-            bounds: store.getState().view.bounds,
-            date: store.getState().date
+            bounds: store.getState().view.bounds
           }
+          // more properties will be added during export
 
           const tangramLayer = getTangramLayer()
           tangramLayer.setSelectionEvents({
