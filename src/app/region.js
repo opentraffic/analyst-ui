@@ -3,11 +3,11 @@ import { getTilesForBbox, getTileUrlSuffix, parseSegmentId } from '../lib/tiles'
 import { merge } from '../lib/geojson'
 import { getTangramLayer, setDataSource, getCurrentConfig, setCurrentConfig } from '../lib/tangram'
 import { fetchDataTiles } from './data'
-import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
+import { addSpeedToMapGeometry, prepareDataForBarChart } from './processing'
 import store from '../store'
 import { setGeoJSON } from '../store/actions/view'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { clearBarchart, setBarchartSpeeds } from '../store/actions/barchart'
+import { clearBarchart, setBarchartData } from '../store/actions/barchart'
 import { setRouteError } from '../store/actions/route'
 import { displayRegionInfo } from './route-info'
 import mathjs from 'mathjs'
@@ -139,16 +139,14 @@ export function showRegion (bounds) {
             let totalCountArray = mathjs.zeros(7, 24)
             parsedIds.forEach((id, index) => {
               addSpeedToMapGeometry(tiles, date, id, features[index].properties)
-              let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-              if (speedsFromThisSegment) {
-                totalPercentDiffArray = mathjs.add(totalPercentDiffArray, speedsFromThisSegment.percentDiff)
-                totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
-                totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+              let dataFromThisSegment = prepareDataForBarChart(tiles, date, id)
+              if (dataFromThisSegment) {
+                totalPercentDiffArray = mathjs.add(totalPercentDiffArray, dataFromThisSegment.percentDiff)
+                totalSpeedArray = mathjs.add(totalSpeedArray, dataFromThisSegment.speeds)
+                totalCountArray = mathjs.add(totalCountArray, dataFromThisSegment.counts)
               }
             })
-            const isComparedEnabled = store.getState().app.refSpeedComparisonEnabled
-            const chartData = (isComparedEnabled) ? totalPercentDiffArray : totalSpeedArray
-            store.dispatch(setBarchartSpeeds(chartData, totalCountArray))
+            store.dispatch(setBarchartData(totalSpeedArray, totalPercentDiffArray, totalCountArray))
           }
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
