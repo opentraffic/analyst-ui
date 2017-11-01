@@ -182,13 +182,11 @@ export function showRoute (waypoints) {
           type: 'FeatureCollection',
           features: [],
           properties: {
-            analysisMode: 'route',
-            analyisName: store.getState().app.viewName,
-            date: store.getState().date,
             baselineTime: store.getState().route.baselineTime,
             trafficRouteTime: store.getState().route.trafficRouteTime
           }
         }
+        // more properties will be added during export
 
         response.edges.forEach(function (edge, index) {
           // Create individual segments for drawing, later.

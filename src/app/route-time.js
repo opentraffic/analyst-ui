@@ -54,6 +54,10 @@ export function getRouteTime (traceAttributes) {
     routeTime += edgeTime
     prevEdge = currEdge
   }
+
+  // round to integers/seconds
+  routeTime = Math.round(routeTime)
+
   return routeTime
 }
 
