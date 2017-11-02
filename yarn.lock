@@ -4174,9 +4174,9 @@ leaflet-extra-markers@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/leaflet-extra-markers/-/leaflet-extra-markers-1.0.6.tgz#e97517006d327e25b2e09be63a6818702f70ad16"
 
-leaflet-shades@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/leaflet-shades/-/leaflet-shades-0.1.0.tgz#88a2e92d83d8a32ad94c5b326c2d2f95fec0eb20"
+leaflet-shades@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/leaflet-shades/-/leaflet-shades-0.1.1.tgz#a2557056ec9190cecb3032fc35b45904c44f0497"
   dependencies:
     leaflet-editable "^1.1.0"
     leaflet.path.drag "0.0.6"
