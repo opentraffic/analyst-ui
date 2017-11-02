@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: ["error", { "vars": "local" }] */
+/* global feature */
 import config from '../config'
 import { STOPS, OUTLINE_STOPS } from '../lib/route-segments'
 import { getColorAtIndexInVec3 } from '../lib/color-ramps'

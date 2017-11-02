@@ -23,8 +23,10 @@ export class TimeFilters extends React.Component {
     refSpeedComparisonEnabled: PropTypes.bool
   }
 
-  componentDidUpdate () {
-    const chartData = (this.props.refSpeedComparisonEnabled) ? crossfilter(this.props.percentDiffsBinnedByHour) : crossfilter(this.props.speedsBinnedByHour)
+  componentDidUpdate (prevProps) {
+    const { refSpeedComparisonEnabled, percentDiffsBinnedByHour, speedsBinnedByHour } = this.props
+    const chartData = (refSpeedComparisonEnabled) ? crossfilter(percentDiffsBinnedByHour) : crossfilter(speedsBinnedByHour)
+
     this.makeDailyChart(chartData)
     this.makeHourlyChart(chartData)
 
@@ -49,7 +51,8 @@ export class TimeFilters extends React.Component {
   shouldComponentUpdate (nextProps) {
     return (
       !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour) ||
-      !isEqual(nextProps.percentDiffsBinnedByHour, this.props.percentDiffsBinnedByHour)
+      !isEqual(nextProps.percentDiffsBinnedByHour, this.props.percentDiffsBinnedByHour) ||
+      !isEqual(nextProps.refSpeedComparisonEnabled, this.props.refSpeedComparisonEnabled)
     )
   }
 
