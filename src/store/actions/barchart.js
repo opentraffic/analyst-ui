@@ -34,11 +34,11 @@ export function setBarchartSpeeds (speedsArray, countArray) {
   }
 }
 
-export function setBarchartPercentDiffs (diffsArray, diffCountArray) {
+export function setBarchartPercentDiffs (diffsArray, countArray) {
   let percentDiffArray
-  if (diffCountArray) {
+  if (countArray) {
     percentDiffArray = diffsArray.map((value, index, matrix) => {
-      let count = diffCountArray.get(index)
+      let count = countArray.get(index)
       if (count && count > 0) {
         return (value / count)
       } else {
