@@ -37,14 +37,14 @@ export function setBarchartData (speedsArray, diffsArray, countArray) {
     hoursForCrossFilter.push({
       'dayOfWeek': index[0] + 1,
       'hourOfDay': index[1] + 1,
-      'meanSpeedThisHour': speed
+      'value': speed
     })
   })
   percentDiffArray.forEach((diff, index) => {
     hoursForDiffCrossFilter.push({
       'dayOfWeek': index[0] + 1,
       'hourOfDay': index[1] + 1,
-      'percentDiffThisHour': diff
+      'value': diff
     })
   })
   return {

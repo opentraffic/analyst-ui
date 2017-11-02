@@ -8,7 +8,7 @@ import 'dc/dc.css'
 // Callback for when data is added to the current filter results
 const reduceAdd = function (p, v) {
   p.count++
-  p.sum += v.meanSpeedThisHour
+  p.sum += v.value // value can be mean speed this hour OR percent diff this hour
   if (p.count > 0) {
     p.avg = (p.sum / p.count)
   } else {
@@ -21,7 +21,7 @@ const reduceAdd = function (p, v) {
 const reduceRemove = function (p, v) {
   // return p - p.
   p.count--
-  p.sum -= v.meanSpeedThisHour
+  p.sum -= v.value // value can be mean speed this hour OR percent diff this hour
   if (p.count > 0) {
     p.avg = (p.sum / p.count)
   } else {
@@ -33,7 +33,7 @@ const reduceRemove = function (p, v) {
 // Initialize `p`
 const reduceInitial = function () {
   return {
-    meanSpeedThisHour: 0,
+    value: 0,
     count: 0,
     sum: 0,
     avg: 0
