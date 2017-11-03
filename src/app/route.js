@@ -3,10 +3,10 @@ import polyline from '@mapbox/polyline'
 import { getRoute, getTraceAttributes, valhallaResponseToPolylineCoordinates } from '../lib/valhalla'
 import { parseSegmentId } from '../lib/tiles'
 import { fetchDataTiles } from './data'
-import { addSpeedToMapGeometry, prepareSpeedsForBarChart } from './processing'
+import { addSpeedToMapGeometry, prepareDataForBarChart } from './processing'
 import { getRouteTime } from './route-time'
 import { startLoading, stopLoading, hideLoading } from '../store/actions/loading'
-import { clearBarchart, setBarchartSpeeds } from '../store/actions/barchart'
+import { clearBarchart, setBarchartData } from '../store/actions/barchart'
 import { setGeoJSON } from '../store/actions/view'
 import {
   clearRouteSegments,
@@ -162,16 +162,19 @@ export function showRoute (waypoints) {
         // TODO: when year and week aren't specified, we should also
         // skip the step of trying to fetch data tiles
         if (date.year && date.week) {
+          let totalPercentDiffArray = mathjs.zeros(7, 24)
           let totalSpeedArray = mathjs.zeros(7, 24)
           let totalCountArray = mathjs.zeros(7, 24)
+
           parsedIds.forEach((id) => {
             // Will add either meaured or reference speed
             addSpeedToMapGeometry(tiles, date, id, id)
-            let speedsFromThisSegment = prepareSpeedsForBarChart(tiles, date, id)
-            totalSpeedArray = mathjs.add(totalSpeedArray, speedsFromThisSegment.speeds)
-            totalCountArray = mathjs.add(totalCountArray, speedsFromThisSegment.counts)
+            let dataFromThisSegment = prepareDataForBarChart(tiles, date, id)
+            totalPercentDiffArray = mathjs.add(totalPercentDiffArray, dataFromThisSegment.percentDiff)
+            totalSpeedArray = mathjs.add(totalSpeedArray, dataFromThisSegment.speeds)
+            totalCountArray = mathjs.add(totalCountArray, dataFromThisSegment.counts)
           })
-          store.dispatch(setBarchartSpeeds(totalSpeedArray, totalCountArray))
+          store.dispatch(setBarchartData(totalSpeedArray, totalPercentDiffArray, totalCountArray))
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
         }
