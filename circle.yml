@@ -1,3 +1,18 @@
+# Using Yarn, rather than NPM. See https://circleci.com/docs/1.0/yarn/
+
 machine:
   node:
     version: 8.2.0
+  environment:
+    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+
+dependencies:
+  override:
+    - yarn install
+  cache_directories:
+    - ~/.cache/yarn
+
+test:
+  override:
+    - yarn test   # run all tests, including the linter
+    - yarn build  # make sure we can successfully build

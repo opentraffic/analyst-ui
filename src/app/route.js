@@ -200,6 +200,7 @@ export function showRoute (waypoints) {
           const fullArrayDist = Distance(coordsSlice[0], coordsSlice[coordsSlice.length - 1])
           let speed = -1
           let speedByHour = []
+          let percentDiff = 0
           let dist = 0
           if (edge.traffic_segments) {
             for (let t = 0; t < edge.traffic_segments.length; t++) {
@@ -248,6 +249,7 @@ export function showRoute (waypoints) {
                 if (id === parsedIds[i].id) {
                   speed = parsedIds[i].speed
                   speedByHour = parsedIds[i].speedByHour
+                  percentDiff = parsedIds[i].percentDiff
                   speeds.push({
                     coordinates: coordsSlice,
                     speed: speed,
@@ -270,7 +272,8 @@ export function showRoute (waypoints) {
                   id: edge.traffic_segments[t],
                   osmlr_id: edge.traffic_segments[t].segment_id,
                   speed: speed,
-                  speedByHour: speedByHour
+                  speedByHour: speedByHour,
+                  percentDiff: percentDiff
                   // Note, this is missing properties that are already there in the region view
                 }
               })
