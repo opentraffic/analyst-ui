@@ -3,7 +3,7 @@ import _ from 'lodash'
 
 const DAYS_OF_WEEK = [null, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
-function prepareCsvForExport (data, analysisMode, route) {
+function prepareCsvForExport (data, analysisMode, refSpeedComparisonEnabled, route) {
   let rows = []
   if (analysisMode === 'ROUTE') {
     rows.push({
@@ -12,15 +12,20 @@ function prepareCsvForExport (data, analysisMode, route) {
       'traffic_route_time': route.trafficRouteTime
     })
   }
+
   rows = rows.concat(_.map(data.features, (segment) => {
     var row = {
       'row_type': 'segment',
       'osmlr_id': segment.properties.osmlr_id
     }
-    segment.properties.speedByHour.forEach((speedByHour) => {
-      let dayOfWeek = DAYS_OF_WEEK[speedByHour.dayOfWeek]
-      row[`average_speed_on_${dayOfWeek}_at_hour_${speedByHour.hourOfDay}`] = speedByHour.speedThisHour
-    })
+    if (refSpeedComparisonEnabled) {
+      row['percent_diff_from_reference_speed'] = segment.properties.percentDiff
+    } else {
+      segment.properties.speedByHour.forEach((speedByHour) => {
+        let dayOfWeek = DAYS_OF_WEEK[speedByHour.dayOfWeek]
+        row[`average_speed_on_${dayOfWeek}_at_hour_${speedByHour.hourOfDay}`] = speedByHour.speedThisHour
+      })
+    }
     return row
   }))
   let str = convertArrayOfObjectsToCsv(rows)
@@ -78,27 +83,42 @@ export function convertArrayOfObjectsToCsv (data, columnDelimiter = ',', lineDel
  * @param {Object} date
  * @param {Object} route
  */
-export function exportData (obj, name = 'untitled', format = 'geojson', analysisMode, date, route) {
+export function exportData (obj, name = 'untitled', format = 'geojson', analysisMode, date, refSpeedComparisonEnabled, route) {
   if (!obj) return false
 
   let blob
 
-  obj.properties.analysisMode = analysisMode
-  obj.properties.analysisName = name
+  let data = JSON.parse(JSON.stringify(obj)) // deep clone, so we can modify the data
+
+  data.properties.analysisMode = analysisMode
+  data.properties.analysisName = name
   const days = (date && date.dayFilter) ? _.slice(DAYS_OF_WEEK, date.dayFilter[0] + 1, date.dayFilter[1] + 1) : _.slice(DAYS_OF_WEEK, 1, 8)
   const hours = (date && date.hourFilter) ? _.range(date.hourFilter[0], date.hourFilter[1]) : _.range(0, 25)
-  obj.properties.date = {
+  data.properties.date = {
     year: date.year,
     week: parseInt(date.week, 10),
     days: days,
     hours: hours
   }
 
+  if (refSpeedComparisonEnabled) {
+    data.features = data.features.map((feature) => {
+      delete feature.properties.speedByHour
+      delete feature.properties.speed
+      return feature
+    })
+  } else {
+    data.features = data.features.map((feature) => {
+      delete feature.properties.percentDiff
+      return feature
+    })
+  }
+
   if (format === 'geojson') {
-    let str = JSON.stringify(obj, null, 2)
+    let str = JSON.stringify(data, null, 2)
     blob = new Blob([str], {type: 'application/json;charset=utf-8'})
   } else if (format === 'csv') {
-    let str = prepareCsvForExport(obj, analysisMode, route)
+    let str = prepareCsvForExport(data, analysisMode, refSpeedComparisonEnabled, route)
     blob = new Blob([str], {type: 'text/csv;charset=utf-8'})
   } else {
     throw new Error('exportData() only supports GeoJSON or CSV formats')

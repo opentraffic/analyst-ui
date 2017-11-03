@@ -11,7 +11,8 @@ class ExportData extends React.Component {
     analysisName: PropTypes.string,
     analysisMode: PropTypes.string,
     date: PropTypes.object,
-    route: PropTypes.object
+    route: PropTypes.object,
+    refSpeedComparisonEnabled: PropTypes.bool
   }
 
   constructor (props) {
@@ -23,7 +24,7 @@ class ExportData extends React.Component {
   }
 
   onClickButton = (format) => {
-    const result = exportData(this.props.geoJSON, this.props.analysisName, format, this.props.analysisMode, this.props.date, this.props.route)
+    const result = exportData(this.props.geoJSON, this.props.analysisName, format, this.props.analysisMode, this.props.date, this.props.refSpeedComparisonEnabled, this.props.route)
     if (result === false) {
       this.setState({
         message: 'There is no data to download.'
@@ -60,7 +61,8 @@ function mapStateToProps (state) {
     analysisName: state.app.viewName,
     analysisMode: state.app.analysisMode,
     date: state.date,
-    route: state.route
+    route: state.route,
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
   }
 }
 
