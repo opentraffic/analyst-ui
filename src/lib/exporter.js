@@ -85,11 +85,13 @@ export function exportData (obj, name = 'untitled', format = 'geojson', analysis
 
   obj.properties.analysisMode = analysisMode
   obj.properties.analysisName = name
+  const days = (date && date.dayFilter) ? _.slice(DAYS_OF_WEEK, date.dayFilter[0] + 1, date.dayFilter[1] + 1) : _.slice(DAYS_OF_WEEK, 1, 8)
+  const hours = (date && date.hourFilter) ? _.range(date.hourFilter[0], date.hourFilter[1]) : _.range(0, 25)
   obj.properties.date = {
     year: date.year,
     week: parseInt(date.week, 10),
-    days: _.slice(DAYS_OF_WEEK, date.dayFilter[0] + 1, date.dayFilter[1] + 1),
-    hours: _.range(date.hourFilter[0], date.hourFilter[1] + 1)
+    days: days,
+    hours: hours
   }
 
   if (format === 'geojson') {
