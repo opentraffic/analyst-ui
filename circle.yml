@@ -1,3 +1,8 @@
 machine:
   node:
     version: 8.2.0
+
+test:
+  override:
+    - yarn test   # run all tests, including the linter
+    - yarn build  # make sure we can successfully build
