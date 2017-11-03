@@ -22,7 +22,7 @@ export default class Legend extends React.PureComponent {
     return (
       <Segment>
         <Header as="h3">
-          { (this.props.compareEnabled) ? 'Percent change in speed' : 'Speed, in kilometers per hour' }
+          { (this.props.compareEnabled) ? 'Percent change, compared to reference speeds' : 'Speed, in kilometers per hour' }
         </Header>
         <table>
           <tbody>
