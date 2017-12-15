@@ -67,6 +67,7 @@ export class TimeFilters extends React.Component {
       xShift: DAILY_X_SHIFT,
       gap: 10,
       onExtentChange: (extent) => {
+        if (extent[0] === extent[1]) extent = [0, 7]
         this.props.dispatch(setDayFilter(extent))
       }
     })
@@ -87,6 +88,7 @@ export class TimeFilters extends React.Component {
       xShift: HOURLY_X_SHIFT,
       gap: 5,
       onExtentChange: (extent) => {
+        if (extent[0] === extent[1]) extent = [0, 24]
         this.props.dispatch(setHourFilter(extent))
       }
     })
