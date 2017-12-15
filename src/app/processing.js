@@ -26,11 +26,14 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
       const speeds = getValuesFromSubtile(segment.segmentIdx, subtile, days, hours, 'speeds')
       geometry.speedByHour = addSpeedByHour(speeds, days, hours)
       geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
+      //geometry.speed = refSpeed
       // calculate percentage difference between weekly/historical speed and reference speed
       if (geometry.speed === null || geometry.speed === 0 || typeof geometry.speed === 'undefined') {
         geometry.percentDiff = 0
       } else {
-        geometry.percentDiff = ((refSpeed - geometry.speed) / mathjs.mean(refSpeed, geometry.speed)) * 100
+        if(refSpeed === 0) console.warn(refSpeed)
+       // geometry.percentDiff = ((refSpeed - geometry.speed) / mathjs.mean(refSpeed)) * 100
+        geometry.percentDiff = ((geometry.speed - refSpeed) / refSpeed) * 100
       }
       subtile.percentDiffs.push(geometry.percentDiff)
     }
@@ -79,7 +82,7 @@ export function prepareDataForBarChart (tiles, date, segment) {
       chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
         speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
           if (speedForThisHour > 0) {
-            const percentDiffForThisHour = ((refSpeed - speedForThisHour) / mathjs.mean(refSpeed, speedForThisHour)) * 100
+            const percentDiffForThisHour = ((speedForThisHour - refSpeed) / refSpeed) * 100
             percentDiffsByDayAndHourArray.set([dayIndex, hourIndex], Number(percentDiffForThisHour.toFixed(2)))
             speedsByDayAndHourArray.set([dayIndex, hourIndex], speedForThisHour)
             nonZeroSpeedCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
@@ -115,7 +118,7 @@ export function preparePercentDiffsForBarChart (tiles, date, segment) {
       chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
         speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
           if (speedForThisHour > 0) {
-            const percDiff = ((refSpeed - speedForThisHour) / mathjs.mean(refSpeed, speedForThisHour)) * 100
+            const percDiff = ((speedForThisHour - refSpeed) / refSpeed) * 100
             percentDiffsByDayAndHourArray.set([dayIndex, hourIndex], percDiff)
             nonZeroDiffCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
           }
