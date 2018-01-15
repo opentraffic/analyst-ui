@@ -242,6 +242,7 @@ export function showRoute (waypoints) {
                         break
                       }
                     }
+                    break
                   }
                 }
               }
