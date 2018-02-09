@@ -27,7 +27,7 @@
     "leaflet-shades": "0.1.1",
     "leaflet.path.drag": "0.0.5",
     "lodash": "4.17.4",
-    "mathjs": "3.16.4",
+    "mathjs": "3.17.0",
     "moment": "2.18.1",
     "protobufjs": "6.8.0",
     "react": "15.6.1",
@@ -46,7 +46,7 @@
     "semantic-ui-css": "2.2.10",
     "semantic-ui-react": "0.70.0",
     "string.prototype.padstart": "3.0.0",
-    "tangram": "0.13.0",
+    "tangram": "0.14.2",
     "url-search-params-polyfill": "2.0.0"
   },
   "devDependencies": {

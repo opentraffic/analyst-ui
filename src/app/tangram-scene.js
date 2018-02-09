@@ -6,8 +6,8 @@ import { getColorAtIndexInVec3 } from '../lib/color-ramps'
 
 const scene = {
   import: [
-    'https://mapzen.com/carto/refill-style/7/refill-style.zip',
-    'https://mapzen.com/carto/refill-style/7/themes/gray.zip'
+    process.env.PUBLIC_URL + 'refill-style.zip',
+    process.env.PUBLIC_URL + 'gray.zip'
   ],
   global: {
     'sdk_mapzen_api_key': config.mapzen.apiKey,
