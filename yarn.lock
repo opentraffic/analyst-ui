@@ -4210,7 +4210,7 @@ js-yaml@^3.4.3, js-yaml@^3.5.1, js-yaml@^3.7.0:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-"js-yaml@github:tangrams/js-yaml#read-only":
+js-yaml@tangrams/js-yaml#read-only:
   version "3.5.3"
   resolved "https://codeload.github.com/tangrams/js-yaml/tar.gz/1637976c6f593bed33ed088aedb6d01390a947c0"
   dependencies:
@@ -4323,7 +4323,7 @@ jsx-ast-utils@^1.4.0, jsx-ast-utils@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-1.4.1.tgz#3867213e8dd79bf1e8f2300c0cfc1efb182c0df1"
 
-"jszip@github:tangrams/jszip#read-only":
+jszip@tangrams/jszip#read-only:
   version "3.0.0"
   resolved "https://codeload.github.com/tangrams/jszip/tar.gz/856ff081cd4a03884fa04a60f3a1998ca51d7b3c"
   dependencies:
@@ -7272,7 +7272,7 @@ to-fast-properties@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.3.tgz#b83571fa4d8c25b82e231b06e3a3055de4ca1a47"
 
-"topojson-client@github:tangrams/topojson-client#read-only":
+topojson-client@tangrams/topojson-client#read-only:
   version "2.1.0"
   resolved "https://codeload.github.com/tangrams/topojson-client/tar.gz/1068f4f2e03ddf8236499bbc896cec98d7a342b7"
   dependencies:
