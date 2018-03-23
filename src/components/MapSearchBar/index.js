@@ -52,14 +52,14 @@ class MapSearchBar extends React.Component {
 
   // Teach Autosuggest what should be input value when suggestion is clicked
   getSuggestionValue = (suggestion) => {
-    return suggestion.properties.label
+    return suggestion.formatted
   }
 
   // Will be called every time suggestion is selected via mouse or keyboard
   onSuggestionSelected = (event, {suggestion, suggestionValue, suggestionIndex, sectionIndex, method}) => {
     event.preventDefault()
-    const lat = suggestion.geometry.coordinates[1]
-    const lng = suggestion.geometry.coordinates[0]
+    const lat = suggestion.geometry.lat
+    const lng = suggestion.geometry.lng
     const latlng = [lat, lng]
 
     // Stores latlng and name of selected location in Redux
@@ -75,7 +75,7 @@ class MapSearchBar extends React.Component {
   }
 
   renderSuggestion = (suggestion, {query, isHighlighted}) => {
-    const label = suggestion.properties.label
+    const label = suggestion.formatted
 
     // Highlight the input query
     const r = new RegExp(`(${query})`, 'gi')
@@ -101,13 +101,13 @@ class MapSearchBar extends React.Component {
 
   // Makes autocomplete request to Mapzen Search based on what user has typed
   autocomplete = (query) => {
-    const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.apiKey}`
-    this.throttleMakeRequest(endpoint)
+    // const endpoint = `https://search.mapzen.com/v1/autocomplete?text=${query}&api_key=${this.props.apiKey}`
+    // this.throttleMakeRequest(endpoint)
   }
 
   // Makes search request based on what user has entered
   search = (query) => {
-    const endpoint = `https://search.mapzen.com/v1/search?text=${query}&api_key=${this.props.apiKey}`
+    const endpoint = `https://api.opencagedata.com/geocode/v1/json?q=${query}&key=${this.props.apiKey}`
     this.throttleMakeRequest(endpoint)
   }
 
@@ -116,7 +116,7 @@ class MapSearchBar extends React.Component {
       .then(response => response.json())
       .then((results) => {
         this.setState({
-          suggestions: results.features
+          suggestions: results.results
         })
       })
   }

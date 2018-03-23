@@ -1,7 +1,7 @@
 const config = {
   name: 'Open Traffic Analyst UI',
   mapzen: {
-    apiKey: 'mapzen-YFrX5jt'
+    apiKey: '8f2a0651ebc54366b59183dca4851489'
   },
   map: {
     center: [0, 120],
