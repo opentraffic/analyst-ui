@@ -1,9 +1,10 @@
-import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS, SET_ANALYSIS_NAME, SET_REF_SPEED_COMPARISON_ENABLED } from '../actions'
+import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS, SET_ANALYSIS_NAME, SET_REF_SPEED_COMPARISON_ENABLED, SET_REF_SPEED_ENABLED } from '../actions'
 
 const initialState = {
   analysisMode: null,
   viewName: '',
-  refSpeedComparisonEnabled: false
+  refSpeedComparisonEnabled: false,
+  refSpeedEnabled: false
 }
 
 const app = (state = initialState, action) => {
@@ -17,7 +18,8 @@ const app = (state = initialState, action) => {
       return {
         ...state,
         analysisMode: null,
-        refSpeedComparisonEnabled: false
+        refSpeedComparisonEnabled: false,
+        refSpeedEnabled: false
       }
     case SET_ANALYSIS_NAME:
       return {
@@ -28,6 +30,11 @@ const app = (state = initialState, action) => {
       return {
         ...state,
         refSpeedComparisonEnabled: action.refSpeedComparisonEnabled
+      }
+    case SET_REF_SPEED_ENABLED:
+      return {
+        ...state,
+        refSpeedEnabled: action.refSpeedEnabled
       }
     default:
       return state

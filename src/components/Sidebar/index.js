@@ -52,7 +52,8 @@ function mapStateToProps (state) {
     errors: state.errors.errors,
     date: state.date,
     analysisMode: state.app.analysisMode,
-    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled,
+    refSpeedEnabled: state.app.refSpeedEnabled
   }
 }
 

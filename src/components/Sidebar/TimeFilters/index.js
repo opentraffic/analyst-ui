@@ -5,7 +5,7 @@ import { Segment, Radio, Divider } from 'semantic-ui-react'
 import dc from 'dc'
 import crossfilter from 'crossfilter2'
 import { createChart } from './chart'
-import { setRefSpeedComparisonEnabled } from '../../../store/actions/app'
+import { setRefSpeedComparisonEnabled, setRefSpeedEnabled } from '../../../store/actions/app'
 import { setDayFilter, setHourFilter } from '../../../store/actions/date'
 import { isEqual } from 'lodash'
 
@@ -19,13 +19,15 @@ export class TimeFilters extends React.Component {
     dayFilter: PropTypes.arrayOf(PropTypes.number),
     hourFilter: PropTypes.arrayOf(PropTypes.number),
     speedsBinnedByHour: PropTypes.array,
+    refSpeedsBinnedByHour: PropTypes.array,
     percentDiffsBinnedByHour: PropTypes.array,
-    refSpeedComparisonEnabled: PropTypes.bool
+    refSpeedComparisonEnabled: PropTypes.bool,
+    refSpeedEnabled: PropTypes.bool
   }
 
   componentDidUpdate (prevProps) {
-    const { refSpeedComparisonEnabled, percentDiffsBinnedByHour, speedsBinnedByHour } = this.props
-    const chartData = (refSpeedComparisonEnabled) ? crossfilter(percentDiffsBinnedByHour) : crossfilter(speedsBinnedByHour)
+    const { refSpeedComparisonEnabled, refSpeedEnabled, percentDiffsBinnedByHour, speedsBinnedByHour, refSpeedsBinnedByHour } = this.props
+    const chartData = (refSpeedComparisonEnabled) ? crossfilter(percentDiffsBinnedByHour) : (refSpeedEnabled) ? crossfilter(refSpeedsBinnedByHour) : crossfilter(speedsBinnedByHour)
 
     this.makeDailyChart(chartData)
     this.makeHourlyChart(chartData)
@@ -51,8 +53,10 @@ export class TimeFilters extends React.Component {
   shouldComponentUpdate (nextProps) {
     return (
       !isEqual(nextProps.speedsBinnedByHour, this.props.speedsBinnedByHour) ||
+      !isEqual(nextProps.refSpeedsBinnedByHour, this.props.refSpeedsBinnedByHour) ||
       !isEqual(nextProps.percentDiffsBinnedByHour, this.props.percentDiffsBinnedByHour) ||
-      !isEqual(nextProps.refSpeedComparisonEnabled, this.props.refSpeedComparisonEnabled)
+      !isEqual(nextProps.refSpeedComparisonEnabled, this.props.refSpeedComparisonEnabled) ||
+      !isEqual(nextProps.refSpeedEnabled, this.props.refSpeedEnabled)
     )
   }
 
@@ -102,14 +106,14 @@ export class TimeFilters extends React.Component {
       <Segment>
         <div className="timefilter-daily">
           <strong>
-            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in speed by day-of-week' : 'Average speed (KPH) by day-of-week' }
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in speed by day-of-week' : (this.props.refSpeedEnabled) ? 'Reference speed (KPH) by day-of-week' : 'Average speed (KPH) by day-of-week' }
           </strong>
           <div ref={(ref) => { this.dailyChartEl = ref }} />
         </div>
 
         <div className="timefilter-hourly">
           <strong>
-            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in speed by hour-of-day' : 'Average speed (KPH) by hour-of-day' }
+            { (this.props.refSpeedComparisonEnabled) ? 'Percent change in speed by hour-of-day' : (this.props.refSpeedEnabled) ? 'Reference speed (KPH) by hour-of-day' : 'Average speed (KPH) by hour-of-day' }
           </strong>
           <div ref={(ref) => { this.hourlyChartEl = ref }} />
         </div>
@@ -126,6 +130,19 @@ export class TimeFilters extends React.Component {
             />
           </strong>
         </div>
+        <Divider />
+        <div className="radio">
+          <strong>
+            <Radio
+              toggle
+              label="Show reference speeds"
+              checked={this.props.refSpeedEnabled}
+              onChange={(event, data) => {
+                this.props.dispatch(setRefSpeedEnabled(data.checked))
+              }}
+            />
+          </strong>
+        </div>
       </Segment>
     )
   }
@@ -136,8 +153,10 @@ function mapStateToProps (state) {
     dayFilter: state.date.dayFilter,
     hourFilter: state.date.hourFilter,
     speedsBinnedByHour: state.barchart.speedsBinnedByHour,
+    refSpeedsBinnedByHour: state.barchart.refSpeedsBinnedByHour,
     percentDiffsBinnedByHour: state.barchart.percentDiffsBinnedByHour,
-    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled
+    refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled,
+    refSpeedEnabled: state.app.refSpeedEnabled
   }
 }
 

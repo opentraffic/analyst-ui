@@ -6,11 +6,19 @@ export function clearBarchart () {
   }
 }
 
-export function setBarchartData (speedsArray, diffsArray, countArray) {
-  let meanSpeedArray
+export function setBarchartData (speedsArray, diffsArray, countArray, refSpeedsArray) {
+  let meanSpeedArray, meanRefSpeedArray
   let percentDiffArray
   if (countArray && diffsArray) {
     meanSpeedArray = speedsArray.map((value, index, matrix) => {
+      let count = countArray.get(index)
+      if (count && count > 0) {
+        return (value / count)
+      } else {
+        return 0
+      }
+    })
+    meanRefSpeedArray = refSpeedsArray.map((value, index, matrix) => {
       let count = countArray.get(index)
       if (count && count > 0) {
         return (value / count)
@@ -28,13 +36,22 @@ export function setBarchartData (speedsArray, diffsArray, countArray) {
     })
   } else {
     meanSpeedArray = speedsArray
+    meanRefSpeedArray = refSpeedsArray
     percentDiffArray = diffsArray
   }
 
   let hoursForCrossFilter = []
+  let hoursForRefCrossFilter = []
   let hoursForDiffCrossFilter = []
   meanSpeedArray.forEach((speed, index) => {
     hoursForCrossFilter.push({
+      'dayOfWeek': index[0] + 1,
+      'hourOfDay': index[1] + 1,
+      'value': speed
+    })
+  })
+  meanRefSpeedArray.forEach((speed, index) => {
+    hoursForRefCrossFilter.push({
       'dayOfWeek': index[0] + 1,
       'hourOfDay': index[1] + 1,
       'value': speed
@@ -50,6 +67,7 @@ export function setBarchartData (speedsArray, diffsArray, countArray) {
   return {
     type: ADD_SEGMENTS_TO_BARCHART,
     speedsBinnedByHour: hoursForCrossFilter,
+    refSpeedsBinnedByHour: hoursForRefCrossFilter,
     percentDiffsBinnedByHour: hoursForDiffCrossFilter
   }
 }

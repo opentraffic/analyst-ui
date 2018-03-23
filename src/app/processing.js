@@ -76,6 +76,7 @@ export function prepareDataForBarChart (tiles, date, segment) {
     if (subtile) {
       var percentDiffsByDayAndHourArray = mathjs.zeros(7, 24)
       var speedsByDayAndHourArray = mathjs.zeros(7, 24)
+      var refSpeedsByDayAndHourArray = mathjs.zeros(7, 24)
       var nonZeroSpeedCountByDayAndHourArray = mathjs.zeros(7, 24)
       var speeds = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'speeds')
       const refSpeeds = getValuesFromSubtile(segment.segmentIdx, tiles.reference[segment.level][segment.tileIdx], [0, 7], [0, 24], 'speeds')
@@ -86,6 +87,7 @@ export function prepareDataForBarChart (tiles, date, segment) {
             const percentDiffForThisHour = (speedForThisHour - refSpeed) / refSpeed * 100
             percentDiffsByDayAndHourArray.set([dayIndex, hourIndex], Number(percentDiffForThisHour.toFixed(2)))
             speedsByDayAndHourArray.set([dayIndex, hourIndex], speedForThisHour)
+            refSpeedsByDayAndHourArray.set([dayIndex, hourIndex], refSpeed)
             nonZeroSpeedCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
           }
         })
@@ -93,7 +95,8 @@ export function prepareDataForBarChart (tiles, date, segment) {
       return {
         speeds: speedsByDayAndHourArray,
         percentDiff: percentDiffsByDayAndHourArray,
-        counts: nonZeroSpeedCountByDayAndHourArray
+        counts: nonZeroSpeedCountByDayAndHourArray,
+        refSpeeds: refSpeedsByDayAndHourArray
       }
     }
   } catch (e) {}

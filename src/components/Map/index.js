@@ -18,6 +18,7 @@ export default class Map extends React.Component {
     onChange: PropTypes.func,
     onClick: PropTypes.func,
     refSpeedComparisonEnabled: PropTypes.bool,
+    refSpeedEnabled: PropTypes.bool,
     recenterMap: PropTypes.func
   }
 
@@ -43,7 +44,7 @@ export default class Map extends React.Component {
   }
 
   render () {
-    const { className, children, center, refSpeedComparisonEnabled, zoom, onClick, scene } = this.props
+    const { className, children, center, refSpeedComparisonEnabled, refSpeedEnabled, zoom, onClick, scene } = this.props
 
     // The `editable` option is not provided by Leaflet but by Leaflet.Editable.
     // It is passed to the options object via props.
@@ -59,6 +60,7 @@ export default class Map extends React.Component {
       >
         <TangramLayer
           refSpeedComparisonEnabled={refSpeedComparisonEnabled}
+          refSpeedEnabled={refSpeedEnabled}
           scene={scene}
           attribution={ATTRIBUTION} />
         <ScaleControl />

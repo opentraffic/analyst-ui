@@ -103,6 +103,7 @@ class MapContainer extends React.Component {
           onClick={this.onClick}
           recenterMap={this.props.recenterMap}
           refSpeedComparisonEnabled={this.props.refSpeedComparisonEnabled}
+          refSpeedEnabled={this.props.refSpeedEnabled}
           scene={this.props.scene}
         >
           <Route
@@ -122,6 +123,7 @@ function mapStateToProps (state) {
   return {
     mode: state.app.analysisMode,
     refSpeedComparisonEnabled: state.app.refSpeedComparisonEnabled,
+    refSpeedEnabled: state.app.refSpeedEnabled,
     apiKey: state.config.mapzen.apiKey,
     route: state.route,
     days: state.date.dayFilter,

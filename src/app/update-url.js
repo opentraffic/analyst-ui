@@ -19,6 +19,7 @@ const ANALYSIS_NAME = 'name'
 const DATA_RANGE_START = 'rangeStart'
 const DATA_RANGE_END = 'rangeEnd'
 const REF_SPEED_COMPARISON_ENABLED = 'refSpeed'
+const REF_SPEED_ENABLED = 'ref'
 
 const VALUE_DELIMITER = '/'
 
@@ -35,7 +36,8 @@ export function initUrlUpdate () {
       ...getMapView(state.map),
       [MAP_LABEL]: getMapLabel(state.map),
       [ANALYSIS_NAME]: getAnalysisName(state.app),
-      [REF_SPEED_COMPARISON_ENABLED]: getRefSpeedComparisonEnabled(state.app)
+      [REF_SPEED_COMPARISON_ENABLED]: getRefSpeedComparisonEnabled(state.app),
+      [REF_SPEED_ENABLED]: getRefSpeedEnabled(state.app)
     })
   })
 }
@@ -122,4 +124,8 @@ function getAnalysisName (app) {
 
 function getRefSpeedComparisonEnabled (app) {
   return app.refSpeedComparisonEnabled || false
+}
+
+function getRefSpeedEnabled (app) {
+  return app.refSpeedEnabled || false
 }

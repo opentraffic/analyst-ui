@@ -14,6 +14,7 @@ export default class TangramLayer extends GridLayer {
       PropTypes.object
     ]),
     refSpeedComparisonEnabled: PropTypes.bool,
+    refSpeedEnabled: PropTypes.bool,
     attribution: PropTypes.string
   }
 
@@ -60,6 +61,10 @@ export default class TangramLayer extends GridLayer {
   componentWillReceiveProps (nextProps) {
     if (this.props.refSpeedComparisonEnabled !== nextProps.refSpeedComparisonEnabled) {
       this.tangram.scene.config.global.refSpeedComparisonEnabled = nextProps.refSpeedComparisonEnabled
+      this.tangram.scene.updateConfig()
+    }
+    if (this.props.refSpeedEnabled !== nextProps.refSpeedEnabled) {
+      this.tangram.scene.config.global.refSpeedEnabled = nextProps.refSpeedEnabled
       this.tangram.scene.updateConfig()
     }
   }

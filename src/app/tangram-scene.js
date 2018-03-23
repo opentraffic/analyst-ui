@@ -11,7 +11,8 @@ const scene = {
   ],
   global: {
     'sdk_mapzen_api_key': config.mapzen.apiKey,
-    'refSpeedComparisonEnabled': false // this is set by the "compare" toggle in the UI
+    'refSpeedComparisonEnabled': false, // this is set by the "compare" toggle in the UI
+    'refSpeedEnabled': false // TODO
   },
   layers: {
     routes: {
@@ -41,6 +42,20 @@ const scene = {
                               : percent >= -40 ? 2 / 15
                               : percent >= -50 ? 1 / 15
                               : 0
+              } else if (global.refSpeedEnabled) {
+                var speed = feature.refSpeed
+                // divide by an even multiple of 255 for lossless conversion to 8 bits
+                colorIndex = speed >= 100 ? 10 / 15
+                             : speed >= 90 ? 9 / 15
+                             : speed >= 80 ? 8 / 15
+                             : speed >= 70 ? 7 / 15
+                             : speed >= 60 ? 6 / 15
+                             : speed >= 50 ? 5 / 15
+                             : speed >= 40 ? 4 / 15
+                             : speed >= 30 ? 3 / 15
+                             : speed >= 20 ? 2 / 15
+                             : speed > 0 ? 1 / 15
+                             : 0
               } else {
                 var speed = feature.speed
                 // divide by an even multiple of 255 for lossless conversion to 8 bits
@@ -66,7 +81,7 @@ const scene = {
             otOutlines: {
               order: 499,
               width: OUTLINE_STOPS,
-              color: `function () {
+              color: `function () {                
                 var colorIndex = 0
                 if (global.refSpeedComparisonEnabled) {
                   var percent = feature.percentDiff
@@ -81,6 +96,20 @@ const scene = {
                                 : percent >= -40 ? 2 / 15
                                 : percent >= -50 ? 1 / 15
                                 : 0
+                } else if (global.refSpeedEnabled) {
+                  var speed = feature.refSpeed
+                  // divide by an even multiple of 255 for lossless conversion to 8 bits
+                  colorIndex = speed >= 100 ? 10 / 15
+                               : speed >= 90 ? 9 / 15
+                               : speed >= 80 ? 8 / 15
+                               : speed >= 70 ? 7 / 15
+                               : speed >= 60 ? 6 / 15
+                               : speed >= 50 ? 5 / 15
+                               : speed >= 40 ? 4 / 15
+                               : speed >= 30 ? 3 / 15
+                               : speed >= 20 ? 2 / 15
+                               : speed > 0 ? 1 / 15
+                               : 0
                 } else {
                   var speed = feature.speed
                   // divide by an even multiple of 255 for lossless conversion to 8 bits

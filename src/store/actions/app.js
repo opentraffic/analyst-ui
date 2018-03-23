@@ -1,4 +1,4 @@
-import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS, SET_ANALYSIS_NAME, SET_REF_SPEED_COMPARISON_ENABLED } from '../actions'
+import { SET_ANALYSIS_MODE, CLEAR_ANALYSIS, SET_ANALYSIS_NAME, SET_REF_SPEED_COMPARISON_ENABLED, SET_REF_SPEED_ENABLED } from '../actions'
 
 const ROUTE_MODE = 'ROUTE'
 const REGION_MODE = 'REGION'
@@ -33,5 +33,12 @@ export function setRefSpeedComparisonEnabled (newState) {
   return {
     type: SET_REF_SPEED_COMPARISON_ENABLED,
     refSpeedComparisonEnabled: newState
+  }
+}
+
+export function setRefSpeedEnabled (newState) {
+  return {
+    type: SET_REF_SPEED_ENABLED,
+    refSpeedEnabled: newState
   }
 }

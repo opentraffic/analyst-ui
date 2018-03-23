@@ -2,7 +2,8 @@ import { CLEAR_BARCHART, ADD_SEGMENTS_TO_BARCHART } from '../actions'
 
 const initialState = {
   percentDiffsBinnedByHour: [],
-  speedsBinnedByHour: []
+  speedsBinnedByHour: [],
+  refSpeedsBinnedByHour: []
 }
 
 const barchart = (state = initialState, action) => {
@@ -11,13 +12,15 @@ const barchart = (state = initialState, action) => {
       return {
         ...state,
         speedsBinnedByHour: [],
-        percentDiffsBinnedByHour: []
+        percentDiffsBinnedByHour: [],
+        refSpeedsBinnedByHour: []
       }
     case ADD_SEGMENTS_TO_BARCHART:
       return {
         ...state,
         speedsBinnedByHour: action.speedsBinnedByHour,
-        percentDiffsBinnedByHour: action.percentDiffsBinnedByHour
+        percentDiffsBinnedByHour: action.percentDiffsBinnedByHour,
+        refSpeedsBinnedByHour: action.refSpeedsBinnedByHour
       }
     default:
       return state

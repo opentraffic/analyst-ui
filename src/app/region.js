@@ -136,6 +136,7 @@ export function showRegion (bounds) {
           if (date.year && date.week) {
             let totalPercentDiffArray = mathjs.zeros(7, 24)
             let totalSpeedArray = mathjs.zeros(7, 24)
+            let totalRefSpeedArray = mathjs.zeros(7, 24)
             let totalCountArray = mathjs.zeros(7, 24)
 
             parsedIds.forEach((id, index) => {
@@ -143,11 +144,12 @@ export function showRegion (bounds) {
               let dataFromThisSegment = prepareDataForBarChart(tiles, date, id)
               if (dataFromThisSegment) {
                 totalPercentDiffArray = mathjs.add(totalPercentDiffArray, dataFromThisSegment.percentDiff)
+                totalRefSpeedArray = mathjs.add(totalRefSpeedArray, dataFromThisSegment.refSpeeds)
                 totalSpeedArray = mathjs.add(totalSpeedArray, dataFromThisSegment.speeds)
                 totalCountArray = mathjs.add(totalCountArray, dataFromThisSegment.counts)
               }
             })
-            store.dispatch(setBarchartData(totalSpeedArray, totalPercentDiffArray, totalCountArray))
+            store.dispatch(setBarchartData(totalSpeedArray, totalPercentDiffArray, totalCountArray, totalRefSpeedArray))
           }
           setDataSource('routes', { type: 'GeoJSON', data: results })
           results.properties = {
