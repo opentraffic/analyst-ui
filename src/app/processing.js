@@ -79,7 +79,7 @@ export function prepareDataForBarChart (tiles, date, segment) {
       chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
         speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
           if (speedForThisHour > 0) {
-            const percentDiffForThisHour =  (speedForThisHour - refSpeed) / refSpeed * 100
+            const percentDiffForThisHour = (speedForThisHour - refSpeed) / refSpeed * 100
             percentDiffsByDayAndHourArray.set([dayIndex, hourIndex], Number(percentDiffForThisHour.toFixed(2)))
             speedsByDayAndHourArray.set([dayIndex, hourIndex], speedForThisHour)
             nonZeroSpeedCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
@@ -115,7 +115,7 @@ export function preparePercentDiffsForBarChart (tiles, date, segment) {
       chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
         speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
           if (speedForThisHour > 0) {
-            const percDiff = ((refSpeed - speedForThisHour) / mathjs.mean(refSpeed, speedForThisHour)) * 100
+            const percDiff = (speedForThisHour - refSpeed) / refSpeed * 100
             percentDiffsByDayAndHourArray.set([dayIndex, hourIndex], percDiff)
             nonZeroDiffCountByDayAndHourArray.set([dayIndex, hourIndex], 1)
           }
