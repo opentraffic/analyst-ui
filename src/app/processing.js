@@ -77,7 +77,7 @@ export function prepareDataForBarChart (tiles, date, segment) {
       var speedsByDayAndHourArray = mathjs.zeros(7, 24)
       var nonZeroSpeedCountByDayAndHourArray = mathjs.zeros(7, 24)
       var speeds = getValuesFromSubtile(segment.segmentIdx, subtile, [0, 7], [0, 24], 'speeds')
-      const refSpeeds = getValuesFromSubtile(segment.segmentIdx, tiles.reference[segment.level][segment.tileIdx], [0, 7], [0, 24], 'speeds')      
+      const refSpeeds = getValuesFromSubtile(segment.segmentIdx, tiles.reference[segment.level][segment.tileIdx], [0, 7], [0, 24], 'speeds')
       chunk(speeds, 24).forEach((speedsForThisDay, dayIndex) => {
         speedsForThisDay.forEach((speedForThisHour, hourIndex) => {
           if (speedForThisHour > 0) {
