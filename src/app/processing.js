@@ -28,6 +28,7 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
       geometry.speedByHour = addSpeedByHour(speeds, days, hours)
       geometry.refSpeedByHour = addSpeedByHour(refSpeeds, days, hours)
       geometry.speed = getMeanSpeed(segment.segmentIdx, subtile, days, hours)
+      geometry.refSpeed = refSpeed
       // calculate percentage difference between weekly/historical speed and reference speed
       if (geometry.speed === null || geometry.speed === 0 || typeof geometry.speed === 'undefined') {
         geometry.percentDiff = 0
