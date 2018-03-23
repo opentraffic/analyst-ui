@@ -30,7 +30,7 @@ export function addSpeedToMapGeometry (tiles, date, segment, geometry) {
       if (geometry.speed === null || geometry.speed === 0 || typeof geometry.speed === 'undefined') {
         geometry.percentDiff = 0
       } else {
-        geometry.percentDiff = ((refSpeed - geometry.speed) / mathjs.mean(refSpeed, geometry.speed)) * 100
+        geometry.percentDiff = (geometry.speed - refSpeed) / refSpeed * 100
       }
       subtile.percentDiffs.push(geometry.percentDiff)
     }
