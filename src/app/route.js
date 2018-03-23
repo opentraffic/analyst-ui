@@ -164,6 +164,7 @@ export function showRoute (waypoints) {
         if (date.year && date.week) {
           let totalPercentDiffArray = mathjs.zeros(7, 24)
           let totalSpeedArray = mathjs.zeros(7, 24)
+          let totalRefSpeedArray = mathjs.zeros(7, 24)
           let totalCountArray = mathjs.zeros(7, 24)
 
           parsedIds.forEach((id) => {
@@ -172,9 +173,10 @@ export function showRoute (waypoints) {
             let dataFromThisSegment = prepareDataForBarChart(tiles, date, id)
             totalPercentDiffArray = mathjs.add(totalPercentDiffArray, dataFromThisSegment.percentDiff)
             totalSpeedArray = mathjs.add(totalSpeedArray, dataFromThisSegment.speeds)
+            totalRefSpeedArray = mathjs.add(totalRefSpeedArray, dataFromThisSegment.refSpeeds)
             totalCountArray = mathjs.add(totalCountArray, dataFromThisSegment.counts)
           })
-          store.dispatch(setBarchartData(totalSpeedArray, totalPercentDiffArray, totalCountArray))
+          store.dispatch(setBarchartData(totalSpeedArray, totalPercentDiffArray, totalCountArray, totalRefSpeedArray))
           const routeTime = getRouteTime(response)
           store.dispatch(setTrafficRouteTime(routeTime))
         }
@@ -199,7 +201,9 @@ export function showRoute (waypoints) {
           let coordsSlice = coordinates.slice(begin, end + 1)
           const fullArrayDist = Distance(coordsSlice[0], coordsSlice[coordsSlice.length - 1])
           let speed = -1
+          let refSpeed = -1
           let speedByHour = []
+          let refSpeedByHour = []
           let percentDiff = 0
           let dist = 0
           if (edge.traffic_segments) {
@@ -234,9 +238,11 @@ export function showRoute (waypoints) {
                     for (let i = 0; i < parsedIds.length; i++) {
                       if (id === parsedIds[i].id) {
                         speed = parsedIds[i].speed
+                        refSpeed = parsedIds[i].refSpeed
                         speeds.push({
                           coordinates: newcoords,
                           speed: speed,
+                          refSpeed: refSpeed,
                           properties: parsedIds[i]
                         })
                         break
@@ -248,11 +254,14 @@ export function showRoute (waypoints) {
               for (let i = 0; i < parsedIds.length; i++) {
                 if (id === parsedIds[i].id) {
                   speed = parsedIds[i].speed
+                  refSpeed = parsedIds[i].refSpeed
                   speedByHour = parsedIds[i].speedByHour
+                  refSpeedByHour = parsedIds[i].refSpeedByHour
                   percentDiff = parsedIds[i].percentDiff
                   speeds.push({
                     coordinates: coordsSlice,
                     speed: speed,
+                    refSpeed: refSpeed,
                     properties: parsedIds[i]
                   })
                   break
@@ -272,7 +281,9 @@ export function showRoute (waypoints) {
                   id: edge.traffic_segments[t],
                   osmlr_id: edge.traffic_segments[t].segment_id,
                   speed: speed,
+                  refSpeed: refSpeed,
                   speedByHour: speedByHour,
+                  refSpeedByHour: refSpeedByHour,
                   percentDiff: percentDiff
                   // Note, this is missing properties that are already there in the region view
                 }
