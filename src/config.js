@@ -12,7 +12,7 @@ const config = {
   historicSpeedTileUrl: 'https://speedtiles-prod.s3-accelerate.amazonaws.com/',
   nextSegmentTileUrl: 'https://speedtiles-prod.s3-accelerate.amazonaws.com/',
   refSpeedTileUrl: 'https://referencetiles-prod.s3-accelerate.amazonaws.com/',
-  valhallaHost: 'routing-prod.opentraffic.io'
+  valhallaHost: 'routing-v1-1.opentraffic.io'
 }
 
 export default config
