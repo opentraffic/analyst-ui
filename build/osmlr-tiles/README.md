@@ -1,4 +1,4 @@
-Put the OSMLR tile here
+Put the OSMLR tiles here
 
 In the end, the directory structure should look like:
 
