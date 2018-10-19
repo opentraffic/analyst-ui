@@ -110,7 +110,7 @@ function figureOutHowManySubtilesThereAre (tile) {
  *            skipped
  */
 function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
-  const url = `${config.historicSpeedTileUrl}${year}/${week}/${suffix}.spd.${subtile}.gz`
+  const url = `${config.historicSpeedTileUrl}${year}/${week}/${suffix}.spd.${subtile}`
   const type = 'historic data tile'
 
   // Add some metadata to the returned tile
@@ -137,7 +137,7 @@ function fetchHistoricSpeedTile (suffix, subtile = 0, year, week) {
  *            skipped
  */
 function fetchNextSegmentTile (suffix, subtile = 0, year, week) {
-  const url = `${config.nextSegmentTileUrl}${year}/${week}/${suffix}.nex.${subtile}.gz`
+  const url = `${config.nextSegmentTileUrl}${year}/${week}/${suffix}.nex.${subtile}`
   const type = 'next segment tile'
 
   // Add some metadata to the returned tile
@@ -161,7 +161,7 @@ function fetchNextSegmentTile (suffix, subtile = 0, year, week) {
  *            skipped
  */
 function fetchReferenceSpeedTile (suffix) {
-  const url = `${config.refSpeedTileUrl}${suffix}.ref.gz`
+  const url = `${config.refSpeedTileUrl}${suffix}.ref`
   const type = 'reference speed tile'
 
   // Add some metadata to the returned tile
