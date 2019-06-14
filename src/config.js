@@ -12,7 +12,7 @@ const config = {
   historicSpeedTileUrl: 'https://wbg-speedtiles-prod.s3.amazonaws.com/',
   nextSegmentTileUrl: 'https://wbg-speedtiles-prod.s3.amazonaws.com/',
   refSpeedTileUrl: 'https://wbg-referencetiles-prod.s3.amazonaws.com/',
-  valhallaHost: 'routing-v1-1.opentraffic.io'
+  valhallaHost: 'localhost:8082'
 }
 
 export default config

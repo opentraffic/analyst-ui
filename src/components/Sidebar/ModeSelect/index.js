@@ -126,6 +126,13 @@ export class ModeSelect extends React.PureComponent {
             onClick={this.onClickRegion}
             basic={!(this.props.activeMode === 'REGION')}
           />
+           <Button
+            icon="car"
+            content="Route"
+            color="blue"
+            onClick={this.onClickRoute}
+            basic={!(this.props.activeMode === 'ROUTE')}
+          />
         </Button.Group>
         <Button
           icon="remove"

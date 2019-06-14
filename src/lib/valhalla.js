@@ -70,7 +70,7 @@ export function valhallaResponseToPolylineCoordinates (response) {
  */
 function makeValhallaRequest (host, endpoint, payload) {
   const options = {}
-  const baseUrl = `https://${host}/${endpoint}`
+  const baseUrl = `http://${host}/${endpoint}`
   const stringPayload = JSON.stringify(payload)
 
   let url
