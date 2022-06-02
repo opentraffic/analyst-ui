@@ -29,7 +29,7 @@
     "lodash": "4.17.4",
     "mathjs": "3.17.0",
     "moment": "2.19.3",
-    "protobufjs": "6.8.0",
+    "protobufjs": "6.11.3",
     "react": "15.6.1",
     "react-addons-shallow-compare": "15.6.0",
     "react-autosuggest": "9.3.1",
